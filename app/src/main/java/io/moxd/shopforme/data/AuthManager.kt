@@ -6,54 +6,65 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.createDataStore
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.coroutines.awaitObject
+import com.github.kittinunf.fuel.coroutines.awaitStringResponse
+import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
+import io.moxd.shopforme.JsonDeserializer
 import io.moxd.shopforme.data.AuthManager.PreferencesKeys.SESSION_ID
-import io.moxd.shopforme.data.deserializer.SessionDeserializer
 import io.moxd.shopforme.data.dto.SessionDto
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 
-private const val API_LOGIN = "api/user/login"
-
-
-// TODO: API überdenken: Auch email und passwort im datastore speichern um in Interface einzubauen?
-//  Wie Error Handling lösen?
+// Einmalig erzeugte Klasse um alle Loginanfragen und die Persisitierung der Session zu managen
 class AuthManager constructor(context: Context) {
 
-    private val dataStore = context.createDataStore("user_auth")
+    // DataStore Objekt der Nutzerdaten erstellen
+    private val dataStore = context.createDataStore("user_preferences")
 
-    private val authEventChannel = Channel<Result>()
-    val authEvent = authEventChannel.receiveAsFlow()
+    // Privater Channel und öffentlicher Flow für den Zugriff von außen
+    private val eventChannel = Channel<Result>()
+    val events = eventChannel.receiveAsFlow()
 
+    // Login Request + Events und Persisiterung der Session
     suspend fun login(email: String, password: String) {
         try {
             val session = Fuel.post(
-                API_LOGIN,
-                listOf("email" to email, "password" to password)
-            ).awaitObject(SessionDeserializer)
+                    RestPath.login,
+                    listOf("email" to email, "password" to password)
+            ).awaitObject<SessionDto>(kotlinxDeserializerOf(JsonDeserializer))
 
             dataStore.edit { preferences ->
-                preferences[SESSION_ID] = session.sessionId
+                preferences[SESSION_ID] = session.id
             }
-            authEventChannel.send(Result.LoginSucessful(session))
+            eventChannel.send(Result.AuthSucess(session))
         } catch (exception: Exception) {
             // TODO: Error handling sauber umsetzen mit echten Fällen
-            authEventChannel.send(Result.LoginError(exception))
+            eventChannel.send(Result.AuthError(exception))
         }
     }
 
+    // Login mit persisiterter Session Id
     suspend fun auth() {
-        // TODO: sessionId per Request erneuern?
         val preferences = dataStore.data.first()
         val sessionId = preferences[SESSION_ID] ?: ""
         if(sessionId.isNotEmpty()) {
-            authEventChannel.send(Result.LoginSucessful(SessionDto(sessionId)))
+            try {
+                // TODO: sessionId per Request erneuern?
+                Fuel.get(
+                    RestPath.user(sessionId)
+                ).awaitStringResponse()
+
+                eventChannel.send(Result.AuthSucess(SessionDto(sessionId)))
+            } catch (exception: Exception) {
+                unauth()
+                eventChannel.send(Result.AuthError(exception))
+            }
         }
     }
 
-    suspend fun logout() {
+    suspend fun unauth() {
         dataStore.edit { it.clear() }
-        authEventChannel.send(Result.LogoutSucessful)
+        eventChannel.send(Result.UnauthSucess)
     }
 
     private object PreferencesKeys {
@@ -61,8 +72,8 @@ class AuthManager constructor(context: Context) {
     }
 
     sealed class Result {
-        object LogoutSucessful: Result()
-        data class LoginSucessful(val session: SessionDto) : Result()
-        data class LoginError(val exception: Exception) : Result()
+        object UnauthSucess: Result()
+        data class AuthSucess(val session: SessionDto) : Result()
+        data class AuthError(val exception: Exception) : Result()
     }
 }

@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.savedstate.SavedStateRegistryOwner
 import io.moxd.shopforme.MainActivity
+import io.moxd.shopforme.requireAuthManager
 
 class LoginViewModelFactory (
     owner: SavedStateRegistryOwner, defaultArgs: Bundle?
@@ -18,6 +19,6 @@ class LoginViewModelFactory (
         modelClass: Class<T>,
         handle: SavedStateHandle
     ): T {
-        return LoginViewModel(MainActivity.authManager!!, handle) as T
+        return LoginViewModel(requireAuthManager(), handle) as T
     }
 }

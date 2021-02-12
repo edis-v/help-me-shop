@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option java_package = "io.moxd.shopforme";
+option java_multiple_files = true;
+
+message ProtoUser {
+  string name = 1;
+  string firstName = 2;
+  string phoneNumber = 3;
+  string email = 4;
+  string street = 5;
+  int32 postalCode = 6;
+  string city = 7;
+  string profilePic = 8;
+  enum UserType {
+      Helfer = 0;
+      Hilfesuchender = 1;
+  }
+  UserType userType = 9;
+}

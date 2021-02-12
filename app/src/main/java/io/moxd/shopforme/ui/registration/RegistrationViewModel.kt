@@ -8,15 +8,20 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
-class RegistrationViewModel(private val state: SavedStateHandle): ViewModel() {
+class RegistrationViewModel(
+    private val state: SavedStateHandle // Objekt um Zustand des ViewModels beizubehalten
+): ViewModel() {
 
-    private val registrationEventChannel = Channel<RegistrationEvent>()
-    val registrationEvent = registrationEventChannel.receiveAsFlow()
+    // Privater Channel für Events
+    private val eventChannel = Channel<RegistrationEvent>()
+    // Öffentlicher Flow auf Basis des EventChannels um asynchron mit dem Fragment zu kommunizieren
+    val events = eventChannel.receiveAsFlow()
 
     fun onRegistrationConfirmClick(registration: Registration) = viewModelScope.launch {
-        registrationEventChannel.send(RegistrationEvent.PerformRegistration(registration))
+        eventChannel.send(RegistrationEvent.PerformRegistration(registration))
     }
 
+    // Eventübersicht (data class wenn Argumente nötig)
     sealed class RegistrationEvent {
         data class PerformRegistration(val registration: Registration): RegistrationEvent()
         object FeedbackMalformedEmail : RegistrationEvent()

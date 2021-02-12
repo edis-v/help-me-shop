@@ -1,16 +1,29 @@
 package io.moxd.shopforme.data.model
 
-enum class UserType { HELFER, HILFESUCHENDER }
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+enum class UserType { Helfer, Hilfesuchender }
+
+@Parcelize
+@Serializable
 data class User (
-    val id: Int,
     val name: String,
+    @SerialName("firstname")
     val firstName: String,
+    @SerialName("phone_number")
     val phoneNumber: String,
     val email: String,
+    @SerialName("Street")
     val street: String,
-    val plz: Int,
+    @SerialName("plz")
+    val postalCode: Int,
+    @SerialName("City")
     val city : String,
+    @SerialName("profile_pic")
     val profilePic: String,
-    val userType: UserType = UserType.HILFESUCHENDER
-)
+    @SerialName("usertype_txt")
+    val userType: UserType = UserType.Hilfesuchender
+): Parcelable

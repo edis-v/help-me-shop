@@ -8,6 +8,14 @@ import android.view.View
 import android.widget.TextView
 import androidx.core.text.set
 import androidx.core.text.toSpannable
+import kotlinx.serialization.json.Json
+
+fun requireUserManager() = MainActivity.userManager!!
+fun requireAuthManager() = MainActivity.authManager!!
+
+val JsonDeserializer = Json {
+    ignoreUnknownKeys = true // Nicht alle Keys müssen im Dto/Model vorhanden sein
+}
 
 fun TextView.toClickable(action: () -> Unit) {
     val spannable = text.toSpannable()

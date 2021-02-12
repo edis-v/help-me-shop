@@ -1,8 +1,10 @@
 package io.moxd.shopforme.data.dto
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class SessionDto(
-    @JsonProperty("session_id")
-    val sessionId: String
+    @SerialName("session_id")
+    val id: String
 )
