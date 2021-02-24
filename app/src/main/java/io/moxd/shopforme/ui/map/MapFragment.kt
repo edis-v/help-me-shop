@@ -215,14 +215,17 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
                         symbolManager.deleteAll()
                         createOtherUser(mystyle)
 
+                        if(otheruserLocations.isNotEmpty()) {
                             val bounds = LatLngBounds.Builder()
 
                             for (i in otheruserLocations)
                                 bounds.include(i.location.getLatLong())
-                        bounds.include( LatLng(
-                            lastKnownLocation!!.latitude,
-                            lastKnownLocation!!.longitude
-                        ))
+                            bounds.include(
+                                LatLng(
+                                    lastKnownLocation!!.latitude,
+                                    lastKnownLocation!!.longitude
+                                )
+                            )
                             val position = CameraPosition.Builder()
                                 .target(
                                     LatLng(
@@ -237,10 +240,11 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
                             mapboxMap.setLatLngBoundsForCameraTarget(boundsbuild)
 
 
-                            mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(boundsbuild, 400)
-                            ,
-                            1000
-                        )
+                            mapboxMap.easeCamera(
+                                CameraUpdateFactory.newLatLngBounds(boundsbuild, 400),
+                                1000
+                            )
+                        }
                         }
                     }
                 }}
@@ -277,7 +281,7 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
             mapboxMap.uiSettings.isTiltGesturesEnabled = false
             //mapboxMap.uiSettings.isRotateGesturesEnabled = false
             mapboxMap.uiSettings.isZoomGesturesEnabled = false
-          //  mapboxMap.uiSettings.isScrollGesturesEnabled = false
+            //mapboxMap.uiSettings.isScrollGesturesEnabled = false
             enableLocationComponent(style)
             initFeatureCollection();
             // initMarkerIcons(style);
@@ -701,23 +705,28 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
                             symbolManager.deleteAll()
                             createOtherUser(mystyle)
 
-                            val bounds = LatLngBounds.Builder()
+                            if(otheruserLocations.isNotEmpty()) {
 
-                            for (i in otheruserLocations)
-                                bounds.include(i.location.getLatLong())
-                            bounds.include( LatLng(
-                                lastKnownLocation!!.latitude,
-                                lastKnownLocation!!.longitude
-                            ))
+                                val bounds = LatLngBounds.Builder()
 
-                            val boundsbuild = bounds.build()
-                            mapboxMap.setLatLngBoundsForCameraTarget(boundsbuild)
+                                for (i in otheruserLocations)
+                                    bounds.include(i.location.getLatLong())
+                                bounds.include(
+                                    LatLng(
+                                        lastKnownLocation!!.latitude,
+                                        lastKnownLocation!!.longitude
+                                    )
+                                )
+
+                                val boundsbuild = bounds.build()
+                                mapboxMap.setLatLngBoundsForCameraTarget(boundsbuild)
 
 
-                            mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(boundsbuild, 400)
-                                ,
-                                1000
-                            )
+                                mapboxMap.easeCamera(
+                                    CameraUpdateFactory.newLatLngBounds(boundsbuild, 400),
+                                    1000
+                                )
+                            }
                         }
                     }
 

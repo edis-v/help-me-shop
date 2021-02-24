@@ -1,151 +1,200 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:scrollbars="vertical"
-    tools:context=".ui.registration.RegistrationFragment">
+    android:background="@color/loginFragmentBackgroundColor"
+    tools:context=".ui.login.LoginFragment">
 
-    <ScrollView
+
+
+
+
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <LinearLayout
+        <ImageView
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/imageView"
+            android:layout_width="151dp"
+            android:layout_height="168dp"
+            android:layout_marginBottom="44dp"
+            android:src="@drawable/logo102"
+            android:textAllCaps="true"/>
+
+        <TextView
+            android:id="@+id/login_txt_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="-50dp"
+            android:text="@string/app_name"
+            android:textAppearance="@style/TextAppearance.Shrine.Title"
+            android:textSize="22sp" />
+
+        <TextView
+            android:textAppearance="@style/TextAppearance.ShopForMe.Subtitle2"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/register_cat_credentials"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="5sp" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            style ="@style/Widget.ShopForMe.TextInputLayout"
+            android:textAppearance="@style/TextAppearance.ShopForMe.Subtitle2"
+            android:id="@+id/register_txt_input_email"
+            app:errorEnabled="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <LinearLayout
+            <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_margin="30sp">
+                android:hint="@string/hint_email"
+                android:inputType="textEmailAddress"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="@string/lorem_ipsum"
-                    android:layout_marginBottom="30sp" />
+        <com.google.android.material.textfield.TextInputLayout
+            style ="@style/Widget.ShopForMe.TextInputLayout"
+            android:textAppearance="@style/TextAppearance.ShopForMe.Subtitle2"
+            android:id="@+id/register_txt_input_pw"
+            app:errorEnabled="true"
+            app:passwordToggleEnabled="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="@string/register_cat_credentials"
-                    android:layout_marginBottom="15sp" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_password"
+                android:inputType="textPassword" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/register_txt_input_email"
-                    app:errorEnabled="true"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+        <com.google.android.material.textfield.TextInputLayout
+            style ="@style/Widget.ShopForMe.TextInputLayout"
+            android:textAppearance="@style/TextAppearance.ShopForMe.Subtitle2"
+            android:id="@+id/register_txt_input_pw_confirm"
+            app:errorEnabled="true"
+            app:passwordToggleEnabled="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/hint_email"
-                        android:inputType="textEmailAddress" />
-                </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_password_confirm"
+                android:inputType="textPassword" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/register_txt_input_pw"
-                    app:errorEnabled="true"
-                    app:passwordToggleEnabled="true"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"
+            android:layout_marginTop="2dp"
+            />
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/hint_password"
-                        android:inputType="textPassword" />
-                </com.google.android.material.textfield.TextInputLayout>
+        <TextView
+            android:textAppearance="@style/TextAppearance.ShopForMe.Subtitle2"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/register_cat_contact"
+            android:layout_marginTop="15sp"
+            android:layout_marginBottom="5sp" />
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/register_txt_input_pw_confirm"
-                    app:errorEnabled="true"
-                    app:passwordToggleEnabled="true"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+        <com.google.android.material.textfield.TextInputLayout
+            android:textAppearance="@style/TextAppearance.ShopForMe.Subtitle2"
+            style ="@style/Widget.ShopForMe.TextInputLayout"
+            android:id="@+id/register_txt_input_lastname"
+            app:counterMaxLength="15"
+            app:errorEnabled="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/hint_password_confirm"
-                        android:inputType="textPassword" />
-                </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_lastname"
+                android:inputType="textPersonName" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="@string/register_cat_contact"
-                    android:layout_marginTop="15sp"
-                    android:layout_marginBottom="15sp" />
+        <com.google.android.material.textfield.TextInputLayout
+            style ="@style/Widget.ShopForMe.TextInputLayout"
+            android:textAppearance="@style/TextAppearance.ShopForMe.Subtitle2"
+            android:id="@+id/register_txt_input_firstname"
+            app:counterMaxLength="15"
+            app:errorEnabled="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/register_txt_input_lastname"
-                    app:counterMaxLength="15"
-                    app:errorEnabled="true"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_firstname"
+                android:inputType="textPersonName" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/hint_lastname"
-                        android:inputType="textPersonName" />
-                </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            android:textAppearance="@style/TextAppearance.ShopForMe.Subtitle2"
+            style ="@style/Widget.ShopForMe.TextInputLayout"
+            android:id="@+id/register_txt_input_address"
+            app:counterMaxLength="15"
+            app:errorEnabled="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/register_txt_input_firstname"
-                    app:counterMaxLength="15"
-                    app:errorEnabled="true"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_address"
+                android:inputType="textPostalAddress" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/hint_firstname"
-                        android:inputType="textPersonName" />
-                </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            android:textAppearance="@style/TextAppearance.ShopForMe.Subtitle2"
+            style ="@style/Widget.ShopForMe.TextInputLayout"
+            android:id="@+id/register_txt_input_phone_num"
+            app:counterMaxLength="15"
+            app:errorEnabled="true"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/register_txt_input_address"
-                    app:counterMaxLength="15"
-                    app:errorEnabled="true"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_phone_num"
+                android:inputType="phone" />
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/hint_address"
-                        android:inputType="textPostalAddress" />
-                </com.google.android.material.textfield.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/register_txt_input_phone_num"
-                    app:counterMaxLength="15"
-                    app:errorEnabled="true"
-                    android:layout_weight="1"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/hint_phone_num"
-                        android:inputType="phone" />
-                </com.google.android.material.textfield.TextInputLayout>
-            </LinearLayout>
-        </LinearLayout>
-    </ScrollView>
+            <com.google.android.material.button.MaterialButton
+                android:textAppearance="@style/TextAppearance.ShopForMe.Button"
+                android:id="@+id/registerFabConfirm"
+                style="@style/Widget.ShopForMe.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:paddingVertical="15sp"
+                android:text="@string/action_register" />
+        </RelativeLayout>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/register_fab_confirm"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        android:src="@drawable/ic_next" />
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    </LinearLayout>
+
+</ScrollView>

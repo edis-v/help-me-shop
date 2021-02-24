@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Shop for me</string>
+    <string name="app_name">Help me Shop</string>
     <string name="action_login">Einloggen</string>
     <string name="email">Email</string>
     <string name="pw">Password</string>

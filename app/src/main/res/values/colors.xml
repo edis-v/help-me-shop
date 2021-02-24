@@ -5,6 +5,15 @@
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="white">#FFFFFF</color>
+    <color name="colorPrimary">#d2f7b4</color>
+    <color name="colorPrimaryDark">#a0c484</color>
+    <color name="colorPrimaryLight">#ffffe6</color>
+    <color name="colorSecondary">#f7c9b7</color>
+    <color name="colorSecondaryDark">#c39887</color>
+    <color name="colorSecondaryLight">#fffce9</color>
+    <color name="loginFragmentBackgroundColor">#F1F8E9</color>
+    <color name="textColorPrimary">#442C2E</color>
     <color name="mapbox">#3A4EBD</color>
+    <color name="divivder">#7E7E7E</color>
 </resources>
