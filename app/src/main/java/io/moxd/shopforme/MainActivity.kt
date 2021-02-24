@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
 
     init {
-        FuelManager.instance.basePath = "https://12bb7c0ce55b.ngrok.io/"
+        FuelManager.instance.basePath = "https://moco.fluffistar.com/"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

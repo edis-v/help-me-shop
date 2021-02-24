@@ -1,7 +1,10 @@
 package io.moxd.shopforme.data
 
 import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.createDataStore
 import com.github.kittinunf.fuel.Fuel
@@ -12,8 +15,8 @@ import io.moxd.shopforme.JsonDeserializer
 import io.moxd.shopforme.data.AuthManager.PreferencesKeys.SESSION_ID
 import io.moxd.shopforme.data.dto.SessionDto
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.*
+import java.io.IOException
 
 // Einmalig erzeugte Klasse um alle Loginanfragen und die Persisitierung der Session zu managen
 class AuthManager constructor(context: Context) {
@@ -69,6 +72,29 @@ class AuthManager constructor(context: Context) {
 
     private object PreferencesKeys {
         val SESSION_ID = stringPreferencesKey("session_id")
+    }
+
+
+     fun SessionID() : Flow<String>{
+      return  dataStore.getValueFlow(SESSION_ID,"")
+    }
+
+
+    //extension to get Value From DataStore
+    private fun <T> DataStore<Preferences>.getValueFlow(
+        key: Preferences.Key<T>,
+        defaultValue: T
+    ): Flow<T> {
+        return this.data
+            .catch { exception ->
+                if (exception is IOException) {
+                    emit(emptyPreferences())
+                } else {
+                    throw exception
+                }
+            }.map { preferences ->
+                preferences[key] ?: defaultValue
+            }
     }
 
     sealed class Result {

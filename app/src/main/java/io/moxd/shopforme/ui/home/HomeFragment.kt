@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
@@ -36,6 +37,10 @@ class HomeFragment: Fragment(R.layout.main_home_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = MainHomeFragmentBinding.bind(view)
+        //einfach zu map navigieren
+        view.findViewById<Button>(R.id.to_map_btn).setOnClickListener {
+            (requireActivity() as MainActivity).setupActionBarWithGraph(R.navigation.nav_graph_map)
+        }
         setHasOptionsMenu(true)
     }
 
