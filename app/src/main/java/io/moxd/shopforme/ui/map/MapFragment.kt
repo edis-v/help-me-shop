@@ -1,9 +1,12 @@
 package io.moxd.shopforme.ui.map
 
+
+import android.Manifest
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
@@ -11,6 +14,7 @@ import android.graphics.PointF
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
+import android.os.Looper.getMainLooper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -18,17 +22,18 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.*
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.FuelManager
-import com.github.kittinunf.fuel.coroutines.awaitObject
-import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
 import com.github.kittinunf.result.Result
 import com.google.android.material.slider.Slider
+import com.mapbox.android.core.location.*
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.geojson.Feature
@@ -60,18 +65,19 @@ import com.mapbox.pluginscalebar.ScaleBarOptions
 import com.mapbox.pluginscalebar.ScaleBarPlugin
 import com.squareup.picasso.Picasso
 import io.moxd.shopforme.JsonDeserializer
+import io.moxd.shopforme.MainActivity
 import io.moxd.shopforme.R
 import io.moxd.shopforme.data.RestPath
-import io.moxd.shopforme.data.UserManager
 import io.moxd.shopforme.data.model.LocationData
 import io.moxd.shopforme.data.model.OtherUser
 import io.moxd.shopforme.requireAuthManager
-import io.moxd.shopforme.requireUserManager
+import io.moxd.shopforme.ui.profile.ProfileFragment
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.take
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
+import java.lang.ref.WeakReference
 
 
 class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxMap.OnMapClickListener {
@@ -89,19 +95,14 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
     private val MARKER_IMAGE_ID = "MARKER_IMAGE_ID"
     private val MARKER_LAYER_ID = "MARKER_LAYER_ID"
     private val PROPERTY_CAPITAL = "capital"
-    private val coordinates = arrayOf(
-        LatLng(50.632, 6.48333),
-        LatLng(50.6343, 6.44333),
-        LatLng(50.6231, 6.45333),
-        LatLng(50.6432, 6.48333),
-        LatLng(50.6535, 6.48333),
-        LatLng(50.6134, 6.48333),
-        LatLng(50.6036, 6.48333)
-    )
+
     private  var otheruserLocations :List<OtherUser> = mutableListOf()
     private  lateinit var mycontext : Context
-    private lateinit var lastKnownLocation : Location
+    private   var lastKnownLocation : Location? = null
     var recyclerlist : List<SingleRecyclerViewLocation> = mutableListOf()
+
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -110,8 +111,9 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
         Mapbox.getInstance(requireActivity(), getString(R.string.mapbox_access_token))
         val root = inflater.inflate(R.layout.map_fragment_layout, container, false)
 
-
         mycontext = root.context
+
+
         mapView = root.findViewById(R.id.map_View)
         val slider = root.findViewById<Slider>(R.id.slider_km)
         val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
@@ -159,95 +161,99 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
             }
 
             override fun onStopTrackingTouch(slider: Slider) {
-                if(lastKnownLocation != null){
-                GlobalScope.launch {
-                    // Responds to when slider's touch event is being stopped
-                    val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
-                        requireAuthManager().SessionID().take(1).collect {
+                if (lastKnownLocation != null) {
+                    GlobalScope.launch {
+                        // Responds to when slider's touch event is being stopped
+                        val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
+                            requireAuthManager().SessionID().take(1).collect {
 
-                            val url = FuelManager.instance.basePath + RestPath.otherUsers(
-                                it,
-                                slider.value.toInt().toString()
-                            )
+                                val url = FuelManager.instance.basePath + RestPath.otherUsers(
+                                    it,
+                                    slider.value.toInt().toString()
+                                )
 
-                            Log.d("URL", url)
+                                Log.d("URL", url)
 
-                            Fuel.get(
-                                url
-                            ).responseString { request, response, result ->
+                                Fuel.get(
+                                    url
+                                ).responseString { request, response, result ->
 
-                                when (result) {
-                                    is Result.Success -> {
-                                        Log.d("result", result.get())
-                                        otheruserLocations =
-                                            JsonDeserializer.decodeFromString<List<OtherUser>>(
-                                                result.get()
+                                    when (result) {
+                                        is Result.Success -> {
+                                            Log.d("result", result.get())
+                                            otheruserLocations =
+                                                JsonDeserializer.decodeFromString<List<OtherUser>>(
+                                                    result.get()
+                                                )
+                                        }
+                                        is Result.Failure -> {
+                                            Log.d(
+                                                "result",
+                                                result.getException().message.toString()
                                             )
+                                            Toast.makeText(mycontext, "Failure", Toast.LENGTH_LONG)
+                                            otheruserLocations = mutableListOf()
+                                        }
+
                                     }
-                                    is Result.Failure -> {
-                                        Log.d("result", result.getException().message.toString())
-                                        Toast.makeText(mycontext, "Failure", Toast.LENGTH_LONG)
-                                        otheruserLocations = mutableListOf()
-                                    }
-
-                                }
 
 
-                            }.join()
-                            Log.d("COunt", otheruserLocations.size.toString())
+                                }.join()
+                                Log.d("COunt", otheruserLocations.size.toString())
+
+                            }
 
                         }
+                        job.join()
+                        initFeatureCollection();
 
-                    }
-                    job.join()
-                    initFeatureCollection();
-
-                    Log.d("OtherUserCount", otheruserLocations.size.toString())
-                    LatLng(lastKnownLocation!!.latitude, lastKnownLocation!!.longitude)
-                    withContext(Dispatchers.Main) {
-                        recyclerlist =  createRecyclerViewLocations()!!
-                        val locationAdapter = LocationRecyclerViewAdapter(
-                            recyclerlist,
-                            mapboxMap, mystyle
-                        )
-
-                        recyclerView.adapter = locationAdapter
-                        symbolManager.deleteAll()
-                        createOtherUser(mystyle)
-
-                        if(otheruserLocations.isNotEmpty()) {
-                            val bounds = LatLngBounds.Builder()
-
-                            for (i in otheruserLocations)
-                                bounds.include(i.location.getLatLong())
-                            bounds.include(
-                                LatLng(
-                                    lastKnownLocation!!.latitude,
-                                    lastKnownLocation!!.longitude
-                                )
+                        Log.d("OtherUserCount", otheruserLocations.size.toString())
+                        LatLng(lastKnownLocation!!.latitude, lastKnownLocation!!.longitude)
+                        withContext(Dispatchers.Main) {
+                            recyclerlist = createRecyclerViewLocations()!!
+                            val locationAdapter = LocationRecyclerViewAdapter(
+                                recyclerlist,
+                                mapboxMap, mystyle
                             )
-                            val position = CameraPosition.Builder()
-                                .target(
+
+                            recyclerView.adapter = locationAdapter
+                            symbolManager.deleteAll()
+                            createOtherUser(mystyle)
+
+                            if (otheruserLocations.isNotEmpty()) {
+                                val bounds = LatLngBounds.Builder()
+
+                                for (i in otheruserLocations)
+                                    bounds.include(i.location.getLatLong())
+                                bounds.include(
                                     LatLng(
                                         lastKnownLocation!!.latitude,
                                         lastKnownLocation!!.longitude
                                     )
                                 )
-                                .zoom(16 - slider.value.toDouble())
-                                .tilt(20.0)
-                                .build()
-                            val boundsbuild = bounds.build()
-                            mapboxMap.setLatLngBoundsForCameraTarget(boundsbuild)
+                                val position = CameraPosition.Builder()
+                                    .target(
+                                        LatLng(
+                                            lastKnownLocation!!.latitude,
+                                            lastKnownLocation!!.longitude
+                                        )
+                                    )
+                                    .zoom(16 - slider.value.toDouble())
+                                    .tilt(20.0)
+                                    .build()
+                                val boundsbuild = bounds.build()
+                                mapboxMap.setLatLngBoundsForCameraTarget(boundsbuild)
 
 
-                            mapboxMap.easeCamera(
-                                CameraUpdateFactory.newLatLngBounds(boundsbuild, 400),
-                                1000
-                            )
-                        }
+                                mapboxMap.easeCamera(
+                                    CameraUpdateFactory.newLatLngBounds(boundsbuild, 400),
+                                    1000
+                                )
+                            }
                         }
                     }
-                }}
+                }
+            }
 
 
         })
@@ -267,51 +273,56 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
 
     lateinit var  scaleBarPlugin : ScaleBarPlugin
     override fun onMapReady(mapboxMap: MapboxMap) {
-        this@MapFragment.mapboxMap = mapboxMap
+        GlobalScope.launch (Dispatchers.IO){
+            this@MapFragment.mapboxMap = mapboxMap
+            if (!PermissionsManager.areLocationPermissionsGranted(mycontext)) {
+                permissionsManager = PermissionsManager( this@MapFragment)
+                permissionsManager.requestLocationPermissions(activity)
+            }
+            while (!PermissionsManager.areLocationPermissionsGranted(mycontext)){}
+            withContext(Dispatchers.Main){
+            mapboxMap.setStyle(
+                    Style.MAPBOX_STREETS
+            ) { style ->
+                mystyle = style
+                mapboxMap.setMinZoomPreference(5.89);
+                mapboxMap.setMaxZoomPreference(16.0);
+
+                mapboxMap.uiSettings.isTiltGesturesEnabled = false
+                //mapboxMap.uiSettings.isRotateGesturesEnabled = false
+                mapboxMap.uiSettings.isZoomGesturesEnabled = false
+                mapboxMap.uiSettings.isScrollGesturesEnabled = false
+                enableLocationComponent(style)
+                initFeatureCollection();
+                // initMarkerIcons(style);
+                createOtherUser(style)
+                setUpMarkerLayer(style);
+                initRecyclerView();
+                // Toast.makeText(this, "Done", Toast.LENGTH_SHORT).show();
+                setUpInfoWindowLayer(style)
 
 
+                scaleBarPlugin = ScaleBarPlugin(mapView!!, mapboxMap)
 
-        mapboxMap.setStyle(
-            Style.MAPBOX_STREETS
-        ) { style ->
-            mystyle = style
-            mapboxMap.setMinZoomPreference(5.89);
-            mapboxMap.setMaxZoomPreference(16.0);
+                val scaleBarOptions = ScaleBarOptions(mycontext)
+                scaleBarOptions
+                        .setTextColor(R.color.black)
+                        .setTextSize(40f)
+                        .setBarHeight(15f)
+                        .setBorderWidth(5f)
+                        .setMetricUnit(true)
+                        .setRefreshInterval(15)
+                        .setMarginTop(30f)
+                        .setMarginLeft(16f)
+                        .setTextBarMargin(15f)
 
-            mapboxMap.uiSettings.isTiltGesturesEnabled = false
-            //mapboxMap.uiSettings.isRotateGesturesEnabled = false
-            mapboxMap.uiSettings.isZoomGesturesEnabled = false
-            //mapboxMap.uiSettings.isScrollGesturesEnabled = false
-            enableLocationComponent(style)
-            initFeatureCollection();
-            // initMarkerIcons(style);
-            createOtherUser(style)
-            setUpMarkerLayer(style);
-            initRecyclerView();
-            // Toast.makeText(this, "Done", Toast.LENGTH_SHORT).show();
-            setUpInfoWindowLayer(style)
+                // Give the plugin the ScaleBarOptions object to style the scale bar
+                scaleBarPlugin.create(scaleBarOptions)
 
 
-            scaleBarPlugin = ScaleBarPlugin(mapView!!, mapboxMap)
+                mapboxMap.addOnMapClickListener(this@MapFragment);
 
-            val scaleBarOptions = ScaleBarOptions(mycontext)
-            scaleBarOptions
-                .setTextColor(R.color.black)
-                .setTextSize(40f)
-                .setBarHeight(15f)
-                .setBorderWidth(5f)
-                .setMetricUnit(true)
-                .setRefreshInterval(15)
-                .setMarginTop(30f)
-                .setMarginLeft(16f)
-                .setTextBarMargin(15f)
-
-            // Give the plugin the ScaleBarOptions object to style the scale bar
-            scaleBarPlugin.create(scaleBarOptions)
-
-
-            mapboxMap.addOnMapClickListener(this@MapFragment);
-
+            }}
         }
     }
 
@@ -323,6 +334,9 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
                 this.resources, R.drawable.icon_info
             )
         )
+
+        mapboxMap.uiSettings.isScrollGesturesEnabled = otheruserLocations.isNotEmpty()
+
         for (user in otheruserLocations)
             symbolManager.create(
                 SymbolOptions()
@@ -365,6 +379,7 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
         })
 
 // set non-data-driven properties, such as:
+        symbolManager?.iconAllowOverlap = true
         symbolManager?.iconAllowOverlap = true
         symbolManager?.iconTranslate = arrayOf(-4f, 5f)
         symbolManager?.iconRotationAlignment = Property.ICON_ROTATION_ALIGNMENT_VIEWPORT
@@ -515,7 +530,7 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
         recyclerView = (mycontext as Activity).findViewById<RecyclerView>(R.id.rv_on_top_of_map)
         recyclerlist =  createRecyclerViewLocations()!!
         val locationAdapter = LocationRecyclerViewAdapter(
-           recyclerlist,
+            recyclerlist,
             mapboxMap, mystyle
         )
         recyclerView.layoutManager = LinearLayoutManager(
@@ -587,7 +602,7 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
 
 // Create and customize the LocationComponent's options
             val customLocationComponentOptions = LocationComponentOptions.builder(mycontext)
-                .trackingGesturesManagement(true).pulseEnabled(true )
+                .trackingGesturesManagement(true).pulseEnabled(true)
                 .pulseColor(ContextCompat.getColor(mycontext, R.color.mapbox))
                 .build()
 
@@ -624,9 +639,14 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
                                 val url = FuelManager.instance.basePath + RestPath.locationUpdate(it)
 
                                 Log.d("URL", url)
-                                val data = LocationData (   type = "Point", coordinates = listOf(  lastKnownLocation!!.latitude , lastKnownLocation!!.longitude ) as List<Double>)
+                                val data = LocationData(
+                                    type = "Point", coordinates = listOf(
+                                        lastKnownLocation!!.latitude,
+                                        lastKnownLocation!!.longitude
+                                    ) as List<Double>
+                                )
                                 Fuel.put(
-                                    url,  listOf("location" to JsonDeserializer.encodeToString(data))
+                                    url, listOf("location" to JsonDeserializer.encodeToString(data))
                                 ).responseString { request, response, result ->
 
                                     when (result) {
@@ -635,7 +655,10 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
                                             Toast.makeText(mycontext, "Success", Toast.LENGTH_LONG)
                                         }
                                         is Result.Failure -> {
-                                            Log.d("result", result.getException().message.toString())
+                                            Log.d(
+                                                "result",
+                                                result.getException().message.toString()
+                                            )
                                             Toast.makeText(mycontext, "Failure", Toast.LENGTH_LONG)
                                             otheruserLocations = mutableListOf()
                                         }
@@ -675,7 +698,10 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
                                                 )
                                         }
                                         is Result.Failure -> {
-                                            Log.d("result", result.getException().message.toString())
+                                            Log.d(
+                                                "result",
+                                                result.getException().message.toString()
+                                            )
                                             Toast.makeText(mycontext, "Failure", Toast.LENGTH_LONG)
                                             otheruserLocations = mutableListOf()
                                         }
@@ -739,11 +765,75 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
                     mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000)
                 }
             }
+             initLocationEngine()
         } else {
             permissionsManager = PermissionsManager(this)
             permissionsManager.requestLocationPermissions(activity)
         }
     }
+
+    private var locationEngine: LocationEngine? = null
+    private val DEFAULT_INTERVAL_IN_MILLISECONDS = 1000L
+    private val DEFAULT_MAX_WAIT_TIME = DEFAULT_INTERVAL_IN_MILLISECONDS * 5
+    private val callback = LocationChangeListeningActivityLocationCallback(this@MapFragment)
+
+    @SuppressLint("MissingPermission")
+    private fun initLocationEngine() {
+        locationEngine = LocationEngineProvider.getBestLocationEngine(mycontext)
+        val request = LocationEngineRequest.Builder(DEFAULT_INTERVAL_IN_MILLISECONDS)
+            .setPriority(LocationEngineRequest.PRIORITY_HIGH_ACCURACY)
+            .setMaxWaitTime(DEFAULT_MAX_WAIT_TIME).build()
+        locationEngine!!.requestLocationUpdates(request, callback, getMainLooper())
+        locationEngine!!.getLastLocation(callback)
+    }
+
+
+    private class LocationChangeListeningActivityLocationCallback internal constructor(activity: MapFragment) :
+        LocationEngineCallback<LocationEngineResult> {
+        private val activityWeakReference: WeakReference<MapFragment>
+
+        /**
+         * The LocationEngineCallback interface's method which fires when the device's location has changed.
+         *
+         * @param result the LocationEngineResult object which has the last known location within it.
+         */
+        override fun onSuccess(result: LocationEngineResult) {
+            val activity: MapFragment? = activityWeakReference.get()
+            if (activity != null) {
+                val location = result.lastLocation ?: return
+
+// Create a Toast which displays the new location's coordinates
+                if(activity.lastKnownLocation?.latitude != location.latitude && activity.lastKnownLocation?.longitude != location.longitude  )
+                    activity.enableLocationComponent(activity.mystyle)
+
+// Pass the new location to the Maps SDK's LocationComponent
+                if (activity.mapboxMap != null && result.lastLocation != null) {
+                    activity.mapboxMap.getLocationComponent()
+                        .forceLocationUpdate(result.lastLocation)
+                }
+            }
+        }
+
+        /**
+         * The LocationEngineCallback interface's method which fires when the device's location can't be captured
+         *
+         * @param exception the exception message
+         */
+        override fun onFailure(exception: Exception) {
+            val activity: MapFragment? = activityWeakReference.get()
+            if (activity != null) {
+                Toast.makeText(
+                    activity.mycontext, exception.localizedMessage,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
+        init {
+            activityWeakReference = WeakReference<MapFragment>(activity)
+        }
+    }
+
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -751,6 +841,12 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
         grantResults: IntArray
     ) {
         permissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        Toast.makeText(
+                this@MapFragment.mycontext,
+                R.string.user_location_permission_explanation,
+                Toast.LENGTH_LONG
+        )
+                .show()
     }
 
     override fun onExplanationNeeded(permissionsToExplain: List<String>) {
@@ -759,14 +855,20 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
 
     override fun onPermissionResult(granted: Boolean) {
         if (granted) {
-            enableLocationComponent(mapboxMap.style!!)
-        } else {
             Toast.makeText(
-                mycontext,
+                    this@MapFragment.mycontext,
+                    R.string.user_location_permission_explanation,
+                    Toast.LENGTH_LONG
+            )
+                    .show()
+            }
+          else {
+            Toast.makeText(
+                this@MapFragment.mycontext,
                 R.string.user_location_permission_not_granted,
                 Toast.LENGTH_LONG
-            ).show()
-            requireActivity().supportFragmentManager.beginTransaction().remove(this@MapFragment).commit()
+            )
+                .show()
         }
     }
 
@@ -797,6 +899,9 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
 
     override fun onDestroy() {
         super.onDestroy()
+        if (locationEngine != null) {
+            locationEngine!!.removeLocationUpdates(callback);
+        }
         mapView.onDestroy()
     }
 
@@ -830,7 +935,7 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
             val singleRecyclerViewLocation = locationList[position]
             holder.name.text = singleRecyclerViewLocation.name
             holder.numOfBeds.text = singleRecyclerViewLocation.bedInfo
-            Picasso.get().load(  singleRecyclerViewLocation.profilepic).into(holder.profilepic);
+            Picasso.get().load(singleRecyclerViewLocation.profilepic).into(holder.profilepic);
             holder.setClickListener(object : ItemClickListener {
                 override fun onClick(view: View?, position: Int) {
                     val selectedLocationLatLng = locationList[position].locationCoordinates

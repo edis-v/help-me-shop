@@ -27,3 +27,18 @@ data class User (
     @SerialName("usertype_txt")
     val userType: UserType = UserType.Hilfesuchender
 ): Parcelable
+
+
+@Serializable
+class UserME  (val id: Int,
+               val name: String,
+               val firstname :String,
+               val phone_number : String,
+               val email : String,
+               val Street : String,
+               val plz : Int,
+               val City  : String,
+               val profile_pic : String,
+               val usertype_txt : String){
+
+}

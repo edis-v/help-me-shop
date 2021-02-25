@@ -41,6 +41,9 @@ class HomeFragment: Fragment(R.layout.main_home_fragment) {
         view.findViewById<Button>(R.id.to_map_btn).setOnClickListener {
             (requireActivity() as MainActivity).setupActionBarWithGraph(R.navigation.nav_graph_map)
         }
+        view.findViewById<Button>(R.id.to_profile_btn).setOnClickListener {
+            (requireActivity() as MainActivity).setupActionBarWithGraph(R.navigation.nav_graph_profile)
+        }
         setHasOptionsMenu(true)
     }
 

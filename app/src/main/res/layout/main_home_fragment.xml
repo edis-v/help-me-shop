@@ -27,6 +27,13 @@
             android:layout_weight="1"
             android:text="TO MAP" />
 
-
+        <Button
+            android:id="@+id/to_profile_btn"
+            android:layout_below="@id/to_map_btn"
+            android:layout_width="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TO Profile" />
 
 </RelativeLayout>
