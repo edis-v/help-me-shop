@@ -1,3 +1,24 @@
 <resources>
-    <string name="app_name">Shop for me</string>
+    <string name="app_name">Help me Shop</string>
+    <string name="action_login">Einloggen</string>
+    <string name="email">Email</string>
+    <string name="pw">Password</string>
+    <string name="action_forgot_pw">Passwort vergessen?</string>
+    <string name="action_register">Jetzt registrieren</string>
+    <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.</string>
+    <string name="subtitle">Für Ihren Einkauf wird gesorgt!</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Passwort</string>
+    <string name="action_show_guide">Wie funktioniert die App?</string>
+    <string name="register_cat_credentials">Anmeldedaten</string>
+    <string name="hint_password_confirm">Passwort bestätigen</string>
+    <string name="register_cat_contact">Kontaktdaten</string>
+    <string name="hint_lastname">Nachname</string>
+    <string name="hint_firstname">Vorname</string>
+    <string name="hint_address">Adresse</string>
+    <string name="hint_phone_num">Telefonnummer</string>
+    <string name="mapbox_access_token">pk.eyJ1IjoiZmx1ZmZpc3RhciIsImEiOiJja2xlOXlldjYxN2NsMndzNHVmYnJ6c3FiIn0.cDTBeabBm8pzaUTvcNKfaA</string>
+    <string name="user_location_permission_not_granted">No Permission for location</string>
+    <string name="user_location_permission_explanation">To get yout Location</string>
+
 </resources>

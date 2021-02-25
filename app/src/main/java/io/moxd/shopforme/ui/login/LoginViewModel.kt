@@ -1,0 +1,109 @@
+package io.moxd.shopforme.ui.login
+
+import android.util.Log
+import androidx.core.util.PatternsCompat
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import io.moxd.shopforme.data.AuthManager
+import io.moxd.shopforme.data.UserManager
+import io.moxd.shopforme.data.dto.SessionDto
+import io.moxd.shopforme.data.model.User
+import io.moxd.shopforme.data.proto_serializer.toModel
+import io.moxd.shopforme.exhaustive
+import io.moxd.shopforme.requireUserManager
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
+import java.lang.Exception
+
+private const val TAG = "LoginViewModel"
+
+class LoginViewModel(
+    private val authManager: AuthManager, // Auth Manager mit Login API
+    private val state: SavedStateHandle // Objekt um Zustand des ViewModels beizubehalten
+) : ViewModel() {
+
+    // State in Variablen speichern und setter definieren
+    var loginEmail = state.get<String>("loginEmail") ?: ""
+        set(value) {
+            field = value
+            state.set("loginEmail", value)
+        }
+    var loginPassword = state.get<String>("loginPassword") ?: ""
+        set(value) {
+            field = value
+            state.set("loginPassword", value)
+        }
+
+    // Privater Channel für Events
+    private val eventChannel = Channel<LoginEvent>()
+    // Öffentlicher Flow auf Basis des EventChannels um asynchron mit dem Fragment zu kommunizieren
+    val events = eventChannel.receiveAsFlow()
+
+    init {
+        // Authentifizierungsversuch (gelingt wenn eine Session gespeichert ist)
+        viewModelScope.launch {
+            authManager.auth() // sessionId in dataStore?
+        }
+
+        // Auf Events des AuthManagers in Coroutine reagieren
+        viewModelScope.launch {
+            authManager.events.collect { result ->
+                when(result) {
+                    is AuthManager.Result.AuthSucess -> {
+                        // User Manager mit neuer Session initialisieren
+                        requireUserManager().initSession(result.session)
+                        // Fragment über erfolgreichen Login benachrichtigen
+                        eventChannel.send(LoginEvent.LoginSuccess(result.session))
+                    }
+                    is AuthManager.Result.AuthError -> eventChannel.send(LoginEvent.LoginFailed(result.exception))
+                    else -> Unit
+                }.exhaustive
+            }
+        }
+    }
+
+    // Beim Login Eingaben auf verschiedene Dinge checken und im Erfolgsfall einloggen (alles Events)
+    fun onLoginClick() = viewModelScope.launch {
+        when {
+            loginEmail.isEmpty() && loginPassword.isEmpty()  -> eventChannel.send(LoginEvent.NoInput)
+            loginEmail.isEmpty()  -> eventChannel.send(LoginEvent.EmptyEmail)
+            loginPassword.isEmpty()  -> eventChannel.send(LoginEvent.EmptyPassword)
+            !PatternsCompat.EMAIL_ADDRESS.matcher(loginEmail).matches() -> eventChannel.send(LoginEvent.MalformedEmail)
+            else -> {
+                eventChannel.send(LoginEvent.LoggingIn)
+                authManager.login(loginEmail, loginPassword)
+            }
+        }
+    }
+
+    // NavigationEvents
+
+    fun onRegisterClick() = viewModelScope.launch {
+        eventChannel.send(LoginEvent.NavigateToRegistrationScreen)
+    }
+
+    fun onForgotPasswordClick() = viewModelScope.launch {
+        eventChannel.send(LoginEvent.NavigateToForgotPasswordScreen)
+    }
+
+    fun onShowGuideClick() = viewModelScope.launch {
+        eventChannel.send(LoginEvent.NavigateToGuideScreen)
+    }
+
+    // Eventübersicht (data class wenn Argumente nötig)
+    sealed class LoginEvent {
+        object LoggingIn: LoginEvent()
+        data class LoginSuccess(val session: SessionDto): LoginEvent()
+        data class LoginFailed(val exception: Exception): LoginEvent()
+        object NoInput: LoginEvent()
+        object EmptyEmail: LoginEvent()
+        object EmptyPassword: LoginEvent()
+        object MalformedEmail : LoginEvent()
+        object NavigateToRegistrationScreen : LoginEvent()
+        object NavigateToForgotPasswordScreen : LoginEvent()
+        object NavigateToGuideScreen : LoginEvent()
+    }
+}

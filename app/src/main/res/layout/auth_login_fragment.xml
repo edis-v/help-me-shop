@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/loginFragmentBackgroundColor"
+    tools:context=".ui.login.LoginFragment"
+    app:elevation="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/imageView"
+            android:layout_width="151dp"
+            android:layout_height="168dp"
+            android:layout_marginBottom="44dp"
+            android:src="@drawable/logo102"
+            android:textAllCaps="true"
+            android:contentDescription="TODO" />
+
+        <TextView
+            android:id="@+id/login_txt_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="-20dp"
+            android:text="@string/app_name"
+            android:textAppearance="@style/TextAppearance.Shrine.Title"
+            android:textSize="50sp"/>
+
+        <TextView
+            android:textAppearance="@style/TextAppearance.ShopForMe.Subtitle1"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/login_txt_subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/subtitle" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:textAppearance="@style/TextAppearance.ShopForMe.Subtitle2"
+            style ="@style/Widget.ShopForMe.TextInputLayout"
+            android:id="@+id/login_txt_input_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            app:errorEnabled="true"
+            android:hint="@string/hint_email">
+
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fontFamily="@font/roboto" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style ="@style/Widget.ShopForMe.TextInputLayout"
+            android:id="@+id/login_txt_input_pw"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_password"
+            app:errorEnabled="true"
+            app:passwordToggleEnabled="true"
+
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:textAppearance="@style/TextAppearance.ShopForMe.Subtitle2" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/loginBtn"
+                style="@style/Widget.ShopForMe.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="0dp"
+                android:layout_marginEnd="16dp"
+                android:paddingVertical="15sp"
+                android:text="@string/action_login"
+                android:textAppearance="@style/TextAppearance.ShopForMe.Button"
+                app:elevation="16dp" />
+
+            <TextView
+                android:id="@+id/login_txt_show_guide"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/login_txt_forgot_pw"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginTop="19dp"
+                android:layout_marginEnd="120dp"
+                android:layout_marginBottom="1dp"
+                android:text="@string/action_show_guide"
+                android:textAppearance="@style/TextAppearance.ShopForMe.Subtitle2"
+                android:textSize="16sp" />
+
+            <TextView
+                android:textAppearance="@style/TextAppearance.ShopForMe.Subtitle2"
+                android:id="@+id/login_txt_register"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="7dp"
+                android:text="@string/action_register"
+                android:textSize="16sp" />
+
+            <TextView
+                android:textAppearance="@style/TextAppearance.ShopForMe.Subtitle2"
+                android:id="@+id/login_txt_forgot_pw"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/login_txt_register"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="24dp"
+                android:text="@string/action_forgot_pw"
+                android:textSize="16sp" />
+
+        </RelativeLayout>
+    </LinearLayout>
+</ScrollView>
