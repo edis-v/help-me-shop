@@ -5,46 +5,65 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.widget.Button
+import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewModelScope
+import com.google.android.material.bottomnavigation.BottomNavigationView
+
 import io.moxd.shopforme.MainActivity
 import io.moxd.shopforme.R
-import io.moxd.shopforme.data.proto_serializer.toModel
-import io.moxd.shopforme.databinding.AuthLoginFragmentBinding
 import io.moxd.shopforme.databinding.MainHomeFragmentBinding
 import io.moxd.shopforme.requireAuthManager
 import io.moxd.shopforme.requireUserManager
-import kotlinx.coroutines.flow.collect
+import io.moxd.shopforme.ui.map.MapFragment
+import io.moxd.shopforme.ui.profile.ProfileFragment
+import io.moxd.shopforme.ui.profile_list.ProfileListFragment
 import kotlinx.coroutines.launch
+
 
 class HomeFragment: Fragment(R.layout.main_home_fragment) {
 
-    lateinit var binding: MainHomeFragmentBinding
 
+    lateinit var binding: MainHomeFragmentBinding
+    lateinit var bottomNavigationView: BottomNavigationView
+    lateinit var mainframe: FrameLayout
+   // lateinit var ft: FragmentTransaction
     init {
-        // Auf Events des UserManagers in Coroutine reagieren (TODO: ins ViewModel packen)
-        lifecycleScope.launchWhenStarted {
-            requireUserManager().user.collect { protoUser ->
-                val user = protoUser.toModel()
-                binding.homeTxtHello.text = "Hallo ${user.firstName}!"
-            }
-        }
+
     }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = MainHomeFragmentBinding.bind(view)
-        //einfach zu map navigieren
-        view.findViewById<Button>(R.id.to_map_btn).setOnClickListener {
-            (requireActivity() as MainActivity).setupActionBarWithGraph(R.navigation.nav_graph_map)
+       // ft = (requireActivity() as MainActivity).getSupportFragmentManager().beginTransaction()
+
+        mainframe = view.findViewById(R.id.mainframe)
+        bottomNavigationView = view.findViewById<BottomNavigationView>(R.id.bottom_navigation)
+        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+        when(item.itemId) {
+            R.id.item1 -> {
+                // Respond to navigation item 1 click
+                true
+            }
+            R.id.item2 -> {
+                // Respond to navigation item 2 click
+                val ft = (requireActivity() as MainActivity).getSupportFragmentManager().beginTransaction()
+                ft.replace(R.id.mainframe, MapFragment())
+                ft.commit()
+                true
+            }
+            R.id.item3 -> {
+                // Respond to navigation item 3 click
+                val ft = (requireActivity() as MainActivity).getSupportFragmentManager().beginTransaction()
+                ft.replace(R.id.mainframe, ProfileListFragment())
+                ft.commit()
+                true
+            }
+            else -> false
         }
-        view.findViewById<Button>(R.id.to_profile_btn).setOnClickListener {
-            (requireActivity() as MainActivity).setupActionBarWithGraph(R.navigation.nav_graph_profile)
-        }
-        setHasOptionsMenu(true)
+    }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

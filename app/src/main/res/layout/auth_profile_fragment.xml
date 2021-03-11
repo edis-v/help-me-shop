@@ -6,114 +6,132 @@
     tools:context=".UI.Profile.ProfileFragment">
 
 
-
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="match_parent">
 
-        android:orientation="vertical">
-        <RelativeLayout
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:layout_gravity="center" >
-        <ImageView
-            android:id="@+id/ProfilePic_field"
-            android:layout_width="200dp"
-            android:layout_gravity="center"
-            android:layout_height="200dp"/>
-            <Button android:layout_width="50dp"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_gravity="center">
+
+                <ImageView
+                    android:id="@+id/ProfilePic_field"
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:layout_gravity="center" />
+
+                <Button
+                    android:id="@+id/uploadnewpic"
+                    android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_alignParentRight="true"
                     android:layout_marginTop="0dp"
                     android:text="..."
-                    android:id="@+id/uploadnewpic"
-                    android:visibility="gone"
-                />
-        </RelativeLayout>
-        <EditText
-            android:enabled="false"
-            android:id="@+id/name_field"
-            android:layout_width="200dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center"
-            android:text="TextView" />
+                    android:visibility="gone" />
+            </RelativeLayout>
 
-        <EditText
-            android:enabled="false"
-            android:id="@+id/firstname_field"
-            android:layout_width="200dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center"
-            android:text="TextView" />
+            <EditText
+                android:id="@+id/name_field"
+                android:layout_width="200dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:enabled="false"
+                android:text="TextView" />
 
-        <EditText
-            android:enabled="false"
-            android:id="@+id/phonenumber_field"
-            android:layout_width="200dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center"
-            android:text="TextView" />
-        <EditText
-            android:enabled="false"
-            android:id="@+id/email_field"
-            android:layout_width="200dp"
-            android:layout_gravity="center"
-            android:layout_height="50dp"
-            android:text="TextView" />
-        <EditText
-            android:enabled="false"
-            android:id="@+id/Street_field"
-            android:layout_width="200dp"
-            android:layout_gravity="center"
-            android:layout_height="50dp"
-            android:text="TextView" />
-        <EditText
-            android:enabled="false"
-            android:id="@+id/plz_field"
-            android:layout_width="200dp"
-            android:layout_gravity="center"
-            android:layout_height="50dp"
-            android:text="TextView" />
-        <EditText
-            android:enabled="false"
-            android:id="@+id/City_field"
-            android:layout_width="200dp"
-            android:layout_gravity="center"
-            android:layout_height="50dp"
-            android:text="TextView" />
-        <Spinner
-            android:enabled="false"
-            android:id="@+id/usertype_field"
-            android:layout_width="200dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center"
-            android:clickable="false"
-             />
-       <GridLayout android:layout_height="50dp" android:layout_width="200dp" android:layout_gravity="center" > <Button
-            android:id="@+id/updateProfile_btn"
-            android:layout_width="200dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center"
-            android:text="Change Profile"
+            <EditText
+                android:id="@+id/firstname_field"
+                android:layout_width="200dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:enabled="false"
+                android:text="TextView" />
 
-            />
-           <Button
-               android:id="@+id/saveProfile_btn"
-               android:layout_width="100dp"
-               android:layout_height="50dp"
-               android:layout_gravity="right"
-               android:text="Save"
-               android:visibility="gone"
-               />
-           <Button
-               android:id="@+id/cancelProfile_btn"
-               android:layout_width="100dp"
-               android:layout_height="50dp"
-               android:layout_gravity="left"
-               android:text="Cancel"
-               android:visibility="gone"
-               />
-       </GridLayout>
-    </LinearLayout>
+            <EditText
+                android:id="@+id/phonenumber_field"
+                android:layout_width="200dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:enabled="false"
+                android:text="TextView" />
+
+            <EditText
+                android:id="@+id/email_field"
+                android:layout_width="200dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:enabled="false"
+                android:text="TextView" />
+
+            <EditText
+                android:id="@+id/Street_field"
+                android:layout_width="200dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:enabled="false"
+                android:text="TextView" />
+
+            <EditText
+                android:id="@+id/plz_field"
+                android:layout_width="200dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:enabled="false"
+                android:text="TextView" />
+
+            <EditText
+                android:id="@+id/City_field"
+                android:layout_width="200dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:enabled="false"
+                android:text="TextView" />
+
+            <Spinner
+                android:id="@+id/usertype_field"
+                android:layout_width="200dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:clickable="false"
+                android:enabled="false" />
+
+            <GridLayout
+                android:layout_width="200dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center">
+
+                <Button
+                    android:id="@+id/updateProfile_btn"
+                    android:layout_width="200dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center"
+                    android:text="Change Profile"
+
+                    />
+
+                <Button
+                    android:id="@+id/saveProfile_btn"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="right"
+                    android:text="Save"
+                    android:visibility="gone" />
+
+                <Button
+                    android:id="@+id/cancelProfile_btn"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="left"
+                    android:text="Cancel"
+                    android:visibility="gone" />
+            </GridLayout>
+        </LinearLayout>
+    </ScrollView>
 
 </FrameLayout>

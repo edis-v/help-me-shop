@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
         navController = navHostFragment.findNavController()
         val graph = inflater.inflate(id)
         navController.graph = graph
-        setupActionBarWithNavController(navController)
+      //  setupActionBarWithNavController(navController)
     }
 
     companion object {
