@@ -25,7 +25,7 @@ class ProfileListFragment : Fragment() {
         root.findViewById<TextView>(R.id.profilelist_ausloggen).setOnClickListener{
             viewLifecycleOwner.lifecycleScope.launch {
                 requireAuthManager().unauth()
-                requireUserManager().sessionRevoked()
+              //  requireUserManager().sessionRevoked()
             }
             (requireActivity() as MainActivity).setupActionBarWithGraph(R.navigation.nav_graph_auth)
         }

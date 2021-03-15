@@ -3,6 +3,7 @@ package io.moxd.shopforme.ui.login
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -104,12 +105,24 @@ class LoginFragment: Fragment(R.layout.auth_login_fragment) {
                     }
                     is LoginViewModel.LoginEvent.EmptyEmail -> {
                         // TODO: Zeige im Email EditText eine Warnung
+                        binding.apply {
+                            loginTxtInputEmail.error = "Feld darf nicht leer sein"
+
+                        }
                     }
                     is LoginViewModel.LoginEvent.EmptyPassword -> {
                         // TODO: Zeige im Passwort EditText eine Warnung
+                        binding.apply {
+                            loginTxtInputPw.error = "Feld darf nicht leer sein"
+
+                        }
                     }
                     is LoginViewModel.LoginEvent.MalformedEmail -> {
                         // TODO: Zeige im Email EditText eine Warnung
+                        binding.apply {
+                            loginTxtInputEmail.error = "Keine Valide Email"
+
+                        }
                     }
 
                     // Login Status
@@ -122,11 +135,14 @@ class LoginFragment: Fragment(R.layout.auth_login_fragment) {
                     is LoginViewModel.LoginEvent.LoginFailed -> {
                         Log.i(TAG, "handleEvents: LoginFailed")
                         Log.i(TAG, "handleEvents: ${event.exception.message}")
+                        Toast.makeText(this@LoginFragment.context,"${event.exception.message}",Toast.LENGTH_LONG).show()
                         // TODO: Meldung an User
                     }
                     is LoginViewModel.LoginEvent.LoggingIn -> {
                         Log.i(TAG, "handleEvents: LoggingIn")
                         // TODO: Blockiere UI und zeige vllt. einen Ladebalken
+                        //login wurde nicht gecallt in manchen Fällen also so implementiert Ursache ... was ist unterschied zwischen loginsucsees und logggingIN ?? //hypothe
+                        (requireActivity() as MainActivity).setupActionBarWithGraph(R.navigation.nav_graph_main)
                     }
                 }
             }

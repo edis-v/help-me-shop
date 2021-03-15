@@ -1,49 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="300dp"
-    android:layout_height="150dp"
+    android:layout_width="match_parent"
+    android:layout_height="175dp"
     android:id="@+id/single_location_cardview"
-    android:layout_marginEnd="8dp"
-    android:layout_marginLeft="8dp"
-    android:layout_marginRight="8dp"
-    android:layout_marginStart="8dp"
+    android:layout_marginRight="5dp"
+    android:layout_marginLeft="5dp"
     android:alpha="0.7"
-    android:layout_marginTop="8dp">
+   >
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/white"
-
+        android:layout_margin="16dp"
         >
             <ImageView
                 android:id="@+id/profilepic_cardview"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_alignParentLeft="true"
-                android:layout_margin="20dp"
+                android:layout_marginRight="10dp"
                 />
         <TextView
-            android:id="@+id/location_title_tv"
+            android:id="@+id/username_cardview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/profilepic_cardview"
-            android:layout_margin="16dp"
+            android:layout_marginBottom="10dp"
             android:textColor="@color/black"
+            android:text="Adam Omari"
             android:textSize="20sp"/>
 
         <TextView
             android:layout_toRightOf="@id/profilepic_cardview"
-            android:id="@+id/location_num_of_beds_tv"
-            android:layout_below="@id/location_title_tv"
+            android:id="@+id/anzahl_cardview"
+            android:layout_below="@id/username_cardview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:textColor="@color/mapbox"
-            android:textSize="14sp"/>
 
+            android:textColor="@color/mapbox"
+            android:text="Anzahl 4"
+            android:layout_marginRight="10dp"
+            android:textSize="18dp"/>
+        <TextView
+            android:layout_toRightOf="@id/anzahl_cardview"
+            android:id="@+id/price_cardview"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/username_cardview"
+            android:textColor="@color/mapbox"
+            android:text="Preis 22€"
+            android:textSize="18dp"/>
+        <TextView
+            android:layout_centerHorizontal="true"
+            android:id="@+id/create_cardview"
+            android:layout_toRightOf="@id/profilepic_cardview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/anzahl_cardview"
+            android:textColor="@color/mapbox"
+            android:text="Erstellt um 18:56 am 22-07-2021"
+            android:textSize="18dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/helpbtn_cardview"
+                style="?attr/materialButtonOutlinedStyle"
+                android:text="Help"
+                android:textSize="18dp"
+                android:textColor="@color/mapbox"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+
+                />
     </RelativeLayout>
 
 
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

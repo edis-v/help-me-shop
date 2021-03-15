@@ -26,6 +26,7 @@ import com.github.kittinunf.fuel.core.FileDataPart
 import com.github.kittinunf.fuel.core.Method
 import com.github.kittinunf.result.Result
 import com.squareup.picasso.Picasso
+import io.moxd.shopforme.JsonDeserializer
 import io.moxd.shopforme.R
 import io.moxd.shopforme.data.RestPath
 import io.moxd.shopforme.data.model.UserME
@@ -186,49 +187,49 @@ class ProfileFragment : Fragment()  {
         }
 
         val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
-            requireAuthManager().SessionID().take(1).collect {
-                //do actions
+                requireAuthManager().SessionID().take(1).collect {
+                    //do actions
 
-                Fuel.get(
-                        RestPath.user(it)
-                ).responseString { _, _, result ->
+                    Fuel.get(
+                            RestPath.user(it)
+                    ).responseString { _, _, result ->
 
-                    when (result) {
+                        when (result) {
 
 
-                        is Result.Failure -> {
-                            this@ProfileFragment.activity?.runOnUiThread() {
-                                Log.d("Error", result.getException().message.toString())
-                                Toast.makeText(root.context, "Login Failed", Toast.LENGTH_LONG).show()
+                            is Result.Failure -> {
+                                this@ProfileFragment.activity?.runOnUiThread() {
+                                    Log.d("Error", result.getException().message.toString())
+                                    Toast.makeText(root.context, "Login Failed", Toast.LENGTH_LONG).show()
+                                }
                             }
-                        }
-                        is Result.Success -> {
-                            val data = result.get()
+                            is Result.Success -> {
+                                val data = result.get()
 
-                            Log.d("USerProfile", data)
+                                Log.d("USerProfile", data)
 
-                            this@ProfileFragment.activity?.runOnUiThread() {
+                                this@ProfileFragment.activity?.runOnUiThread() {
 
-                                val Profile = Json.decodeFromString<UserME>(data);
-                                Picasso.get().load(Profile.profile_pic).into(profilepic)
-                                //does actions on Ui-Thread u neeed it because Ui-elements can only be edited in Main/Ui-Thread
+                                    val Profile = JsonDeserializer.decodeFromString<UserME>(data);
+                                    Picasso.get().load(Profile.profile_pic).into(profilepic)
+                                    //does actions on Ui-Thread u neeed it because Ui-elements can only be edited in Main/Ui-Thread
 
-                                name.setText(Profile.name)
-                                firstname.setText(Profile.firstname)
-                                email.setText(Profile.email)
-                                street.setText(Profile.Street)
-                                phonenumber.setText(Profile.phone_number)
-                                plz.setText(Profile.plz.toString())
-                                city.setText(Profile.City)
-                                if (Profile.usertype_txt == "Helfer")
-                                    usertype.setSelection(0)
-                                else
-                                    usertype.setSelection(1)
+                                    name.setText(Profile.name)
+                                    firstname.setText(Profile.firstname)
+                                    email.setText(Profile.email)
+                                    street.setText(Profile.Street)
+                                    phonenumber.setText(Profile.phone_number)
+                                    plz.setText(Profile.plz.toString())
+                                    city.setText(Profile.City)
+                                    if (Profile.usertype_txt == "Helfer")
+                                        usertype.setSelection(0)
+                                    else
+                                        usertype.setSelection(1)
 
+                                }
                             }
-                        }
-                        }
-            }.join()
+                            }
+                }.join()
 
 
             }

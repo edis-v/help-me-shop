@@ -3,7 +3,7 @@ package io.moxd.shopforme.data
 import android.content.Context
 import android.util.Log
 import androidx.datastore.core.DataStore
-import androidx.datastore.createDataStore
+
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.coroutines.awaitObject
 import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
@@ -11,7 +11,7 @@ import io.moxd.shopforme.JsonDeserializer
 import io.moxd.shopforme.ProtoUser
 import io.moxd.shopforme.data.dto.SessionDto
 import io.moxd.shopforme.data.model.User
-import io.moxd.shopforme.data.proto_serializer.ProtoUserSerializer
+
 import io.moxd.shopforme.data.proto_serializer.exists
 import io.moxd.shopforme.data.proto_serializer.toModel
 import io.moxd.shopforme.data.proto_serializer.toProto
@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 
 class UserManager (context: Context) {
 
-    private val dataStore: DataStore<ProtoUser> = context.createDataStore (
+/*    private val dataStore: DataStore<ProtoUser> = context.createDataStore (
         fileName = "user.pb",
         serializer = ProtoUserSerializer
     )
@@ -81,5 +81,5 @@ class UserManager (context: Context) {
         data class UserProfileFetchSuccess(val session: SessionDto, val user: User): UserEvent()
         data class UserProfileFetchError(val exception: Exception): UserEvent()
         data class UserSessionInitialized(val session: SessionDto): UserEvent()
-    }
+    }*/
 }
