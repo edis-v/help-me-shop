@@ -1,22 +1,26 @@
 package io.moxd.shopforme.adapter
 
 import android.content.Context
-import android.text.InputFilter
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.textfield.TextInputEditText
-import io.moxd.shopforme.MinMaxFilter
+import androidx.transition.Fade
+import com.google.android.material.transition.MaterialElevationScale
+import io.moxd.shopforme.FormatDate
+import io.moxd.shopforme.MainActivity
 import io.moxd.shopforme.R
-import io.moxd.shopforme.data.model.Item
 import io.moxd.shopforme.data.model.Shop
+import io.moxd.shopforme.ui.shopbuylist.ShopAdd
 
-class ShopAdapter (private val context: Context, val itemModelArrayList: List<Shop>) :
+
+class ShopAdapter(private val context: Context, val itemModelArrayList: List<Shop>) :
         RecyclerView.Adapter<ShopAdapter.Viewholder>() {
 
 
@@ -31,7 +35,11 @@ class ShopAdapter (private val context: Context, val itemModelArrayList: List<Sh
         // to set data to textview and imageview of each card layout
         val model: Shop = itemModelArrayList[position]
 
-        holder.Title.text = model.creation_date
+
+
+        ViewCompat.setTransitionName(holder.itemView,"shop${model.id}")
+
+        holder.Title.text = FormatDate(model.creation_date)
         holder.payed.text = if(model.payed) "Bezahlt" else   "Zu Bezahlen"
         holder.price.text =   "Preis: ${ String.format(
                 "%.2f",
@@ -45,7 +53,7 @@ class ShopAdapter (private val context: Context, val itemModelArrayList: List<Sh
         }
         else if (model.done)
             when(model.payed){
-                true ->{ // green arrow
+                true -> { // green arrow
                     holder.status.setImageResource(R.drawable.ic_done)
                     holder.status.setColorFilter(ContextCompat.getColor(context, R.color.green_200), android.graphics.PorterDuff.Mode.SRC_IN);
                 }
@@ -56,9 +64,25 @@ class ShopAdapter (private val context: Context, val itemModelArrayList: List<Sh
             }
         else {
             //timer
-            holder.status.setImageResource(R.drawable.ic_baseline_timelapse_24)
+            holder.status.setImageResource(R.drawable.ic_baseline_hourglass_bottom_24)
             holder.status.setColorFilter(ContextCompat.getColor(context, R.color.divivder), android.graphics.PorterDuff.Mode.SRC_IN);
         }
+
+
+
+         holder.itemView.setOnClickListener {
+             val f = ShopAdd() 
+
+             val args = Bundle()
+             args.putSerializable("model",model)
+             f.arguments  = args
+          //   val extras = FragmentNavigatorExtras(it to emailCardDetailTransitionName)
+                    (context as MainActivity).supportFragmentManager.beginTransaction()
+                     .replace(R.id.mainframe, f,"detail").addToBackStack(null).addSharedElement(it, "max_shop${model.id}").commit();
+
+
+         }
+
     }
 
     override fun getItemCount(): Int {
@@ -75,12 +99,14 @@ class ShopAdapter (private val context: Context, val itemModelArrayList: List<Sh
         val count: TextView
         val payed: TextView
         val status : ImageView
+
         init {
             Title = itemView.findViewById(R.id.shop_cardview_title)
             price = itemView.findViewById(R.id.shop_cardview_Preis)
             count = itemView.findViewById(R.id.shop_cardview_anzahl)
             payed = itemView.findViewById(R.id.shop_cardview_bezahlt)
             status = itemView.findViewById(R.id.shop_cardview_status)
+
         }
     }
 

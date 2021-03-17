@@ -58,10 +58,10 @@
             app:overlay_orientation="portrait"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
-            android:id="@+id/floating_action_button"
+            android:id="@+id/shopcart_floating_action_button"
             android:layout_gravity="bottom|end"
             android:layout_margin="16dp"
-            android:contentDescription="Add Shop"
+            android:contentDescription="Options"
             app:srcCompat="@drawable/ic_menu_24"
             tools:ignore="VectorDrawableCompat"
             />
@@ -77,8 +77,47 @@
         <com.nambimobile.widgets.efab.FabOption
             android:layout_width="wrap_content"
             app:label_text="Filter"
+            android:id="@+id/shopcart_filter"
             app:srcCompat="@drawable/ic_filter_alt_24"
             android:layout_height="wrap_content"
             tools:ignore="VectorDrawableCompat" />
     </com.nambimobile.widgets.efab.ExpandableFabLayout>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_height="500dp"
+        android:id="@+id/shopcart_filter_window"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        app:cardElevation="16dp"
+        android:layout_width="300dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+
+            android:layout_height="match_parent"
+            tools:layout_editor_absoluteX="113dp"
+            tools:layout_editor_absoluteY="155dp">
+
+            <ImageView
+
+                android:id="@+id/shopcart_filter_exit"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/ic_wrong"
+                app:tint="@color/black" />
+
+            <TextView
+                android:id="@+id/shopcart_filter_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/shopcart_filter_exit"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="10dp"
+
+                android:text="Filter"
+                android:textColor="@color/black"
+
+                android:textSize="24dp" />
+        </RelativeLayout>
+    </com.google.android.material.card.MaterialCardView>
 </RelativeLayout>

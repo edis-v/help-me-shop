@@ -1,45 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="100dp">
-    <RelativeLayout
-        android:layout_margin="16dp"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <TextView
-            android:id="@+id/buy_cardview_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="24dp"
-            android:layout_marginBottom="10dp"
-            android:text="Einkauf vom 22.78.68"/>
-        <TextView
-            android:id="@+id/buy_cardview_anzahl"
-            android:layout_width="wrap_content"
-            android:textSize="20dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/buy_cardview_title"
-            android:text="Items 22"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp"
 
-            android:layout_marginRight="16dp"
-            />
-        <TextView
-            android:id="@+id/buy_cardview_Preis"
+        >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:divider="@color/divivder"
+        android:animateLayoutChanges="true"
+        android:orientation="vertical"
+        android:showDividers="middle"
+        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:layout_margin="16dp"
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:id="@+id/buy_cardview_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="24dp"
+                android:layout_marginBottom="10dp"
+
+                android:text="Einkauf vom 22.78.68"/>
+            <TextView
+                android:id="@+id/buy_cardview_anzahl"
+                android:layout_width="wrap_content"
+                android:textSize="20dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/buy_cardview_title"
+                android:text="Items 22"
+
+                android:layout_marginRight="16dp"
+                />
+            <TextView
+                android:id="@+id/buy_cardview_Preis"
+                android:layout_width="wrap_content"
+                android:textSize="20dp"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/buy_cardview_anzahl"
+                android:layout_below="@id/buy_cardview_title"
+                android:layout_marginRight="16dp"
+                android:text="Preis: 22€"
+                />
+            <ImageView
+                android:id="@+id/buy_cardview_expand"
+                android:layout_height="50dp"
+                android:layout_width="50dp"
+                android:src="@drawable/ic_baseline_expand_more_24"
+                android:layout_toRightOf="@id/buy_cardview_Preis"
+                android:layout_alignTop="@id/buy_cardview_Preis"
+                />
+
+
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_margin="16dp"
+            android:id="@+id/buy_cardview_menu"
+
+            android:layout_below="@id/buy_cardview_Preis"
             android:layout_width="wrap_content"
-            android:textSize="20dp"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/buy_cardview_anzahl"
-            android:layout_below="@id/buy_cardview_title"
-            android:layout_marginRight="16dp"
-            android:text="Preis: 22€"
-            />
-        <ImageView
-            android:id="@+id/buy_cardview_more"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_centerVertical="true"
-            android:layout_alignParentRight="true"
-            android:src="@drawable/ic_more_vert_24"
-            />
-    </RelativeLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+            android:visibility="gone"
+            android:layout_height="wrap_content" >
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/buy_cardview_menu_buylist"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+
+                    android:layout_marginBottom="10dp"
+                    />
+
+
+
+            <LinearLayout
+                android:layout_below="@id/buy_cardview_menu_buylist"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+
+                android:layout_height="wrap_content">
+                <com.google.android.material.button.MaterialButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/buy_cardview_menu_delete"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:text="Löschen"
+                    android:textSize="16dp"
+                    android:textColor="@color/red"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentBottom="true"
+
+                    />
+                <com.google.android.material.button.MaterialButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/buy_cardview_menu_shop"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:text="Einkauf Erstellen"
+                    android:textSize="16dp"
+                    android:layout_marginLeft="10dp"
+                    android:textColor="@color/green_200"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentBottom="true"
+
+                    />
+            </LinearLayout>
+        </RelativeLayout>
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

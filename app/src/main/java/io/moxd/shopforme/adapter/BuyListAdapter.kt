@@ -2,38 +2,42 @@ package io.moxd.shopforme.adapter
 
 import android.app.Activity
 import android.content.Context
-import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MenuInflater
 import android.view.View
+import android.view.View.*
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.PopupMenu
-import android.widget.TextView
-import android.widget.Toast
-import androidx.annotation.RequiresApi
-import androidx.appcompat.view.menu.MenuBuilder
-import androidx.appcompat.view.menu.MenuPopupHelper
+import android.view.animation.AnimationUtils
+import android.widget.*
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.Fade
+import androidx.transition.Transition
+import androidx.transition.TransitionManager
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.result.Result
+import com.google.android.material.snackbar.Snackbar
+import io.moxd.shopforme.FormatDate
+import io.moxd.shopforme.MainActivity
 import io.moxd.shopforme.R
 import io.moxd.shopforme.data.RestPath
 import io.moxd.shopforme.data.model.BuyList
 import io.moxd.shopforme.requireAuthManager
+import io.moxd.shopforme.ui.shopbuylist.Shopcart
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 
 
-class BuyListAdapter(private val context: Context, val itemModelArrayList: List<BuyList>) :
+class BuyListAdapter(private val context: Context, var itemModelArrayList: MutableList<BuyList>) :
     RecyclerView.Adapter<BuyListAdapter.Viewholder>() {
 
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Viewholder {
+    lateinit  var _parent:ViewGroup
+    override fun onCreateViewHolder(  parent: ViewGroup, viewType: Int): Viewholder {
         // to inflate the layout for each item of recycler view.
+        _parent = parent
         val view: View =
             LayoutInflater.from(parent.context).inflate(R.layout.buy_cardview, parent, false)
         return Viewholder(view)
@@ -43,20 +47,61 @@ class BuyListAdapter(private val context: Context, val itemModelArrayList: List<
     override fun onBindViewHolder(holder: Viewholder, position: Int) {
         // to set data to textview and imageview of each card layout
         val model: BuyList = itemModelArrayList[position]
-        holder.Title.text = model.creation_date
+        holder.Title.text = FormatDate( model.creation_date)
         holder.cost.text =   "Preis: ${ String.format(
-            "%.2f",
-            model.articles.sumOf { (it.count * it.item.cost) })} €"
+                "%.2f",
+                model.articles.sumOf { (it.count * it.item.cost) })} €"
         holder.anzahl.text = "Anzahl: ${ model.articles.sumBy {  it.count  } }"
 
-        holder.more.setOnClickListener {
-            val popup = PopupMenu(context, holder.more)
-            popup.menuInflater.inflate(R.menu.buylist_menu, popup.menu)
+        val stringlist = mutableListOf<String>()
+        val transition: Transition = Fade()
+        transition.duration = 600;
+        transition.addTarget(R.id.buy_cardview_menu);
+
+        TransitionManager.beginDelayedTransition(_parent, transition);
+
+        for(i in model.articles) {
+            stringlist.add("${i.item.name} x${i.count} ")
+            Log.d("List$i" , "${i.item.name} x${i.count} ")
+        }
+        holder.buylist.layoutManager = LinearLayoutManager(context,LinearLayoutManager.VERTICAL,false)
+        holder.buylist.adapter = BuyListMinAdapter(context,model.articles.toMutableList())
+
+        holder.expand.setOnClickListener {
+             if ( holder.menu.visibility == VISIBLE) {
+                 holder.expand.setImageResource(R.drawable.ic_baseline_expand_more_24)
+
+                 holder.menu.visibility = INVISIBLE
+          //       holder.menu.startAnimation(animate)
+                 holder.menu.visibility = GONE
+
+             } else {
+
+                 holder.expand.setImageResource(R.drawable.ic_baseline_expand_less_24)
+                 val animate =AnimationUtils.loadAnimation(context, R.anim.slide_down);
+                 holder.menu.visibility = VISIBLE
+             //    holder.menu.startAnimation(animate)
+
+             }
+
+        }
 
 
+        holder.createbtn.setOnClickListener {
+            createShop(model.id, it)
+        }
+
+        holder.deltebtn.setOnClickListener {
+            deleteBuylist(model.id, it)
+
+          val pos =  itemModelArrayList.indexOf(model)
+            itemModelArrayList.remove(model)
+            this.notifyItemRemoved(pos)
+
+        }
 
             //registering popup with OnMenuItemClickListener
-            popup.setOnMenuItemClickListener { item ->
+         /*   popup.setOnMenuItemClickListener { item ->
 
                 Log.d("BuyListAdapter" , item.title as String)
                     when(item.title){
@@ -111,11 +156,118 @@ class BuyListAdapter(private val context: Context, val itemModelArrayList: List<
             }
             popup.show() //showing popup menu
 
-        }
+        }*/
 
 
 
 
+    }
+
+
+    fun deleteBuylist(id: Int, v: View){
+        GlobalScope.launch(Dispatchers.IO) {
+            requireAuthManager().SessionID().take(1).collect {
+                Fuel.delete(
+                        RestPath.buylistdelete(it, id)
+                ).responseString { request, response, result ->
+
+                    when (result) {
+
+
+                        is Result.Failure -> {
+                            (context as Activity).runOnUiThread() {
+                                Log.d(
+                                        "Error",
+                                        result.getException().message.toString()
+                                )
+                                Toast.makeText(
+                                        context,
+                                        "Creation Failed",
+                                        Toast.LENGTH_LONG
+                                )
+                                        .show()
+
+
+                                Log.d("Buylist", request.headers.toString())
+                            }
+                        }
+                        is Result.Success -> {
+                            val data = result.get()
+
+                            Log.d("Shop", data)
+
+                            (context as Activity).runOnUiThread() {
+
+                                Snackbar
+                                        .make(
+                                                v,
+                                                "Message is deleted",
+                                                Snackbar.LENGTH_LONG
+                                        ).show()
+                            }
+                        }
+                    }
+                }.join()
+
+            }}
+    }
+
+    fun createShop(id: Int, v: View){
+        GlobalScope.launch(Dispatchers.IO) {
+            requireAuthManager().SessionID().take(1).collect {
+                Fuel.post(
+                        RestPath.shopadd, listOf("session_id" to it, "buylist" to id)
+                ).responseString { request, response, result ->
+
+                    when (result) {
+
+
+                        is Result.Failure -> {
+                            (context as Activity).runOnUiThread() {
+                                Log.d(
+                                        "Error",
+                                        result.getException().message.toString()
+                                )
+                                Toast.makeText(
+                                        context,
+                                        "Creation Failed",
+                                        Toast.LENGTH_LONG
+                                )
+                                        .show()
+
+
+                                Log.d("Buylist", request.headers.toString())
+                            }
+                        }
+                        is Result.Success -> {
+                            val data = result.get()
+
+                            Log.d("Shop", data)
+
+                            (context as Activity).runOnUiThread() {
+
+
+                                Snackbar
+                                        .make(
+                                                v,
+                                                "Einkauf erstellt",
+                                                Snackbar.LENGTH_LONG
+                                        ).setAction(
+                                                "Go to Shop")
+                                        {
+
+                                            val ft = (context as MainActivity).supportFragmentManager.beginTransaction()
+                                            ft.replace(R.id.mainframe, Shopcart())
+                                            ft.commit()
+                                        }
+                                        .show()
+
+                            }
+                        }
+                    }
+                }.join()
+
+            }}
     }
 
     override fun getItemCount(): Int {
@@ -130,12 +282,22 @@ class BuyListAdapter(private val context: Context, val itemModelArrayList: List<
         val Title: TextView
         val cost: TextView
         val anzahl : TextView
-        val more : ImageView
+        val expand : ImageView
+        val menu :RelativeLayout
+        val deltebtn : Button
+        val createbtn : Button
+        val buylist : RecyclerView
+      //  val more : ImageView
         init {
             Title = itemView.findViewById(R.id.buy_cardview_title)
             cost = itemView.findViewById(R.id.buy_cardview_Preis)
             anzahl = itemView.findViewById(R.id.buy_cardview_anzahl)
-            more = itemView.findViewById(R.id.buy_cardview_more)
+          expand = itemView.findViewById(R.id.buy_cardview_expand)
+          menu = itemView.findViewById(R.id.buy_cardview_menu)
+          buylist = itemView.findViewById(R.id.buy_cardview_menu_buylist)
+          deltebtn = itemView.findViewById(R.id.buy_cardview_menu_delete)
+          createbtn = itemView.findViewById(R.id.buy_cardview_menu_shop)
+       //     more = itemView.findViewById(R.id.buy_cardview_more)
         }
     }
 

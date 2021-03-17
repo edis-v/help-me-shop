@@ -13,6 +13,8 @@ class RestPath {
         fun buylist(sessionId: String) = "api/buylist/$sessionId"
         fun angebot(sessionId: String) = "api/angebot/hfs/$sessionId"
         fun angebotapprove(sessionId: String,id : Int) = "api/angebot/hfs/$sessionId/$id"
+        fun angebote(sessionId: String ) = "api/angebot/hf/$sessionId"
+        fun buylistdelete(sessionId: String,id : Int) = "api/buylist/delete/$sessionId/$id"
         fun shop(sessionId: String) = "api/shop/$sessionId"
         fun otherUsers(sessionId: String,radius: String) = "api/user/search/$sessionId?radius=$radius"
         fun locationUpdate(sessionId: String)= "api/user/location/$sessionId"

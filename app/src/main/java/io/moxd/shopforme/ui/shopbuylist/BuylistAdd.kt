@@ -15,8 +15,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.result.Result
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.squareup.picasso.Picasso
 import io.moxd.shopforme.JsonDeserializer
+import io.moxd.shopforme.MainActivity
 import io.moxd.shopforme.R
 import io.moxd.shopforme.adapter.ItemAdapter
 import io.moxd.shopforme.data.RestPath
@@ -88,6 +90,7 @@ class BuylistAdd: Fragment() {
                             i.anzahl.observe(requireActivity(), {
                                 priceinfo.text =  "Preis: ${ String.format("%.2f" ,items.sumOf { (it.anzahl.value!! * it.cost) })} €"
                                 countinfo.text = "Anzahl: ${ items.sumBy {  it.anzahl.value!!  } }"
+                                createbtn.isEnabled = items.filter { it.anzahl.value!! > 0  }.isNotEmpty()
                             })
                     }
                 }
@@ -96,88 +99,105 @@ class BuylistAdd: Fragment() {
 
         createbtn.setOnClickListener {
             //create buylist
-
-            //maybe a dialog beforre
-            if(items.filter { it.anzahl.value!! > 0  }.isNotEmpty())
-            GlobalScope.launch(Dispatchers.IO) {
-                val listids : MutableList<Int> =  ArrayList<Int>(items.filter { it.anzahl.value!! > 0  }.size)
-                requireAuthManager().SessionID().take(1).collect {
-                    //do actions
-
-                    Log.d("articles" ,  items.filter { it2 -> it2.anzahl.value!! > 0 }.size.toString())
-                    for (item in items.filter { it2 -> it2.anzahl.value!! > 0 }){
-                        Fuel.post(
-                            RestPath.article, listOf("item" to item.id , "count" to item.anzahl.value)
-                        ).responseString { _, _, result ->
-
-                            when (result) {
-
-
-                                is Result.Failure -> {
-                                    this@BuylistAdd.activity?.runOnUiThread() {
-                                        Log.d("Error", result.getException().message.toString())
-                                        Toast.makeText(root.context, "Creation FAiled", Toast.LENGTH_LONG)
-                                            .show()
-                                    }
-                                }
-                                is Result.Success -> {
-                                    val data = result.get()
-                                    Log.d("Succsess", data)
-                                    val id = JsonDeserializer.decodeFromString<ArticleAdd>(data).id
-
-                                    listids.add(id)
-                                    Log.d("Added ",  id.toString())
-                                    this@BuylistAdd.activity?.runOnUiThread() {
-
-
-                                    }
-                                }
-                            }
-                        }.join()
-
-                    }
-
-                    Log.d("articles2" ,  listids.size.toString())
-                    while (items.filter { it2 -> it2.anzahl.value!! > 0 }.size != listids.size){}
-                    val body = "{\n" +
-                            "    \"articles\": [${listids.joinToString()}],\n" +
-                            "    \"session_id\": \"$it\"\n" +
-                            "}"
-
-                    Log.d("Body" , body)
-
-                    Fuel.post(
-                        RestPath.buylistadd
-                    ).header("Content-Type" to "application/json").body(body).responseString { request, response, result ->
-
-                        when (result) {
-
-
-                            is Result.Failure -> {
-                                this@BuylistAdd.activity?.runOnUiThread() {
-                                    Log.d("Error", result.getException().message.toString())
-                                    Toast.makeText(root.context, "Creation Failed", Toast.LENGTH_LONG)
-                                        .show()
-
-
-                                    Log.d("Buylist", request.headers.toString())
-                                }
-                            }
-                            is Result.Success -> {
-                                val data = result.get()
-
-                                Log.d("Buylist", data)
-
-                                this@BuylistAdd.activity?.runOnUiThread() {
-
-
-                                }
-                            }
-                        }
-                    }.join()
-
+            MaterialAlertDialogBuilder(root.context)
+                .setTitle("Fertig?")
+                .setMessage("Willst du die Einkaufsliste erstellen?")
+                .setNeutralButton("Nein") { _, _ ->
+                    // Respond to neutral button press
+                }.setNegativeButton("Abbrechen"){_, _ ->
+                    val ft = (context as MainActivity).supportFragmentManager.beginTransaction()
+                    ft.replace(R.id.mainframe, Shopcart())
+                    ft.commit()
                 }
-            }
+                .setPositiveButton("Ja") { _, _ ->
+                    // Respond to positive button press
+                    //create an antrag with firebase or with a new api table
+                    GlobalScope.launch(Dispatchers.IO) {
+                        val listids : MutableList<Int> =  ArrayList<Int>(items.filter { it.anzahl.value!! > 0  }.size)
+                        requireAuthManager().SessionID().take(1).collect {
+                            //do actions
+
+                            Log.d("articles" ,  items.filter { it2 -> it2.anzahl.value!! > 0 }.size.toString())
+                            for (item in items.filter { it2 -> it2.anzahl.value!! > 0 }){
+                                Fuel.post(
+                                    RestPath.article, listOf("item" to item.id , "count" to item.anzahl.value)
+                                ).responseString { _, _, result ->
+
+                                    when (result) {
+
+
+                                        is Result.Failure -> {
+                                            this@BuylistAdd.activity?.runOnUiThread() {
+                                                Log.d("Error", result.getException().message.toString())
+                                                Toast.makeText(root.context, "Creation FAiled", Toast.LENGTH_LONG)
+                                                    .show()
+                                            }
+                                        }
+                                        is Result.Success -> {
+                                            val data = result.get()
+                                            Log.d("Succsess", data)
+                                            val id = JsonDeserializer.decodeFromString<ArticleAdd>(data).id
+
+                                            listids.add(id)
+                                            Log.d("Added ",  id.toString())
+                                            this@BuylistAdd.activity?.runOnUiThread() {
+
+
+                                            }
+                                        }
+                                    }
+                                }.join()
+
+                            }
+
+                            Log.d("articles2" ,  listids.size.toString())
+                            while (items.filter { it2 -> it2.anzahl.value!! > 0 }.size != listids.size){}
+                            val body = "{\n" +
+                                    "    \"articles\": [${listids.joinToString()}],\n" +
+                                    "    \"session_id\": \"$it\"\n" +
+                                    "}"
+
+                            Log.d("Body" , body)
+
+                            Fuel.post(
+                                RestPath.buylistadd
+                            ).header("Content-Type" to "application/json").body(body).responseString { request, response, result ->
+
+                                when (result) {
+
+
+                                    is Result.Failure -> {
+                                        this@BuylistAdd.activity?.runOnUiThread() {
+                                            Log.d("Error", result.getException().message.toString())
+                                            Toast.makeText(root.context, "Creation Failed", Toast.LENGTH_LONG)
+                                                .show()
+
+
+                                            Log.d("Buylist", request.headers.toString())
+                                        }
+                                    }
+                                    is Result.Success -> {
+                                        val data = result.get()
+
+                                        Log.d("Buylist", data)
+
+                                        this@BuylistAdd.activity?.runOnUiThread() {
+
+
+                                        }
+                                    }
+                                }
+                            }.join()
+
+                        }
+                    }
+                    val ft = (context as MainActivity).supportFragmentManager.beginTransaction()
+                    ft.replace(R.id.mainframe, Shopcart())
+                    ft.commit()
+                }
+                .show()
+            //maybe a dialog beforre
+
 
         }
 

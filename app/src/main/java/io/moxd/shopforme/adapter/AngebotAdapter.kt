@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.result.Result
 import com.squareup.picasso.Picasso
+import io.moxd.shopforme.FormatDate
 import io.moxd.shopforme.JsonDeserializer
 import io.moxd.shopforme.R
 import io.moxd.shopforme.data.RestPath
@@ -41,20 +42,23 @@ class AngebotAdapter  (private val context: Context, var itemModelArrayList: Mut
         // to set data to textview and imageview of each card layout
         val model: Angebot = itemModelArrayList[position]
 
-        holder.date.text = model.shop.creation_date
+        holder.date.text = FormatDate( model.shop.creation_date)
         holder.user.text = model.helper.firstname + " "+model.helper.name
         Picasso.get().load(model.helper.profile_pic).into(holder.profilepic);
 
         holder.wrong.setOnClickListener {
             updateAngebot(model.id,false)
-              itemModelArrayList.removeAll{ it.id == model.id }
-            this.notifyItemRemoved(position)
+            val pos =  itemModelArrayList.indexOf(model)
+            itemModelArrayList.remove(model)
+            this.notifyItemRemoved(pos)
+
         }
 
         holder.right.setOnClickListener {
             updateAngebot(model.id,true)
-           itemModelArrayList.removeAll{ it.id == model.id }
-            this.notifyItemRemoved(position)
+            val pos =  itemModelArrayList.indexOf(model)
+            itemModelArrayList.remove(model)
+            this.notifyItemRemoved(pos)
         }
 
     }

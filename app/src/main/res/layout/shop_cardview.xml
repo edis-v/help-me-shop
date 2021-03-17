@@ -3,6 +3,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
+    android:transitionName="shopmin"
+    android:layout_margin="5dp"
+    android:id="@+id/shop_cardview"
     android:layout_height="150dp">
     <RelativeLayout
         android:layout_width="match_parent"
@@ -14,11 +17,13 @@
             android:layout_height="wrap_content"
             android:textSize="24dp"
             android:layout_marginBottom="10dp"
+            android:transitionName="shoptitle"
             android:text="Einkauf vom 22.78.68"/>
         <TextView
             android:id="@+id/shop_cardview_anzahl"
             android:layout_width="wrap_content"
             android:textSize="20dp"
+            android:transitionName="shopanzahl"
             android:layout_height="wrap_content"
             android:layout_below="@id/shop_cardview_title"
             android:text="Items 22"
@@ -29,6 +34,7 @@
             android:id="@+id/shop_cardview_Preis"
             android:layout_width="wrap_content"
             android:textSize="20dp"
+            android:transitionName="shopprice"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/shop_cardview_anzahl"
             android:layout_below="@id/shop_cardview_title"
@@ -41,7 +47,7 @@
             android:layout_height="wrap_content"
             android:textSize="20dp"
             android:text="Bezahlt am 22.7.99"
-
+            android:transitionName="shoppayed"
             android:layout_below="@id/shop_cardview_anzahl"
             />
         <ImageView

@@ -86,7 +86,7 @@ dependencies {
 
     implementation 'com.nambimobile.widgets:expandable-fab:1.0.2'
 
-    implementation 'com.alespero:expandable-cardview:0.6'
+
 }
 
 protobuf {
