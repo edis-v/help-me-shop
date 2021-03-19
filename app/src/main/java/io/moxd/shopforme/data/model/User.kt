@@ -40,6 +40,6 @@ class UserME  (val id: Int,
                val City  : String,
                val profile_pic : String,
                val location : LocationData,
-               val usertype_txt : String){
+               val usertype_txt : String) : java.io.Serializable{
 
 }

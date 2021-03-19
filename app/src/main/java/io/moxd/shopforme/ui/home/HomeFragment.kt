@@ -47,9 +47,7 @@ class HomeFragment: Fragment(R.layout.main_home_fragment) {
 
     var last = 0
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            container!!.isTransitionGroup = true
-        }
+
         return super.onCreateView(inflater, container, savedInstanceState)
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -123,12 +121,12 @@ class HomeFragment: Fragment(R.layout.main_home_fragment) {
                     // Respond to navigation item 1 click
                     if (AuthManager.User!!.usertype_txt == "Helfer") {
                         val ft = (requireActivity() as MainActivity).supportFragmentManager.beginTransaction()
-                        ft.replace(R.id.mainframe,ShopAngebotFragment().apply { enterTransition = Fade().apply {  } ; exitTransition = Fade() } )
+                        ft.replace(R.id.mainframe,ShopAngebotFragment() )
                         ft.commit()
                     }
                     else{
                         val ft = (requireActivity() as MainActivity).supportFragmentManager.beginTransaction()
-                        ft.replace(R.id.mainframe,Shopcart().apply { enterTransition = Fade() ; exitTransition = Fade()} )
+                        ft.replace(R.id.mainframe,Shopcart()  )
                         ft.commit()
                     }
                     true
@@ -137,13 +135,13 @@ class HomeFragment: Fragment(R.layout.main_home_fragment) {
                     // Respond to navigation item 2 click
                     if (AuthManager.User!!.usertype_txt == "Helfer") {
                         val ft = (requireActivity() as MainActivity).supportFragmentManager.beginTransaction()
-                        ft.replace(R.id.mainframe, MapFragment().apply { enterTransition = Fade() ; exitTransition = Fade()})
+                        ft.replace(R.id.mainframe, MapFragment() )
                         ft.commit()
                     }
                     else
                     {
                         val ft = (requireActivity() as MainActivity).supportFragmentManager.beginTransaction()
-                        ft.replace(R.id.mainframe, AngebotFragment().apply { enterTransition = Fade() ; exitTransition = Fade()})
+                        ft.replace(R.id.mainframe, AngebotFragment() )
                         ft.commit()
                     }
                     true
@@ -151,7 +149,7 @@ class HomeFragment: Fragment(R.layout.main_home_fragment) {
                 R.id.item3 -> {
                     // Respond to navigation item 3 click
                     val ft = (requireActivity() as MainActivity).supportFragmentManager.beginTransaction()
-                    ft.replace(R.id.mainframe, ProfileListFragment().apply { enterTransition = Fade() ; exitTransition = Fade()})
+                    ft.replace(R.id.mainframe, ProfileListFragment() )
                     ft.commit()
                     true
                 }

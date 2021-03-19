@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 class ArticleAdd(val id : Int , val item : Int , val count :Int) {
 }
 @Serializable
-class Article (  val item : Item , val count :Int) {
+class Article (  val item : Item2 , val count :Int) : java.io.Serializable {
 }

@@ -103,7 +103,7 @@
             <com.google.android.material.button.MaterialButton
                 android:layout_width="130dp"
                 android:layout_height="wrap_content"
-                android:id="@+id/buy_cardview_menu_delete"
+                android:id="@+id/max_shop_cardview_menu_delete"
                 style="?attr/materialButtonOutlinedStyle"
                 android:text="Löschen"
                 android:textSize="16dp"

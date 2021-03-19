@@ -21,6 +21,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.result.Result
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.transition.MaterialContainerTransform
 import com.google.android.material.transition.MaterialElevationScale
@@ -196,6 +197,16 @@ class Shopcart : Fragment() {
 
             }
         }
+    }
+
+
+    fun shopDeleted(){
+        Snackbar
+                .make(
+                        requireView(),
+                        "Shop is deleted",
+                        Snackbar.LENGTH_LONG
+                ).show()
     }
 
     fun GetBuyList(){
