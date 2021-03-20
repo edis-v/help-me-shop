@@ -59,7 +59,7 @@ class ShopAngebotFragment : Fragment() {
                 LinearLayoutManager.VERTICAL,
                 false
         )
-        GetShop()
+        GetAgebotList()
         tabLayout = root.findViewById(R.id.shopangebot_tab)
         refreshlayout = root.findViewById(R.id.shopangebot_Refresh)
         ViewGroupCompat.setTransitionGroup(list,true)
@@ -94,7 +94,7 @@ class ShopAngebotFragment : Fragment() {
 
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 when (tab!!.text) {
-                    "Shopping" -> {
+                    "Shoppen" -> {
                         Log.d("Tab", "Shop clicked")
                         GetShop()
 

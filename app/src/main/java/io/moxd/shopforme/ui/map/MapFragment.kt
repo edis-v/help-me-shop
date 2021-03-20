@@ -587,6 +587,7 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
         val locationList: ArrayList<SingleRecyclerViewLocation> = ArrayList()
         for (user in otheruserLocations) {
             val singleLocation = SingleRecyclerViewLocation()
+            singleLocation.id = user.id
             singleLocation.name =  user.helpsearcher.firstname + " "+  user.helpsearcher.name
             singleLocation.price =  "Preis: ${ String.format(
                     "%.2f",
@@ -922,7 +923,7 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
 
     class SingleRecyclerViewLocation {
 
-
+        var id : Int = -1
         var name: String? = null
         var price: String? = null
         var count : String?   = null
@@ -960,6 +961,46 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
                         .setPositiveButton("Ja") { dialog, which ->
                             // Respond to positive button press
                             //create an antrag with firebase or with a new api table
+                            GlobalScope.launch(Dispatchers.IO) {
+                                requireAuthManager().SessionID().take(1).collect {
+                                    Fuel.post(
+                                           RestPath.angebotadd, listOf("session_id" to it , "shop" to singleRecyclerViewLocation.id)
+                                    ).responseString { request, response, result ->
+
+                                        when (result) {
+
+
+                                            is Result.Failure -> {
+                                                (context as Activity).runOnUiThread() {
+                                                    Log.d(
+                                                            "Error",
+                                                            result.getException().message.toString()
+                                                    )
+                                                    Toast.makeText(
+                                                            context,
+                                                            "Create Failed",
+                                                            Toast.LENGTH_LONG
+                                                    )
+                                                            .show()
+
+
+                                                    Log.d("Angebot", request.headers.toString())
+                                                }
+                                            }
+                                            is Result.Success -> {
+                                                val data = result.get()
+
+                                                Log.d("Angebot", data)
+
+                                                (context as Activity).runOnUiThread {
+                                                     ///show snack
+                                                }
+
+                                            }
+                                        }
+                                    }.join()
+
+                                }}
                           }
                         .show()
             }

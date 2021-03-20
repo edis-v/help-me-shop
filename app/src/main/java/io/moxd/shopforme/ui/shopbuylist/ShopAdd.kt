@@ -32,21 +32,23 @@ import com.github.kittinunf.fuel.core.Method
 import com.github.kittinunf.result.Result
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialContainerTransform
-import io.moxd.shopforme.FormatDate
-import io.moxd.shopforme.MainActivity
-import io.moxd.shopforme.R
+import com.squareup.picasso.Picasso
+import io.moxd.shopforme.*
 import io.moxd.shopforme.adapter.BuyListMinAdapter
 import io.moxd.shopforme.data.AuthManager
 import io.moxd.shopforme.data.RestPath
 import io.moxd.shopforme.data.model.Shop
-import io.moxd.shopforme.requireAuthManager
+import io.moxd.shopforme.data.model.UserME
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
+import kotlinx.serialization.decodeFromString
 import java.io.ByteArrayOutputStream
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class ShopAdd : Fragment() {
@@ -68,8 +70,61 @@ class ShopAdd : Fragment() {
     companion object
     {
       val  PERMISSION_CODE = 1111
+        var lastid = -1
+    }
+    fun getmodel(){
+        val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
+            requireAuthManager().SessionID().take(1).collect {
+                //do actions
+                Log.d("Url: ", RestPath.getOneShop(it, lastid))
+                Fuel.get(
+                        RestPath.getOneShop(it, lastid)
+                ).responseString { _, _, result ->
+
+                    when (result) {
+
+
+                        is Result.Failure -> {
+                            this@ShopAdd.activity?.runOnUiThread() {
+
+                                Log.d("Error", result.getException().message.toString())
+                                Toast.makeText(requireContext(), "Failed", Toast.LENGTH_LONG).show()
+                            }
+                        }
+                        is Result.Success -> {
+                            val data = result.get()
+
+                            Log.d("USerProfile", data)
+
+                            this@ShopAdd.activity?.runOnUiThread() {
+
+                                  model = JsonDeserializer.decodeFromString<Shop>(data);
+
+                                //does actions on Ui-Thread u neeed it because Ui-elements can only be edited in Main/Ui-Thread
+
+
+
+                            }
+                        }
+                    }
+                }.join()
+
+
+            }
+
+        }
+        job.start()
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+           sharedElementEnterTransition =   MaterialContainerTransform().apply {
+            drawingViewId = R.id.mainframe
+            duration = resources.getInteger(R.integer.reply_motion_duration_large).toLong()
+            scrimColor = Color.TRANSPARENT
+
+        }
+    }
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
@@ -81,9 +136,11 @@ class ShopAdd : Fragment() {
         title.paintFlags = title.paintFlags or Paint.UNDERLINE_TEXT_FLAG
         try {
             model = arguments?.getSerializable("model") as Shop
+            lastid = model!!.id
         }catch (ex: Exception){
 
         }
+        getmodel()
         ViewCompat.setTransitionName(root, "max_shop${model!!.id}")
         price = root.findViewById(R.id.max_shop_cardview_Preis)
         count = root.findViewById(R.id.max_shop_cardview_anzahl)
@@ -97,7 +154,6 @@ class ShopAdd : Fragment() {
         done = root.findViewById(R.id.max_shop_cardview_menu_shop)
         pay = root.findViewById(R.id.max_shop_cardview_menu_payed)
         report = root.findViewById(R.id.max_shop_cardview_menu_report)
-
 
         delete.setOnClickListener { delete() }
         done.setOnClickListener { done() }
@@ -132,15 +188,10 @@ class ShopAdd : Fragment() {
             }
         else {
             //timer
-             status.setImageResource(R.drawable.ic_baseline_timelapse_24)
+             status.setImageResource(R.drawable.ic_baseline_hourglass_bottom_24)
            status.setColorFilter(ContextCompat.getColor(root.context, R.color.divivder), android.graphics.PorterDuff.Mode.SRC_IN);
         }
-     sharedElementEnterTransition =   MaterialContainerTransform().apply {
-            drawingViewId = R.id.mainframe
-            duration = resources.getInteger(R.integer.reply_motion_duration_large).toLong()
-            scrimColor = Color.TRANSPARENT
 
-        }
 
         delete.isEnabled = (model!!.helper == null) //optical not visible if enable or disable !!
 
@@ -288,14 +339,14 @@ class ShopAdd : Fragment() {
 
             Log.d("Picturerun", getPath(uri)!!)
 
-            val data = FileDataPart.from(getPath(uri)!! , name = if (AuthManager.User?.usertype_txt == "Helfer") "payed" else "payed_prove")
+            val data = FileDataPart.from(getPath(uri)!!, name = "payed_prove")
             // from(data?.data?.encodedPath.toString() , name = "profile_pic")
 
             val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
                 requireAuthManager().SessionID().take(1).collect {
                     //do actions
                     val url =  if(AuthManager.User?.usertype_txt == "Helfer" )RestPath.shopaddpayHF(it, model!!.id) else RestPath.shopaddpayHFS(it, model!!.id)
-                    Log.d("URL: ",url )
+                    Log.d("URL: ", url)
                     val asyncupload = Fuel.upload(url, Method.PUT)
                             .add(data)
                             .responseString { _, _, result ->
@@ -306,6 +357,7 @@ class ShopAdd : Fragment() {
                                     }
                                     is Result.Success -> {
                                         Toast.makeText(this@ShopAdd.context, "Upload Sucess", Toast.LENGTH_LONG).show()
+                                        Log.d("Succsess", "Upload")
                                     }
                                 }
                             }
@@ -328,14 +380,16 @@ class ShopAdd : Fragment() {
             val tempUri = getImageUri(this.requireActivity().applicationContext, photo)
 
 
-            val data = FileDataPart.from((getRealPathFromURI(tempUri))!! , name = if (AuthManager.User?.usertype_txt == "Helfer") "payed" else "payed_prove")
+                val data = FileDataPart.from((getRealPathFromURI(tempUri))!!, name = "payed_prove")
+
+
             // from(data?.data?.encodedPath.toString() , name = "profile_pic")
 
             val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
                 requireAuthManager().SessionID().take(1).collect {
                     //do actions
-                    val url =  if(AuthManager.User?.usertype_txt == "Helfer" )RestPath.shopaddpayHF(it, model!!.id) else RestPath.shopaddpayHFS(it, model!!.id)
-                    Log.d("URL: ",url )
+                    val url =    RestPath.shopaddpayHFS(it, model!!.id)
+                    Log.d("URL: ", url)
                     val asyncupload = Fuel.upload(url, Method.PUT)
                             .add(data)
                             .responseString { _, _, result ->
@@ -346,6 +400,7 @@ class ShopAdd : Fragment() {
                                     }
                                     is Result.Success -> {
                                         Toast.makeText(this@ShopAdd.context, "Upload Sucess", Toast.LENGTH_LONG).show()
+                                        Log.d("Succsess", "Upload")
                                     }
                                 }
                             }
@@ -370,15 +425,15 @@ class ShopAdd : Fragment() {
 
             Log.d("Picturerun", getPath(uri)!!)
 
-            val data = FileDataPart.from(getPath(uri)!! , name = if (AuthManager.User?.usertype_txt == "Helfer") "bill_hf" else "bill_hfs")
+            val data = FileDataPart.from(getPath(uri)!!, name = if (AuthManager.User?.usertype_txt == "Helfer") "bill_hf" else "bill_hfs")
             // from(data?.data?.encodedPath.toString() , name = "profile_pic")
 
             val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
                 requireAuthManager().SessionID().take(1).collect {
                     //do actions
-                    val url =  RestPath.shopadddone(it, model!!.id)
-                    Log.d("URL: ",url )
-                    val asyncupload = Fuel.upload(url, Method.PUT)
+                    val url =  RestPath.shopadddone(it, model!!.id, if (AuthManager.User?.usertype_txt == "Helfer") "hf" else "hfs")
+                    Log.d("URL: ", url)
+                    val asyncupload = Fuel.upload(url, Method.PUT, if (AuthManager.User?.usertype_txt == "Helfer") listOf() else listOf("done" to true))
                             .add(data)
                             .responseString { _, _, result ->
                                 when (result) {
@@ -388,6 +443,7 @@ class ShopAdd : Fragment() {
                                     }
                                     is Result.Success -> {
                                         Toast.makeText(this@ShopAdd.context, "Upload Sucess", Toast.LENGTH_LONG).show()
+                                        Log.d("Succsess", "Upload")
                                     }
                                 }
                             }
@@ -410,15 +466,15 @@ class ShopAdd : Fragment() {
             val tempUri = getImageUri(this.requireActivity().applicationContext, photo)
 
 
-            val data = FileDataPart.from((getRealPathFromURI(tempUri))!! , name = if (AuthManager.User?.usertype_txt == "Helfer") "bill_hf" else "bill_hfs")
+            val data = FileDataPart.from((getRealPathFromURI(tempUri))!!, name = if (AuthManager.User?.usertype_txt == "Helfer") "bill_hf" else "bill_hfs")
             // from(data?.data?.encodedPath.toString() , name = "profile_pic")
 
             val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
                 requireAuthManager().SessionID().take(1).collect {
                     //do actions
-                    val url =  RestPath.shopadddone(it, model!!.id)
-                    Log.d("URL: ",url )
-                    val asyncupload = Fuel.upload(url, Method.PUT)
+                    val url =  RestPath.shopadddone(it, model!!.id, if (AuthManager.User?.usertype_txt == "Helfer") "hf" else "hfs")
+                    Log.d("URL: ", url)
+                    val asyncupload = Fuel.upload(url, Method.PUT, if (AuthManager.User?.usertype_txt == "Helfer") listOf() else listOf("done" to true))
                             .add(data)
                             .responseString { _, _, result ->
                                 when (result) {
@@ -428,6 +484,7 @@ class ShopAdd : Fragment() {
                                     }
                                     is Result.Success -> {
                                         Toast.makeText(this@ShopAdd.context, "Upload Sucess", Toast.LENGTH_LONG).show()
+                                        Log.d("Succsess", "Upload")
                                     }
                                 }
                             }
@@ -454,9 +511,54 @@ class ShopAdd : Fragment() {
     }
 
 
+
+    fun ParseDate(Date : Date) : String{
+        val sdf2 = SimpleDateFormat("yyyy-MM-dd HH:mm.ss", Locale.getDefault())
+        val stwentyfourhour = sdf2.format(Date)
+        Log.d("Parse Date" , stwentyfourhour.replace(" ","T").replace(".",":")+"Z")
+        return stwentyfourhour.replace(" ","T").replace(".",":")+"Z"
+    }
+
+
     fun payed(){
         //create dialog from galleri  or take a picture
         //than upload like profile upload
+        if (AuthManager.User?.usertype_txt == "Helfer")
+            MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Bezahlt worden")
+                    .setMessage("Ja oder Noch nicht")
+                    .setNeutralButton("Cancel") { _, _ ->
+                        // Respond to neutral button press
+                    }.setNegativeButton("Noch nicht"){ _, _ ->
+                      //maybe send alert to user
+                    }
+                    .setPositiveButton("Ja") { _, _ ->
+                        val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
+                            requireAuthManager().SessionID().take(1).collect {
+                                //do actions
+                                val url =  RestPath.shopaddpayHF(it, model!!.id)
+                                Log.d("URL: ", url)
+
+
+                                val asyncupload = Fuel.upload(url, Method.PUT, listOf("payed" to true, "finished_date" to ParseDate(Date())))
+                                        .responseString { _, _, result ->
+                                            when (result) {
+                                                is Result.Failure -> {
+                                                    Log.d("error", result.getException().message!!)
+                                                    Toast.makeText(this@ShopAdd.context, "Update Failed", Toast.LENGTH_LONG).show()
+                                                }
+                                                is Result.Success -> {
+                                                    Toast.makeText(this@ShopAdd.context, "Update Sucess", Toast.LENGTH_LONG).show()
+                                                    Log.d("Succsess", "Update")
+                                                }
+                                            }
+                                        }
+                                asyncupload.join();
+                            }}
+                        job.start()
+
+                    }.show()
+            else
         MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Bezahlungsbeleg")
                 .setMessage("Upload From?")

@@ -1,31 +1,24 @@
 package io.moxd.shopforme.ui.splashscreen
 
-import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.FuelManager
-import com.github.kittinunf.result.Result
 import io.moxd.shopforme.MainActivity
-
 import io.moxd.shopforme.R
 import io.moxd.shopforme.data.AuthManager
 import io.moxd.shopforme.data.UserManager
-import io.moxd.shopforme.data.model.UserME
-import io.moxd.shopforme.requireAuthManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import okhttp3.Dispatcher
-import java.lang.Exception
+
 
 class SplashScreen : AppCompatActivity() {
 
@@ -40,6 +33,15 @@ class SplashScreen : AppCompatActivity() {
     init {
         FuelManager.instance.basePath = "https://moco.fluffistar.com/"
     }
+    val requestPermissionLauncher =
+            registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()
+            ) {
+                if(it.all { it.component2() == true }){
+                    Toast.makeText(this, "All Permission Success", Toast.LENGTH_LONG).show()
+                    loginSplash()
+                }
+
+            }
     override fun onCreate(savedInstanceState: Bundle?) {
 
 
@@ -53,7 +55,11 @@ class SplashScreen : AppCompatActivity() {
 
             Handler(Looper.getMainLooper()).postDelayed(Runnable {
                 // Login here
-            loginSplash()
+                runOnUiThread {
+                    val info: PackageInfo = packageManager.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS)
+                    requestPermissionLauncher.launch(info.requestedPermissions)
+                }
+
 
 
             }, 100) //it will wait 100 millisec before login

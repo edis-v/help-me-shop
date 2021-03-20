@@ -18,8 +18,9 @@ class RestPath {
         fun shopdelete(sessionId: String,id : Int) = "api/shop/delete/$sessionId/$id"
         fun shopaddpayHF(sessionId: String,id : Int) = "api/shop/pay/$sessionId/$id"
         fun shopaddpayHFS(sessionId: String,id : Int) = "api/shop/payprove/$sessionId/$id"
-        fun shopadddone(sessionId: String,id : Int) = "api/shop/done/$sessionId/$id"
+        fun shopadddone(sessionId: String,id : Int, usertype : String) = "api/shop/done$usertype/$sessionId/$id"
         fun shop(sessionId: String) = "api/shop/$sessionId"
+        fun getOneShop(sessionId: String , id: Int) = "api/shop/$sessionId/$id"
         fun otherUsers(sessionId: String,radius: String) = "api/user/search/$sessionId?radius=$radius"
         fun locationUpdate(sessionId: String)= "api/user/location/$sessionId"
     }
