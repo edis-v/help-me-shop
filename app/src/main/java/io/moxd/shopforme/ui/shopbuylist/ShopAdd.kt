@@ -56,6 +56,7 @@ class ShopAdd : Fragment() {
     lateinit var price :TextView
     lateinit var count :TextView
     lateinit var bezahlt :TextView
+    lateinit var phonenumber :TextView
     lateinit var status :ImageView
     lateinit var buylist : RecyclerView
     lateinit var exit : ImageView
@@ -102,7 +103,40 @@ class ShopAdd : Fragment() {
 
                                 //does actions on Ui-Thread u neeed it because Ui-elements can only be edited in Main/Ui-Thread
 
+                                buylist.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+                                buylist.adapter = BuyListMinAdapter(requireContext(), model!!.buylist.articles.toMutableList())
+                                title.text = FormatDate(model!!.creation_date)
+                                phonenumber.text = if(AuthManager.User?.usertype_txt == "Helfer") model!!.helpsearcher.phone_number else  if( model!!.helper != null) model!!.helper?.phone_number else "Kein Helfer"
+                                bezahlt.text = if(model!!.payed) "Bezahlt" else   "Zu Bezahlen"
+                                price.text =   "Preis: ${ String.format(
+                                        "%.2f",
+                                        model!!.buylist.articles.sumOf { (it.count * it.item.cost) })} €"
+                                count.text = "Anzahl: ${ model!!.buylist.articles.sumBy {  it.count  } }"
+                                if(model!!.helper == null)
+                                {
+                                    //searcvhing
+                                    status.setImageResource(R.drawable.ic_baseline_person_search_24)
+                                    status.setColorFilter(ContextCompat.getColor(requireContext(), R.color.divivder), android.graphics.PorterDuff.Mode.SRC_IN);
+                                }
+                                else if (model!!.done)
+                                    when(model!!.payed){
+                                        true -> { // green arrow
+                                            status.setImageResource(R.drawable.ic_done)
+                                            status.setColorFilter(ContextCompat.getColor(requireContext(), R.color.green_200), android.graphics.PorterDuff.Mode.SRC_IN);
+                                        }
+                                        false -> {//red X
+                                            status.setImageResource(R.drawable.ic_wrong)
+                                            status.setColorFilter(ContextCompat.getColor(requireContext(), R.color.red), android.graphics.PorterDuff.Mode.SRC_IN);
+                                        }
+                                    }
+                                else {
+                                    //timer
+                                    status.setImageResource(R.drawable.ic_baseline_hourglass_bottom_24)
+                                    status.setColorFilter(ContextCompat.getColor(requireContext(), R.color.divivder), android.graphics.PorterDuff.Mode.SRC_IN);
+                                }
 
+
+                                delete.isEnabled = (model!!.helper == null) //optical not visible if enable or disable !!
 
                             }
                         }
@@ -125,6 +159,12 @@ class ShopAdd : Fragment() {
 
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        getmodel()
+    }
+
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
@@ -140,7 +180,7 @@ class ShopAdd : Fragment() {
         }catch (ex: Exception){
 
         }
-        getmodel()
+
         ViewCompat.setTransitionName(root, "max_shop${model!!.id}")
         price = root.findViewById(R.id.max_shop_cardview_Preis)
         count = root.findViewById(R.id.max_shop_cardview_anzahl)
@@ -148,52 +188,20 @@ class ShopAdd : Fragment() {
         status = root.findViewById(R.id.max_shop_cardview_status)
         buylist = root.findViewById(R.id.max_shop_cardview_menu_buylist)
         exit =  root.findViewById<ImageView>(R.id.max_shop_cardview_exit)
-
+        phonenumber = root.findViewById(R.id.max_shop_cardview_phonenumber)
 
         delete = root.findViewById(R.id.max_shop_cardview_menu_delete)
         done = root.findViewById(R.id.max_shop_cardview_menu_shop)
         pay = root.findViewById(R.id.max_shop_cardview_menu_payed)
         report = root.findViewById(R.id.max_shop_cardview_menu_report)
-
+        getmodel()
         delete.setOnClickListener { delete() }
         done.setOnClickListener { done() }
         pay.setOnClickListener { payed() }
         report.setOnClickListener { report() }
 
 
-        buylist.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        buylist.adapter = BuyListMinAdapter(root.context, model!!.buylist.articles.toMutableList())
-        title.text = FormatDate(model!!.creation_date)
-        bezahlt.text = if(model!!.payed) "Bezahlt" else   "Zu Bezahlen"
-         price.text =   "Preis: ${ String.format(
-                 "%.2f",
-                 model!!.buylist.articles.sumOf { (it.count * it.item.cost) })} €"
-        count.text = "Anzahl: ${ model!!.buylist.articles.sumBy {  it.count  } }"
-        if(model!!.helper == null)
-        {
-            //searcvhing
-             status.setImageResource(R.drawable.ic_baseline_person_search_24)
-             status.setColorFilter(ContextCompat.getColor(root.context, R.color.divivder), android.graphics.PorterDuff.Mode.SRC_IN);
-        }
-        else if (model!!.done)
-            when(model!!.payed){
-                true -> { // green arrow
-                    status.setImageResource(R.drawable.ic_done)
-                    status.setColorFilter(ContextCompat.getColor(root.context, R.color.green_200), android.graphics.PorterDuff.Mode.SRC_IN);
-                }
-                false -> {//red X
-                    status.setImageResource(R.drawable.ic_wrong)
-                    status.setColorFilter(ContextCompat.getColor(root.context, R.color.red), android.graphics.PorterDuff.Mode.SRC_IN);
-                }
-            }
-        else {
-            //timer
-             status.setImageResource(R.drawable.ic_baseline_hourglass_bottom_24)
-           status.setColorFilter(ContextCompat.getColor(root.context, R.color.divivder), android.graphics.PorterDuff.Mode.SRC_IN);
-        }
 
-
-        delete.isEnabled = (model!!.helper == null) //optical not visible if enable or disable !!
 
 
 

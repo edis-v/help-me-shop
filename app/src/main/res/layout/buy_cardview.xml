@@ -20,7 +20,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-
+            android:id="@+id/buy_cardview_top"
             android:layout_height="match_parent"
             android:layout_margin="16dp">
 

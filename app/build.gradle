@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-
+    id 'com.google.gms.google-services'
     id 'kotlin-parcelize'
     id 'com.google.protobuf' version '0.8.12'
     id 'kotlinx-serialization'
@@ -75,6 +75,7 @@ dependencies {
 
     implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1'
     implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'com.google.firebase:firebase-messaging:21.0.1'
 
     testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
@@ -87,6 +88,12 @@ dependencies {
 
     implementation 'com.nambimobile.widgets:expandable-fab:1.0.2'
 
+
+    implementation platform('com.google.firebase:firebase-bom:26.7.0')
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation 'com.google.firebase:firebase-messaging-ktx'
+
+    implementation 'android.arch.work:work-runtime:1.0.1'
 
 }
 

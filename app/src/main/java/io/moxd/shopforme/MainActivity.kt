@@ -3,12 +3,17 @@ package io.moxd.shopforme
 import android.app.Application
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupActionBarWithNavController
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.messaging.ktx.messaging
 
 import io.moxd.shopforme.data.AuthManager
 import io.moxd.shopforme.data.UserManager
@@ -23,6 +28,7 @@ import kotlinx.coroutines.launch
 class MainActivity : AppCompatActivity() {
 
     private lateinit var navController: NavController
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,6 +62,8 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                   }
+
+
 
     }
 

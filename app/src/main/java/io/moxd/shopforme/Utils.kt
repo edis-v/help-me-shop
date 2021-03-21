@@ -9,7 +9,16 @@ import android.view.View
 import android.widget.TextView
 import androidx.core.text.set
 import androidx.core.text.toSpannable
+import com.github.kittinunf.fuel.Fuel
+import com.github.kittinunf.result.Result
+import io.moxd.shopforme.data.RestPath
+import io.moxd.shopforme.service.MyFirebaseMessagingService
 import io.moxd.shopforme.ui.splashscreen.SplashScreen
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
@@ -26,7 +35,43 @@ val JsonDeserializer = Json {
 }
 
 
+fun sendRegistrationToServer(token: String?) {
+    // TODO: Implement this method to send token to your app server.
+    //api send token to db
+    GlobalScope.launch(context = Dispatchers.IO) {
+        requireAuthManager().SessionID().take(1).collect {
 
+            val url = RestPath.firebasetoken(it)
+
+            Log.d("URL", url)
+
+            Fuel.put(
+                url, listOf("firebase_token" to token)
+            ).responseString { request, response, result ->
+
+                when (result) {
+                    is Result.Success -> {
+                        Log.d("result", result.get())
+
+                    }
+                    is Result.Failure -> {
+                        Log.d(
+                            "Failed",
+                            result.getException().message.toString()
+                        )
+                    }
+
+                }
+
+
+            }.join()
+
+
+        }
+
+    }
+    Log.d("Firebase", "sendRegistrationTokenToServer($token)")
+}
 
 fun FormatDate(date: String) : String{
 

@@ -38,4 +38,12 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_marginBottom="32dp" />
+    <TextView
+        android:id="@+id/map_maxlocations"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_alignParentTop="true"
+
+        android:layout_alignParentRight="true"/>
 </RelativeLayout>

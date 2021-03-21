@@ -80,7 +80,7 @@ class ShopAngebotFragment : Fragment() {
                 0 -> {
                     Log.d("Tab", "Angebot clicked")
 
-
+                        GetAgebotList()
                 }
                 1 -> {
                     Log.d("Tab", "Shop clicked")

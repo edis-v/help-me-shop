@@ -71,13 +71,22 @@ class Shopcart : Fragment() {
                 LinearLayoutManager.VERTICAL,
                 false
         )
-        GetShop()
+
+
         tabLayout = root.findViewById(R.id.shopcart_tab)
         refreshlayout = root.findViewById(R.id.shopcart_list_refresh)
         ViewGroupCompat.setTransitionGroup(list,true)
         shopfilterwindow = root.findViewById(R.id.shopcart_filter_window)
         shopcartfab = root.findViewById(R.id.shopcart_floating_action_button)
         closewindow = root.findViewById(R.id.shopcart_filter_exit)
+        try {
+            val b =  arguments?.getCharSequence("page") as String
+            tabLayout.selectTab(tabLayout.getTabAt(1))
+            GetBuyList()
+        }catch (ex: Exception){
+            GetShop()
+
+        }
        // list.addItemDecoration(DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL))
         root.findViewById<com.nambimobile.widgets.efab.FabOption>(R.id.shopcart_addbuy).setOnClickListener {
             val ft = (requireActivity() as MainActivity).supportFragmentManager.beginTransaction()

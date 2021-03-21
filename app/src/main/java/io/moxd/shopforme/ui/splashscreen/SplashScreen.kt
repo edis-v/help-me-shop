@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -36,9 +37,12 @@ class SplashScreen : AppCompatActivity() {
     val requestPermissionLauncher =
             registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()
             ) {
+                it.forEach{ map ->  Log.d("PErmissions: ${map.key}", map.value.toString())}
                 if(it.all { it.component2() == true }){
                     Toast.makeText(this, "All Permission Success", Toast.LENGTH_LONG).show()
                     loginSplash()
+                }else{
+                    Toast.makeText(this, "All Permission not Success", Toast.LENGTH_LONG).show()
                 }
 
             }
@@ -55,15 +59,18 @@ class SplashScreen : AppCompatActivity() {
 
             Handler(Looper.getMainLooper()).postDelayed(Runnable {
                 // Login here
-                runOnUiThread {
+
+
+                this.runOnUiThread {
                     val info: PackageInfo = packageManager.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS)
                     requestPermissionLauncher.launch(info.requestedPermissions)
                 }
 
 
 
-            }, 100) //it will wait 100 millisec before login
+            },  100)//it will wait 100 millisec before login
         }).start()
+
 
 
     }

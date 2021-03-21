@@ -66,14 +66,11 @@ import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import com.mapbox.pluginscalebar.ScaleBarOptions
 import com.mapbox.pluginscalebar.ScaleBarPlugin
 import com.squareup.picasso.Picasso
-import io.moxd.shopforme.JsonDeserializer
-import io.moxd.shopforme.MainActivity
-import io.moxd.shopforme.R
+import io.moxd.shopforme.*
 import io.moxd.shopforme.data.RestPath
 import io.moxd.shopforme.data.model.LocationData
 import io.moxd.shopforme.data.model.OtherUser
 import io.moxd.shopforme.data.model.ShopMap
-import io.moxd.shopforme.requireAuthManager
 import io.moxd.shopforme.ui.profile.ProfileFragment
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
@@ -88,6 +85,7 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
     private lateinit var mapboxMap: MapboxMap
     private lateinit var mapView : MapView
     private  lateinit var  symbolManager : SymbolManager
+    private  lateinit var  maxlocation : TextView
     private  lateinit var mystyle  : Style
     private val SYMBOL_ICON_ID = "SYMBOL_ICON_ID"
     private val SOURCE_ID = "SOURCE_ID"
@@ -118,6 +116,7 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
 
 
         mapView = root.findViewById(R.id.map_View)
+        maxlocation = root.findViewById(R.id.map_maxlocations)
         val slider = root.findViewById<Slider>(R.id.slider_km)
         val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
             requireAuthManager().SessionID().take(1).collect {
@@ -726,6 +725,7 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
 
                         }
                         job.join()
+                        getMaxLocation()
                         initFeatureCollection();
 
                         Log.d("OtherUserCount", otheruserLocations.size.toString())
@@ -797,6 +797,53 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
         locationEngine!!.getLastLocation(callback)
     }
 
+    fun getMaxLocation(){
+        val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
+            requireAuthManager().SessionID().take(1).collect {
+
+                val url = FuelManager.instance.basePath + RestPath.otherUsers(
+                    it,
+                    100.toString()
+                )
+
+                Log.d("URL", url)
+
+                Fuel.get(
+                    url
+                ).responseString { request, response, result ->
+
+                    when (result) {
+                        is Result.Success -> {
+                            Log.d("result", result.get())
+                             val list =
+                                JsonDeserializer.decodeFromString<List<ShopMap>>(
+                                    result.get()
+                                )
+
+                             requireActivity().runOnUiThread {
+                                 maxlocation.text = "Max Hilfesuchende in 100km: ${list.size}"
+                             }
+                        }
+                        is Result.Failure -> {
+                            Log.d(
+                                "result",
+                                result.getException().message.toString()
+                            )
+
+
+                        }
+
+                    }
+
+
+                }.join()
+
+
+            }
+
+        }
+        job.start()
+    }
 
     private class LocationChangeListeningActivityLocationCallback internal constructor(activity: MapFragment) :
         LocationEngineCallback<LocationEngineResult> {
@@ -858,6 +905,10 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
         )
                 .show()
     }
+
+
+
+
 
     override fun onExplanationNeeded(permissionsToExplain: List<String>) {
         Toast.makeText(mycontext, R.string.user_location_permission_explanation, Toast.LENGTH_LONG).show()
@@ -948,7 +999,7 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
             holder.name.text = singleRecyclerViewLocation.name
             holder.price.text = singleRecyclerViewLocation.price
             holder.count.text = singleRecyclerViewLocation.count
-            holder.createdate.text = singleRecyclerViewLocation.createdate
+            holder.createdate.text = FormatDate( singleRecyclerViewLocation.createdate!!)
             Picasso.get().load(singleRecyclerViewLocation.profilepic).into(holder.profilepic);
 
             holder.btn.setOnClickListener {

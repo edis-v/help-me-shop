@@ -40,7 +40,7 @@ class AngebotHelperAdapter (private val context: Context, var itemModelArrayList
         // to set data to textview and imageview of each card layout
         val model: AngebotHelper = itemModelArrayList[position]
 
-        holder.date.text = FormatDate( model.shop.creation_date)
+        holder.date.text = FormatDate( model.creation_date)
         holder.user.text =  model.shop.helpsearcher.firstname + " "+model.shop.helpsearcher.name
         Picasso.get().load(model.shop.helpsearcher.profile_pic).into(holder.profilepic);
         if(model.viewed)

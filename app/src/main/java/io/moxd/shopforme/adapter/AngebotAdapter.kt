@@ -42,8 +42,9 @@ class AngebotAdapter  (private val context: Context, var itemModelArrayList: Mut
         // to set data to textview and imageview of each card layout
         val model: Angebot = itemModelArrayList[position]
 
-        holder.date.text = FormatDate( model.shop.creation_date)
+        holder.date.text = FormatDate( model.creation_date)
         holder.user.text = model.helper.firstname + " "+model.helper.name
+        Log.d("data",model.helper.profile_pic )
         Picasso.get().load(model.helper.profile_pic).into(holder.profilepic);
 
         holder.wrong.setOnClickListener {

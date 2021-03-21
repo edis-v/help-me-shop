@@ -91,6 +91,26 @@ class BuyListAdapter(private val context: Context, var itemModelArrayList: Mutab
             createShop(model.id, it)
         }
 
+
+        holder.viewtop.setOnClickListener {
+            if ( holder.menu.visibility == VISIBLE) {
+                holder.expand.setImageResource(R.drawable.ic_baseline_expand_more_24)
+
+                holder.menu.visibility = INVISIBLE
+                //       holder.menu.startAnimation(animate)
+                holder.menu.visibility = GONE
+
+            } else {
+
+                holder.expand.setImageResource(R.drawable.ic_baseline_expand_less_24)
+                val animate =AnimationUtils.loadAnimation(context, R.anim.slide_down);
+                holder.menu.visibility = VISIBLE
+                //    holder.menu.startAnimation(animate)
+
+            }
+        }
+
+
         holder.deltebtn.setOnClickListener {
             deleteBuylist(model.id, it)
 
@@ -287,6 +307,7 @@ class BuyListAdapter(private val context: Context, var itemModelArrayList: Mutab
         val deltebtn : Button
         val createbtn : Button
         val buylist : RecyclerView
+        val viewtop : RelativeLayout
       //  val more : ImageView
         init {
             Title = itemView.findViewById(R.id.buy_cardview_title)
@@ -297,6 +318,7 @@ class BuyListAdapter(private val context: Context, var itemModelArrayList: Mutab
           buylist = itemView.findViewById(R.id.buy_cardview_menu_buylist)
           deltebtn = itemView.findViewById(R.id.buy_cardview_menu_delete)
           createbtn = itemView.findViewById(R.id.buy_cardview_menu_shop)
+          viewtop = itemView.findViewById(R.id.buy_cardview_top)
        //     more = itemView.findViewById(R.id.buy_cardview_more)
         }
     }

@@ -191,8 +191,12 @@ class BuylistAdd: Fragment() {
 
                         }
                     }
+                    val args = Bundle()
+                    args.putCharSequence("page","B")
+                    val f = Shopcart()
+                    f.arguments = args
                     val ft = (context as MainActivity).supportFragmentManager.beginTransaction()
-                    ft.replace(R.id.mainframe, Shopcart())
+                    ft.replace(R.id.mainframe, f)
                     ft.commit()
                 }
                 .show()

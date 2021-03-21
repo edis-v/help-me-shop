@@ -3,6 +3,7 @@ package io.moxd.shopforme.data
 class RestPath {
     companion object {
         val login = "api/user/login"
+        fun firebasetoken(sessionId: String)= "api/user/firebase/$sessionId"
         val items = "api/items"
         val article = "api/article/add"
         fun user(sessionId: String) = "api/user/$sessionId"
