@@ -1,111 +1,127 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp"
-
+    android:layout_margin="4dp"
+    android:layout_marginTop="8dp"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="@color/card_background"
         >
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:divider="@color/divivder"
+        android:layout_height="wrap_content"
         android:animateLayoutChanges="true"
+        android:divider="@color/divivder"
         android:orientation="vertical"
-        android:showDividers="middle"
-        android:layout_height="wrap_content">
-        <RelativeLayout
-            android:layout_margin="16dp"
+        android:showDividers="middle">
 
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+
+            android:layout_height="match_parent"
+            android:layout_margin="16dp">
+
             <TextView
                 android:id="@+id/buy_cardview_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="24dp"
                 android:layout_marginBottom="10dp"
+                android:text="Einkauf vom 22.78.68"
 
-                android:text="Einkauf vom 22.78.68"/>
+                android:textSize="24dp" />
+
             <TextView
                 android:id="@+id/buy_cardview_anzahl"
                 android:layout_width="wrap_content"
-                android:textSize="20dp"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/buy_cardview_title"
+                android:layout_marginRight="16dp"
                 android:text="Items 22"
 
-                android:layout_marginRight="16dp"
-                />
+                android:textSize="20dp" />
+
             <TextView
                 android:id="@+id/buy_cardview_Preis"
                 android:layout_width="wrap_content"
-                android:textSize="20dp"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/buy_cardview_anzahl"
                 android:layout_below="@id/buy_cardview_title"
                 android:layout_marginRight="16dp"
+                android:layout_toRightOf="@id/buy_cardview_anzahl"
                 android:text="Preis: 22€"
-                />
+                android:textSize="20dp" />
+
             <ImageView
                 android:id="@+id/buy_cardview_expand"
-                android:layout_height="50dp"
                 android:layout_width="50dp"
-                android:src="@drawable/ic_baseline_expand_more_24"
-                android:layout_toRightOf="@id/buy_cardview_Preis"
+                android:layout_height="50dp"
                 android:layout_alignTop="@id/buy_cardview_Preis"
-                />
+                android:layout_marginLeft="53dp"
+                android:layout_marginTop="-15dp"
+                android:layout_toRightOf="@id/buy_cardview_Preis"
+                android:src="@drawable/ic_baseline_expand_more_24" />
 
 
         </RelativeLayout>
+
         <RelativeLayout
-            android:layout_margin="16dp"
             android:id="@+id/buy_cardview_menu"
-
-            android:layout_below="@id/buy_cardview_Preis"
             android:layout_width="wrap_content"
-            android:visibility="gone"
-            android:layout_height="wrap_content" >
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/buy_cardview_menu_buylist"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/buy_cardview_Preis"
+            android:layout_margin="16dp"
+            android:visibility="gone">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/buy_cardview_menu_buylist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
 
 
-                    android:layout_marginBottom="10dp"
-                    />
+                android:layout_marginBottom="10dp" />
 
-
+            <View
+                android:layout_below="@id/buy_cardview_menu_buylist"
+                android:id="@+id/buy_cardview_menu_divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"
+                />
 
             <LinearLayout
-                android:layout_below="@id/buy_cardview_menu_buylist"
-                android:orientation="horizontal"
                 android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/buy_cardview_menu_divider"
 
-                android:layout_height="wrap_content">
+                android:orientation="horizontal">
+
                 <com.google.android.material.button.MaterialButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:id="@+id/buy_cardview_menu_delete"
                     style="?attr/materialButtonOutlinedStyle"
-                    android:text="Löschen"
-                    android:textSize="16dp"
-                    android:textColor="@color/red"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentBottom="true"
-
-                    />
-                <com.google.android.material.button.MaterialButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/buy_cardview_menu_shop"
-                    style="?attr/materialButtonOutlinedStyle"
-                    android:text="Einkauf Erstellen"
-                    android:textSize="16dp"
-                    android:layout_marginLeft="10dp"
-                    android:textColor="@color/green_200"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentBottom="true"
+                    android:text="Löschen"
+                    android:textColor="@color/red"
+                    android:textSize="16dp"
+
+                    />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buy_cardview_menu_shop"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginLeft="10dp"
+                    android:text="Einkauf Erstellen"
+                    android:textColor="@color/green_200"
+                    android:textSize="16dp"
 
                     />
             </LinearLayout>

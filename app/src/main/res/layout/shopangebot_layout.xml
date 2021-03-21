@@ -8,7 +8,9 @@
         android:id="@+id/shopangebot_tab"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:tabMode="fixed">
+        app:tabMode="fixed"
+        android:elevation="0dp"
+        >
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -29,11 +31,14 @@
     android:layout_width="match_parent"
     android:layout_below="@id/shopangebot_tab"
     android:id="@+id/shopangebot_Refresh"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:elevation="8dp">
+
     <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="match_parent"
         android:id="@+id/shopangebot_list"
-        android:layout_height="match_parent">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#FFFFFF">
 
     </androidx.recyclerview.widget.RecyclerView>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

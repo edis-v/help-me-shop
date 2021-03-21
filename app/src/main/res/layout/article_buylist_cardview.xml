@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_margin="5dp"
-    android:layout_height="35dp">
+    android:layout_height="35dp"
+    app:cardElevation="0dp"
+    app:cardBackgroundColor="@color/card_background">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -10,9 +13,21 @@
             android:id="@+id/article_buylist_data"
             android:layout_width="wrap_content"
             android:textSize="26dp"
-            android:text="Toast x3"
-            android:layout_centerHorizontal="true"
+            android:text="Toast "
+            android:layout_alignParentLeft ="true"
+            android:layout_toLeftOf="@id/article_buylist_anzahl"
             android:layout_height="match_parent"/>
+
+        <TextView
+            android:layout_marginEnd="10dp"
+            android:id="@+id/article_buylist_anzahl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="0dp"
+            android:text="X3"
+
+            android:textSize="26dp" />
     </RelativeLayout>
 
 </com.google.android.material.card.MaterialCardView>

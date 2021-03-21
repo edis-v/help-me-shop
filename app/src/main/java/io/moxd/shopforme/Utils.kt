@@ -45,8 +45,8 @@ fun FormatDate(date: String) : String{
     val differenceDates = difference / (24 * 60 * 60 * 1000)
     val dayDifference =  (differenceDates)
     if(dayDifference == 1.toLong())
-        return "Erstellt: Gestern"
-    return if(dayDifference > 0) "Erstellt: vor $dayDifference Tagen" else "Erstellt: Heute"
+        return "Gestern"
+    return if(dayDifference > 0) "Vor $dayDifference Tagen" else "Heute"
 }
 
 

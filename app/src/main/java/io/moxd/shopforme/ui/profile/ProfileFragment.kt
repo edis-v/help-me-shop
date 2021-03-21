@@ -25,6 +25,7 @@ import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.FileDataPart
 import com.github.kittinunf.fuel.core.Method
 import com.github.kittinunf.result.Result
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.squareup.picasso.Picasso
 import io.moxd.shopforme.JsonDeserializer
 import io.moxd.shopforme.R
@@ -69,10 +70,10 @@ class ProfileFragment : Fragment()  {
         val city = root.findViewById<EditText>(R.id.City_field)
         val usertype = root.findViewById<Spinner>(R.id.usertype_field)
         profilepic = root.findViewById<ImageView>(R.id.ProfilePic_field)
-        val updatebtn = root.findViewById<Button>(R.id.updateProfile_btn)
+        val updatebtn = root.findViewById<FloatingActionButton>(R.id.updateProfile_btn)
         val savebtn = root.findViewById<Button>(R.id.saveProfile_btn)
         val cancel = root.findViewById<Button>(R.id.cancelProfile_btn)
-        val newpicbtn = root.findViewById<Button>(R.id.uploadnewpic)
+        val newpicbtn = root.findViewById<FloatingActionButton>(R.id.uploadnewpic)
 
 
         val ad = ArrayAdapter<String>(root.context, R.layout.support_simple_spinner_dropdown_item, usertypes_txt)

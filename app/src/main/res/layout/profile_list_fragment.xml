@@ -1,39 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/profile_list"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:cardBackgroundColor="@color/colorSecondaryLight"
+    >
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            >
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/profilelist_profile"
+        style="@style/Widget.ShopForMe.Button.big"
+        android:backgroundTint="@color/loginFragmentBackgroundColor"
+        android:elevation="20dp"
+        android:text="@string/profile"
+        app:icon="@drawable/ic_baseline_person_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/profilelist_profile"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="Profile"
-                />
-            <TextView
-                android:id="@+id/profilelist_notification"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="Notification"
-                />
-            <TextView
-                android:id="@+id/profilelist_ausloggen"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="Ausloggen"
-                />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/profilelist_notification"
+        android:text="@string/notification"
+        android:backgroundTint="@color/colorPrimary"
+        style="@style/Widget.ShopForMe.Button.big"
+        app:icon="@drawable/ic_baseline_edit_notifications_24"
+        app:layout_constraintStart_toStartOf="@+id/profilelist_profile"
+        app:layout_constraintTop_toBottomOf="@+id/profilelist_profile"
+        android:elevation="20dp"
+        />
 
-        </LinearLayout>
-    </ScrollView>
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/profilelist_ausloggen"
+        android:text="@string/ausloggen"
+        android:backgroundTint="@color/colorPrimaryDark"
+        style="@style/Widget.ShopForMe.Button.big"
+        app:icon="@drawable/ic_baseline_login_24"
+        app:layout_constraintStart_toStartOf="@+id/profilelist_notification"
+        app:layout_constraintTop_toBottomOf="@+id/profilelist_notification"
+        android:elevation="20dp"
+        />
 
-</FrameLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

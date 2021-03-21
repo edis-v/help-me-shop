@@ -1,6 +1,7 @@
 package io.moxd.shopforme.adapter
 
 import android.content.Context
+import android.graphics.Paint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -38,7 +39,7 @@ class ShopAdapter(private val context: Context, val itemModelArrayList: List<Sho
 
 
         ViewCompat.setTransitionName(holder.itemView,"shop${model.id}")
-
+        holder.Title.paintFlags = holder.Title.paintFlags or Paint.UNDERLINE_TEXT_FLAG
         holder.Title.text = FormatDate(model.creation_date)
         holder.payed.text = if(model.payed) "Bezahlt" else   "Zu Bezahlen"
         holder.price.text =   "Preis: ${ String.format(

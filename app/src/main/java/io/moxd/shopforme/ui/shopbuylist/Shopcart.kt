@@ -53,8 +53,8 @@ class Shopcart : Fragment() {
     var buylist: List<BuyList> = mutableListOf()
     var filtered = false //observe the data to enable disable reset filter or hard code
     lateinit var closewindow : ImageView
- //   lateinit var Buyadapter : BuyListAdapter
-  //  lateinit var Shopadapter : ShopAdapter
+ //  lateinit var Buyadapter : BuyListAdapter
+ //   lateinit var Shopadapter : ShopAdapter
     var shop: List<Shop> = mutableListOf()
 
     override fun onCreateView(
@@ -78,7 +78,7 @@ class Shopcart : Fragment() {
         shopfilterwindow = root.findViewById(R.id.shopcart_filter_window)
         shopcartfab = root.findViewById(R.id.shopcart_floating_action_button)
         closewindow = root.findViewById(R.id.shopcart_filter_exit)
-        list.addItemDecoration(DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL))
+       // list.addItemDecoration(DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL))
         root.findViewById<com.nambimobile.widgets.efab.FabOption>(R.id.shopcart_addbuy).setOnClickListener {
             val ft = (requireActivity() as MainActivity).supportFragmentManager.beginTransaction()
             ft.replace(R.id.mainframe, BuylistAdd())

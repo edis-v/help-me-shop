@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="100dp"
-    android:elevation="4dp"
-    >
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:shapeAppearance="@style/ShapeAppearance.MaterialComponents.LargeComponent">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -12,8 +12,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Toast"
-            android:textSize="16dp"
-            android:textColor="@color/black"
+            android:textSize="20dp"
             android:layout_marginTop="25dp"
             android:layout_marginLeft="25dp"
             />
@@ -23,7 +22,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="25dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="6dp"
             android:text="Preis: 1€"
             />
         <com.google.android.material.textfield.TextInputLayout
@@ -44,6 +43,12 @@
 
                 android:text="0" />
         </com.google.android.material.textfield.TextInputLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"/>
+
         <LinearLayout android:id="@+id/buy_item_selectfield"
             android:layout_width="wrap_content"
             android:layout_alignParentRight="true"
@@ -63,4 +68,5 @@
                 android:layout_height="25dp"/>
         </LinearLayout>
     </RelativeLayout>
+
 </com.google.android.material.card.MaterialCardView>

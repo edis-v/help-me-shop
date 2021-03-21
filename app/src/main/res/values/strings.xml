@@ -23,5 +23,7 @@
     <string name="NavBarShopping">TEst1</string>
     <string name="NavBarMap">Map</string>
     <string name="profile">NavBarProfile</string>
+    <string name="ausloggen">Ausloggen</string>
+    <string name="notification">Notification</string>
 
 </resources>

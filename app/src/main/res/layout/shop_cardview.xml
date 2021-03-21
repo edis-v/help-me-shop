@@ -1,63 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:transitionName="shopmin"
-    android:layout_margin="5dp"
     android:id="@+id/shop_cardview"
-    android:layout_height="150dp">
+    android:layout_width="match_parent"
+    android:layout_height="120dp"
+    android:layout_margin="4dp"
+    android:transitionName="shopmin"
+    app:cardBackgroundColor="@color/card_background"
+    app:cardElevation="4dp">
+
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_margin="16dp"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp">
+
         <TextView
             android:id="@+id/shop_cardview_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="24dp"
             android:layout_marginBottom="10dp"
+            android:text="Einkauf vom 22.78.68"
+            android:textAppearance="@style/TextAppearance.ShopForMe.Headline6"
+            android:textSize="24dp"
+
             android:transitionName="shoptitle"
-            android:text="Einkauf vom 22.78.68"/>
+
+
+            />
+
+
+
+
         <TextView
             android:id="@+id/shop_cardview_anzahl"
+            android:textAppearance="@style/TextAppearance.ShopForMe.Subtitle1"
             android:layout_width="wrap_content"
-            android:textSize="20dp"
-            android:transitionName="shopanzahl"
             android:layout_height="wrap_content"
             android:layout_below="@id/shop_cardview_title"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="2dp"
             android:text="Items 22"
-            android:layout_marginBottom="10dp"
-            android:layout_marginRight="16dp"
-            />
+            android:textSize="20dp"
+
+            android:transitionName="shopanzahl" />
+
         <TextView
             android:id="@+id/shop_cardview_Preis"
             android:layout_width="wrap_content"
-            android:textSize="20dp"
-            android:transitionName="shopprice"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/shop_cardview_anzahl"
             android:layout_below="@id/shop_cardview_title"
-            android:layout_marginRight="16dp"
+            android:layout_marginRight="10dp"
+            android:layout_toRightOf="@id/shop_cardview_anzahl"
             android:text="Preis: 22€"
-            />
+            android:textAppearance="@style/TextAppearance.ShopForMe.Subtitle1"
+            android:textSize="20dp"
+            android:textStyle="normal"
+            android:transitionName="shopprice" />
+
         <TextView
             android:id="@+id/shop_cardview_bezahlt"
+            android:textAppearance="@style/TextAppearance.ShopForMe.Subtitle1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20dp"
-            android:text="Bezahlt am 22.7.99"
-            android:transitionName="shoppayed"
             android:layout_below="@id/shop_cardview_anzahl"
-            />
+            android:layout_marginTop="0dp"
+            android:text="Bezahlt am 22.7.99"
+            android:textSize="20dp"
+
+            android:transitionName="shoppayed" />
+
         <ImageView
             android:id="@+id/shop_cardview_status"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:src="@drawable/ic_done"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            app:tint="@color/green_200" />
+            android:src="@drawable/ic_done"
+            app:tint="@color/green_500" />
 
     </RelativeLayout>
 

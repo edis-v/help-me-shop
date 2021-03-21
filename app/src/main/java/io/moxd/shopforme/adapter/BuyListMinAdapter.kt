@@ -27,7 +27,8 @@ class BuyListMinAdapter(private val context: Context, var itemModelArrayList: Mu
     override fun onBindViewHolder(holder:  Viewholder, position: Int) {
         // to set data to textview and imageview of each card layout
         val model: Article = itemModelArrayList[position]
-        holder.data.text =  ("${model.item.name} x${model.count} ")
+        holder.data.text =  ("${model.item.name}")
+        holder.anzahl.text = ( "x${model.count} ")
     }
 
     override fun getItemCount(): Int {
@@ -36,11 +37,11 @@ class BuyListMinAdapter(private val context: Context, var itemModelArrayList: Mu
     }
     inner class Viewholder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val data: TextView
-
+        val anzahl:TextView
         //  val more : ImageView
         init {
             data = itemView.findViewById(R.id.article_buylist_data)
-
+            anzahl = itemView.findViewById(R.id.article_buylist_anzahl)
             //     more = itemView.findViewById(R.id.buy_cardview_more)
         }
     }

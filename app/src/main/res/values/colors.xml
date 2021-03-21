@@ -2,6 +2,27 @@
 <resources>
     <color name="green_200">#68d28d</color>
     <color name="green_500">#32a05f</color>
+    <color name="teal_200">#a8dadc</color>
+    <color name="teal_700">#a8dadc</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="colorPrimary">#f4a261</color>
+    <color name="colorPrimaryDark">#e76f51</color>
+    <color name="colorPrimaryLight">#ffffe6</color>
+    <color name="colorSecondary">#f7c9b7</color>
+    <color name="colorSecondaryDark">#264653</color>
+    <color name="colorSecondaryLight">#2a9d8f</color>
+    <color name="loginFragmentBackgroundColor">#e9c46a</color>
+    <color name="textColorPrimary">#FFFF</color>
+    <color name="mapbox">#3A4EBD</color>
+    <color name="divivder">#7E7E7E</color>
+    <color name="red">#D62929</color>
+    <color name="card_background">#FFFFFF</color>
+</resources>
+
+<!-- <resources>
+    <color name="green_200">#68d28d</color>
+    <color name="green_500">#32a05f</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
@@ -18,3 +39,5 @@
     <color name="divivder">#7E7E7E</color>
     <color name="red">#D62929</color>
 </resources>
+-->
+
