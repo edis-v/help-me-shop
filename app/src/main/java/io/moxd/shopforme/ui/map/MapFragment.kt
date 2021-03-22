@@ -141,8 +141,8 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
                                 )
                         }
                         is Result.Failure -> {
-                            Log.d("result", result.getException().message.toString())
-                            Toast.makeText(mycontext, "Failure", Toast.LENGTH_LONG)
+                            Log.d("Error",  getError(response))
+                            Toast.makeText(mycontext,  getError(response), Toast.LENGTH_LONG).show()
                         }
 
                     }
@@ -190,10 +190,10 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
                                         }
                                         is Result.Failure -> {
                                             Log.d(
-                                                "result",
-                                                result.getException().message.toString()
+                                                "Error",
+                                                    getError(response)
                                             )
-                                            Toast.makeText(mycontext, "Failure", Toast.LENGTH_LONG)
+                                            Toast.makeText(mycontext,  getError(response), Toast.LENGTH_LONG).show()
                                             otheruserLocations = mutableListOf()
                                         }
 
@@ -665,10 +665,10 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
                                         }
                                         is Result.Failure -> {
                                             Log.d(
-                                                "result",
-                                                result.getException().message.toString()
+                                                "Error",
+                                                    getError(response)
                                             )
-                                            Toast.makeText(mycontext, "Failure", Toast.LENGTH_LONG)
+                                            Toast.makeText(mycontext,  getError(response), Toast.LENGTH_LONG).show()
                                             otheruserLocations = mutableListOf()
                                         }
 
@@ -709,9 +709,9 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
                                         is Result.Failure -> {
                                             Log.d(
                                                 "result",
-                                                result.getException().message.toString()
+                                                    getError(response)
                                             )
-                                            Toast.makeText(mycontext, "Failure", Toast.LENGTH_LONG)
+                                            Toast.makeText(mycontext,  getError(response), Toast.LENGTH_LONG).show()
                                             otheruserLocations = mutableListOf()
                                         }
 
@@ -826,8 +826,8 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
                         }
                         is Result.Failure -> {
                             Log.d(
-                                "result",
-                                result.getException().message.toString()
+                                "Error",
+                                    getError(response)
                             )
 
 
@@ -1025,11 +1025,11 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
                                                 (context as Activity).runOnUiThread() {
                                                     Log.d(
                                                             "Error",
-                                                            result.getException().message.toString()
+                                                            getError(response)
                                                     )
                                                     Toast.makeText(
                                                             context,
-                                                            "Create Failed",
+                                                            getError(response),
                                                             Toast.LENGTH_LONG
                                                     )
                                                             .show()

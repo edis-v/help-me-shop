@@ -80,7 +80,7 @@ class ShopAdd : Fragment() {
                 Log.d("Url: ", RestPath.getOneShop(it, lastid))
                 Fuel.get(
                         RestPath.getOneShop(it, lastid)
-                ).responseString { _, _, result ->
+                ).responseString { _, response, result ->
 
                     when (result) {
 
@@ -88,8 +88,8 @@ class ShopAdd : Fragment() {
                         is Result.Failure -> {
                             this@ShopAdd.activity?.runOnUiThread() {
 
-                                Log.d("Error", result.getException().message.toString())
-                                Toast.makeText(requireContext(), "Failed", Toast.LENGTH_LONG).show()
+                                Log.d("Error",  getError(response))
+                                Toast.makeText(requireContext(),  getError(response), Toast.LENGTH_LONG).show()
                             }
                         }
                         is Result.Success -> {
@@ -233,11 +233,11 @@ class ShopAdd : Fragment() {
                             (context as Activity).runOnUiThread() {
                                 Log.d(
                                         "Error",
-                                        result.getException().message.toString()
+                                        getError(response)
                                 )
                                 Toast.makeText(
                                         context,
-                                        "Delete Failed",
+                                        getError(response),
                                         Toast.LENGTH_LONG
                                 )
                                         .show()
@@ -357,11 +357,11 @@ class ShopAdd : Fragment() {
                     Log.d("URL: ", url)
                     val asyncupload = Fuel.upload(url, Method.PUT)
                             .add(data)
-                            .responseString { _, _, result ->
+                            .responseString { _, response, result ->
                                 when (result) {
                                     is Result.Failure -> {
-                                        Log.d("error", result.getException().message!!)
-                                        Toast.makeText(this@ShopAdd.context, "Upload Failed", Toast.LENGTH_LONG).show()
+                                        Log.d("error", getError(response))
+                                        Toast.makeText(this@ShopAdd.context,  getError(response), Toast.LENGTH_LONG).show()
                                     }
                                     is Result.Success -> {
                                         Toast.makeText(this@ShopAdd.context, "Upload Sucess", Toast.LENGTH_LONG).show()
@@ -400,11 +400,11 @@ class ShopAdd : Fragment() {
                     Log.d("URL: ", url)
                     val asyncupload = Fuel.upload(url, Method.PUT)
                             .add(data)
-                            .responseString { _, _, result ->
+                            .responseString { _, response, result ->
                                 when (result) {
                                     is Result.Failure -> {
-                                        Log.d("error", result.getException().message!!)
-                                        Toast.makeText(this@ShopAdd.context, "Upload Failed", Toast.LENGTH_LONG).show()
+                                        Log.d("error",  getError(response))
+                                        Toast.makeText(this@ShopAdd.context,  getError(response), Toast.LENGTH_LONG).show()
                                     }
                                     is Result.Success -> {
                                         Toast.makeText(this@ShopAdd.context, "Upload Sucess", Toast.LENGTH_LONG).show()
@@ -443,11 +443,11 @@ class ShopAdd : Fragment() {
                     Log.d("URL: ", url)
                     val asyncupload = Fuel.upload(url, Method.PUT, if (AuthManager.User?.usertype_txt == "Helfer") listOf() else listOf("done" to true))
                             .add(data)
-                            .responseString { _, _, result ->
+                            .responseString { _, response, result ->
                                 when (result) {
                                     is Result.Failure -> {
-                                        Log.d("error", result.getException().message!!)
-                                        Toast.makeText(this@ShopAdd.context, "Upload Failed", Toast.LENGTH_LONG).show()
+                                        Log.d("error",  getError(response))
+                                        Toast.makeText(this@ShopAdd.context, getError(response), Toast.LENGTH_LONG).show()
                                     }
                                     is Result.Success -> {
                                         Toast.makeText(this@ShopAdd.context, "Upload Sucess", Toast.LENGTH_LONG).show()
@@ -484,11 +484,11 @@ class ShopAdd : Fragment() {
                     Log.d("URL: ", url)
                     val asyncupload = Fuel.upload(url, Method.PUT, if (AuthManager.User?.usertype_txt == "Helfer") listOf() else listOf("done" to true))
                             .add(data)
-                            .responseString { _, _, result ->
+                            .responseString { _, response, result ->
                                 when (result) {
                                     is Result.Failure -> {
-                                        Log.d("error", result.getException().message!!)
-                                        Toast.makeText(this@ShopAdd.context, "Upload Failed", Toast.LENGTH_LONG).show()
+                                        Log.d("error", getError(response))
+                                        Toast.makeText(this@ShopAdd.context,  getError(response), Toast.LENGTH_LONG).show()
                                     }
                                     is Result.Success -> {
                                         Toast.makeText(this@ShopAdd.context, "Upload Sucess", Toast.LENGTH_LONG).show()
@@ -549,11 +549,11 @@ class ShopAdd : Fragment() {
 
 
                                 val asyncupload = Fuel.upload(url, Method.PUT, listOf("payed" to true, "finished_date" to ParseDate(Date())))
-                                        .responseString { _, _, result ->
+                                        .responseString { _, response, result ->
                                             when (result) {
                                                 is Result.Failure -> {
-                                                    Log.d("error", result.getException().message!!)
-                                                    Toast.makeText(this@ShopAdd.context, "Update Failed", Toast.LENGTH_LONG).show()
+                                                    Log.d("error",  getError(response))
+                                                    Toast.makeText(this@ShopAdd.context,  getError(response), Toast.LENGTH_LONG).show()
                                                 }
                                                 is Result.Success -> {
                                                     Toast.makeText(this@ShopAdd.context, "Update Sucess", Toast.LENGTH_LONG).show()

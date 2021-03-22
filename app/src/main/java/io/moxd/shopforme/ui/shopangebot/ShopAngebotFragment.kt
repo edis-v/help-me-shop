@@ -16,9 +16,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.result.Result
 import com.google.android.material.tabs.TabLayout
-import io.moxd.shopforme.JsonDeserializer
-import io.moxd.shopforme.MainActivity
-import io.moxd.shopforme.R
+import io.moxd.shopforme.*
 import io.moxd.shopforme.adapter.AngebotAdapter
 import io.moxd.shopforme.adapter.AngebotHelperAdapter
 import io.moxd.shopforme.adapter.BuyListAdapter
@@ -28,7 +26,6 @@ import io.moxd.shopforme.data.RestPath
 import io.moxd.shopforme.data.model.AngebotHelper
 import io.moxd.shopforme.data.model.BuyList
 import io.moxd.shopforme.data.model.Shop
-import io.moxd.shopforme.requireAuthManager
 import io.moxd.shopforme.ui.shopbuylist.BuylistAdd
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -135,7 +132,7 @@ class ShopAngebotFragment : Fragment() {
 
                 Fuel.get(
                         RestPath.shop(it)
-                ).responseString { _, _, result ->
+                ).responseString { _, response, result ->
 
                     when (result) {
 
@@ -144,11 +141,11 @@ class ShopAngebotFragment : Fragment() {
                             this@ShopAngebotFragment.activity?.runOnUiThread() {
                                 Log.d(
                                         "Error",
-                                        result.getException().message.toString()
+                                      getError(response)
                                 )
                                 Toast.makeText(
                                         this@ShopAngebotFragment.requireContext(),
-                                        "Get Shop Failed",
+                                        getError(response),
                                         Toast.LENGTH_LONG
                                 ).show()
                             }
@@ -184,7 +181,7 @@ class ShopAngebotFragment : Fragment() {
 
                 Fuel.get(
                         RestPath.angebote(it)
-                ).responseString { _, _, result ->
+                ).responseString { _, response, result ->
 
                     when (result) {
 
@@ -193,11 +190,11 @@ class ShopAngebotFragment : Fragment() {
                             this@ShopAngebotFragment.activity?.runOnUiThread() {
                                 Log.d(
                                         "Error",
-                                        result.getException().message.toString()
+                                        getError(response)
                                 )
                                 Toast.makeText(
                                         this@ShopAngebotFragment.requireContext(),
-                                        "Login Failed",
+                                        getError(response),
                                         Toast.LENGTH_LONG
                                 ).show()
                             }

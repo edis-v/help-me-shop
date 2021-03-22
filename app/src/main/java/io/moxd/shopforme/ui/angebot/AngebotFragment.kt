@@ -19,6 +19,7 @@ import io.moxd.shopforme.adapter.BuyListAdapter
 import io.moxd.shopforme.data.RestPath
 import io.moxd.shopforme.data.model.Angebot
 import io.moxd.shopforme.data.model.BuyList
+import io.moxd.shopforme.getError
 import io.moxd.shopforme.requireAuthManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -59,20 +60,17 @@ class AngebotFragment : Fragment() {
 
                 Fuel.get(
                         RestPath.angebot(it)
-                ).responseString { _, _, result ->
+                ).responseString { _, response, result ->
 
                     when (result) {
 
 
                         is Result.Failure -> {
                             this@AngebotFragment.activity?.runOnUiThread() {
-                                Log.d(
-                                        "Error",
-                                        result.getException().message.toString()
-                                )
+                                Log.d("Error", getError(response))
                                 Toast.makeText(
                                         this@AngebotFragment.requireContext(),
-                                        "Login Failed",
+                                        getError(response) ,
                                         Toast.LENGTH_LONG
                                 ).show()
                             }

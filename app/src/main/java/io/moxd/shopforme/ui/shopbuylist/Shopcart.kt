@@ -27,15 +27,12 @@ import com.google.android.material.transition.MaterialContainerTransform
 import com.google.android.material.transition.MaterialElevationScale
 import com.nambimobile.widgets.efab.ExpandableFab
 import com.nambimobile.widgets.efab.ExpandableFabLayout
-import io.moxd.shopforme.JsonDeserializer
-import io.moxd.shopforme.MainActivity
-import io.moxd.shopforme.R
+import io.moxd.shopforme.*
 import io.moxd.shopforme.adapter.BuyListAdapter
 import io.moxd.shopforme.adapter.ShopAdapter
 import io.moxd.shopforme.data.RestPath
 import io.moxd.shopforme.data.model.BuyList
 import io.moxd.shopforme.data.model.Shop
-import io.moxd.shopforme.requireAuthManager
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -166,7 +163,7 @@ class Shopcart : Fragment() {
 
                 Fuel.get(
                     RestPath.shop(it)
-                ).responseString { _, _, result ->
+                ).responseString { _, response, result ->
 
                     when (result) {
 
@@ -175,11 +172,11 @@ class Shopcart : Fragment() {
                             this@Shopcart.activity?.runOnUiThread() {
                                 Log.d(
                                     "Error",
-                                    result.getException().message.toString()
+                                        getError(response)
                                 )
                                 Toast.makeText(
                                     this@Shopcart.requireContext(),
-                                    "Get Shop Failed",
+                                        getError(response),
                                     Toast.LENGTH_LONG
                                 ).show()
                             }
@@ -225,7 +222,7 @@ class Shopcart : Fragment() {
 
                 Fuel.get(
                     RestPath.buylist(it)
-                ).responseString { _, _, result ->
+                ).responseString { _, response, result ->
 
                     when (result) {
 
@@ -234,11 +231,11 @@ class Shopcart : Fragment() {
                             this@Shopcart.activity?.runOnUiThread() {
                                 Log.d(
                                     "Error",
-                                    result.getException().message.toString()
+                                        getError(response)
                                 )
                                 Toast.makeText(
                                     this@Shopcart.requireContext(),
-                                    "Login Failed",
+                                        getError(response),
                                     Toast.LENGTH_LONG
                                 ).show()
                             }

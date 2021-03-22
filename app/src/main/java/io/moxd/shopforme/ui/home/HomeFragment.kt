@@ -81,15 +81,15 @@ class HomeFragment: Fragment(R.layout.main_home_fragment) {
 
                 Fuel.get(
                     RestPath.user(it)
-                ).responseString { _, _, result ->
+                ).responseString { _, response, result ->
 
                     when (result) {
 
 
                         is Result.Failure -> {
                             this@HomeFragment.activity?.runOnUiThread() {
-                                Log.d("Error", result.getException().message.toString())
-                                Toast.makeText(context, "Login Failed", Toast.LENGTH_LONG).show()
+                                Log.d("Error", getError(response))
+
                             }
                         }
                         is Result.Success -> {
@@ -185,10 +185,8 @@ class HomeFragment: Fragment(R.layout.main_home_fragment) {
 
                                                     }
                                                     is Result.Failure -> {
-                                                        Log.d(
-                                                            "result",
-                                                            result.getException().message.toString()
-                                                        )
+                                                        Log.d("Error", getError(response))
+
 
 
                                                     }

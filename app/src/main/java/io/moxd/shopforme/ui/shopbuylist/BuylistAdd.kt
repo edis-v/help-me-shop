@@ -17,15 +17,12 @@ import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.result.Result
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.squareup.picasso.Picasso
-import io.moxd.shopforme.JsonDeserializer
-import io.moxd.shopforme.MainActivity
-import io.moxd.shopforme.R
+import io.moxd.shopforme.*
 import io.moxd.shopforme.adapter.ItemAdapter
 import io.moxd.shopforme.data.RestPath
 import io.moxd.shopforme.data.model.ArticleAdd
 import io.moxd.shopforme.data.model.Item
 import io.moxd.shopforme.data.model.UserME
-import io.moxd.shopforme.requireAuthManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
@@ -63,15 +60,15 @@ class BuylistAdd: Fragment() {
        )
         Fuel.get(
             RestPath.items
-        ).responseString { _, _, result ->
+        ).responseString { _, response, result ->
 
             when (result) {
 
 
                 is Result.Failure -> {
                     this@BuylistAdd.activity?.runOnUiThread() {
-                        Log.d("Error", result.getException().message.toString())
-                        Toast.makeText(root.context, "ItemList Failed", Toast.LENGTH_LONG).show()
+                        Log.d("Error", getError(response))
+                        Toast.makeText(root.context,  getError(response), Toast.LENGTH_LONG).show()
                     }
                 }
                 is Result.Success -> {
@@ -121,15 +118,15 @@ class BuylistAdd: Fragment() {
                             for (item in items.filter { it2 -> it2.anzahl.value!! > 0 }){
                                 Fuel.post(
                                     RestPath.article, listOf("item" to item.id , "count" to item.anzahl.value)
-                                ).responseString { _, _, result ->
+                                ).responseString { _, response, result ->
 
                                     when (result) {
 
 
                                         is Result.Failure -> {
                                             this@BuylistAdd.activity?.runOnUiThread() {
-                                                Log.d("Error", result.getException().message.toString())
-                                                Toast.makeText(root.context, "Creation FAiled", Toast.LENGTH_LONG)
+                                                Log.d("Error",  getError(response))
+                                                Toast.makeText(root.context,  getError(response), Toast.LENGTH_LONG)
                                                     .show()
                                             }
                                         }
@@ -168,12 +165,10 @@ class BuylistAdd: Fragment() {
 
                                     is Result.Failure -> {
                                         this@BuylistAdd.activity?.runOnUiThread() {
-                                            Log.d("Error", result.getException().message.toString())
-                                            Toast.makeText(root.context, "Creation Failed", Toast.LENGTH_LONG)
+                                            Log.d("Error", getError(response))
+                                            Toast.makeText(root.context,  getError(response), Toast.LENGTH_LONG)
                                                 .show()
 
-
-                                            Log.d("Buylist", request.headers.toString())
                                         }
                                     }
                                     is Result.Success -> {

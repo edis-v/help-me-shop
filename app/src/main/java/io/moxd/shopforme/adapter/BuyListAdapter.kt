@@ -17,12 +17,9 @@ import androidx.transition.TransitionManager
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.result.Result
 import com.google.android.material.snackbar.Snackbar
-import io.moxd.shopforme.FormatDate
-import io.moxd.shopforme.MainActivity
-import io.moxd.shopforme.R
+import io.moxd.shopforme.*
 import io.moxd.shopforme.data.RestPath
 import io.moxd.shopforme.data.model.BuyList
-import io.moxd.shopforme.requireAuthManager
 import io.moxd.shopforme.ui.shopbuylist.Shopcart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -64,6 +61,7 @@ class BuyListAdapter(private val context: Context, var itemModelArrayList: Mutab
             stringlist.add("${i.item.name} x${i.count} ")
             Log.d("List$i" , "${i.item.name} x${i.count} ")
         }
+
         holder.buylist.layoutManager = LinearLayoutManager(context,LinearLayoutManager.VERTICAL,false)
         holder.buylist.adapter = BuyListMinAdapter(context,model.articles.toMutableList())
 
@@ -112,11 +110,9 @@ class BuyListAdapter(private val context: Context, var itemModelArrayList: Mutab
 
 
         holder.deltebtn.setOnClickListener {
-            deleteBuylist(model.id, it)
+            deleteBuylist(model, it)
 
-          val pos =  itemModelArrayList.indexOf(model)
-            itemModelArrayList.remove(model)
-            this.notifyItemRemoved(pos)
+
 
         }
 
@@ -184,11 +180,11 @@ class BuyListAdapter(private val context: Context, var itemModelArrayList: Mutab
     }
 
 
-    fun deleteBuylist(id: Int, v: View){
+    fun deleteBuylist(model: BuyList, v: View){
         GlobalScope.launch(Dispatchers.IO) {
             requireAuthManager().SessionID().take(1).collect {
                 Fuel.delete(
-                        RestPath.buylistdelete(it, id)
+                        RestPath.buylistdelete(it, model.id)
                 ).responseString { request, response, result ->
 
                     when (result) {
@@ -198,14 +194,14 @@ class BuyListAdapter(private val context: Context, var itemModelArrayList: Mutab
                             (context as Activity).runOnUiThread() {
                                 Log.d(
                                         "Error",
-                                        result.getException().message.toString()
+                                        getError(response)
                                 )
-                                Toast.makeText(
-                                        context,
-                                        "Creation Failed",
-                                        Toast.LENGTH_LONG
-                                )
-                                        .show()
+                                Snackbar
+                                        .make(
+                                                v,
+                                                getError(response),
+                                                Snackbar.LENGTH_LONG
+                                        ).show()
 
 
                                 Log.d("Buylist", request.headers.toString())
@@ -215,7 +211,9 @@ class BuyListAdapter(private val context: Context, var itemModelArrayList: Mutab
                             val data = result.get()
 
                             Log.d("Shop", data)
-
+                            val pos =  itemModelArrayList.indexOf(model)
+                            itemModelArrayList.remove(model)
+                            this@BuyListAdapter.notifyItemRemoved(pos)
                             (context as Activity).runOnUiThread() {
 
                                 Snackbar
@@ -244,13 +242,17 @@ class BuyListAdapter(private val context: Context, var itemModelArrayList: Mutab
 
                         is Result.Failure -> {
                             (context as Activity).runOnUiThread() {
+
+
+
                                 Log.d(
                                         "Error",
-                                        result.getException().message.toString()
+                                        getError(response)
                                 )
+
                                 Toast.makeText(
                                         context,
-                                        "Creation Failed",
+                                        getError(response),
                                         Toast.LENGTH_LONG
                                 )
                                         .show()

@@ -31,6 +31,7 @@ import io.moxd.shopforme.JsonDeserializer
 import io.moxd.shopforme.R
 import io.moxd.shopforme.data.RestPath
 import io.moxd.shopforme.data.model.UserME
+import io.moxd.shopforme.getError
 import io.moxd.shopforme.requireAuthManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -114,8 +115,8 @@ class ProfileFragment : Fragment()  {
                         when (result) {
                             is Result.Failure -> {
 
-                                Toast.makeText(root.context, "Update Failed", Toast.LENGTH_LONG).show()
-                                Log.d("Update", result.getException().message.toString())
+                                Toast.makeText(root.context, getError(response), Toast.LENGTH_LONG).show()
+                                Log.d("Update", getError(response))
                             }
                             is Result.Success -> {
 
@@ -193,15 +194,15 @@ class ProfileFragment : Fragment()  {
 
                     Fuel.get(
                             RestPath.user(it)
-                    ).responseString { _, _, result ->
+                    ).responseString { _, response, result ->
 
                         when (result) {
 
 
                             is Result.Failure -> {
                                 this@ProfileFragment.activity?.runOnUiThread() {
-                                    Log.d("Error", result.getException().message.toString())
-                                    Toast.makeText(root.context, "Login Failed", Toast.LENGTH_LONG).show()
+                                    Log.d("Error", getError(response))
+                                    Toast.makeText(root.context, getError(response), Toast.LENGTH_LONG).show()
                                 }
                             }
                             is Result.Success -> {
@@ -286,10 +287,10 @@ class ProfileFragment : Fragment()  {
 
                 val asyncupload = Fuel.upload(RestPath.userUpdate(it), Method.PUT)
                         .add(data)
-                        .responseString { _, _, result ->
+                        .responseString { _, response, result ->
                             when (result) {
                                 is Result.Failure -> {
-                                    Toast.makeText(this@ProfileFragment.context, "Picture Update Failed", Toast.LENGTH_LONG).show()
+                                    Toast.makeText(this@ProfileFragment.context, getError(response), Toast.LENGTH_LONG).show()
                                 }
                                 is Result.Success -> {
                                     Toast.makeText(this@ProfileFragment.context, "Picture Update Sucess", Toast.LENGTH_LONG).show()

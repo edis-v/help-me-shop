@@ -12,14 +12,13 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.result.Result
+import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso.Picasso
-import io.moxd.shopforme.FormatDate
-import io.moxd.shopforme.JsonDeserializer
-import io.moxd.shopforme.R
+import io.moxd.shopforme.*
 import io.moxd.shopforme.data.RestPath
 import io.moxd.shopforme.data.model.Angebot
+import io.moxd.shopforme.data.model.AngebotHelper
 import io.moxd.shopforme.data.model.Shop
-import io.moxd.shopforme.requireAuthManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
@@ -48,18 +47,14 @@ class AngebotAdapter  (private val context: Context, var itemModelArrayList: Mut
         Picasso.get().load(model.helper.profile_pic).into(holder.profilepic);
 
         holder.wrong.setOnClickListener {
-            updateAngebot(model.id,false)
-            val pos =  itemModelArrayList.indexOf(model)
-            itemModelArrayList.remove(model)
-            this.notifyItemRemoved(pos)
+            updateAngebot(model,false,it)
+
 
         }
 
         holder.right.setOnClickListener {
-            updateAngebot(model.id,true)
-            val pos =  itemModelArrayList.indexOf(model)
-            itemModelArrayList.remove(model)
-            this.notifyItemRemoved(pos)
+            updateAngebot(model,true, it)
+
         }
 
     }
@@ -70,24 +65,27 @@ class AngebotAdapter  (private val context: Context, var itemModelArrayList: Mut
     }
 
 
-    fun updateAngebot(id:Int,approve: Boolean){
+    fun updateAngebot(model:Angebot,approve: Boolean, v : View){
         GlobalScope.launch(context = Dispatchers.IO) {
             requireAuthManager().SessionID().take(1).collect {
                 Fuel.put(
-                        RestPath.angebotapprove(it, id), listOf("viewed" to true, "approve" to approve)
+                        RestPath.angebotapprove(it, model.id), listOf("viewed" to true, "approve" to approve)
                 ).responseString { request, response, result ->
 
                     when (result) {
                         is Result.Success -> {
                             Log.d("result", result.get())
-                            Toast.makeText(context, "Success", Toast.LENGTH_LONG)
+                            val pos =  itemModelArrayList.indexOf(model)
+                            itemModelArrayList.remove(model)
+                            this@AngebotAdapter.notifyItemRemoved(pos)
+                            Snackbar.make(v,  "Success", Snackbar.LENGTH_LONG).show()
                         }
                         is Result.Failure -> {
                             Log.d(
-                                    "result",
-                                    result.getException().message.toString()
+                                    "Error",
+                                    getError(response)
                             )
-                            Toast.makeText(context, "Failure", Toast.LENGTH_LONG)
+                            Snackbar.make(v,  getError(response), Snackbar.LENGTH_LONG).show()
 
                         }
 

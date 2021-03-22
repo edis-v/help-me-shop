@@ -18,6 +18,7 @@ import io.moxd.shopforme.data.AuthManager.PreferencesKeys.PASSWORD
 import io.moxd.shopforme.data.AuthManager.PreferencesKeys.SESSION_ID
 import io.moxd.shopforme.data.dto.SessionDto
 import io.moxd.shopforme.data.model.UserME
+import io.moxd.shopforme.getError
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -56,7 +57,7 @@ class AuthManager constructor(context: Context) {
         }
     }*/
     companion object {
-        var User : UserME? = null
+        var User : UserME? = null //switch not normal objects
     }
     suspend fun login2(email: String, password: String) {
             unauth()
@@ -79,6 +80,7 @@ class AuthManager constructor(context: Context) {
                     }
                 }
                 is com.github.kittinunf.result.Result.Failure -> {
+                    Log.d("Error", getError(response))
                     GlobalScope.launch {
                         eventChannel.send(Result.AuthError(result.getException()))
                     }
@@ -141,6 +143,7 @@ class AuthManager constructor(context: Context) {
                             }
                         }
                         is com.github.kittinunf.result.Result.Failure -> {
+                            Log.d("Error", getError(response))
                             GlobalScope.launch {
 
                                 eventChannel.send(Result.AuthError(result.getException()))
