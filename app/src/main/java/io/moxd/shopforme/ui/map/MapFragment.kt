@@ -96,7 +96,7 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
     private val MARKER_IMAGE_ID = "MARKER_IMAGE_ID"
     private val MARKER_LAYER_ID = "MARKER_LAYER_ID"
     private val PROPERTY_CAPITAL = "capital"
-
+    private  var Maxnumber  = -1
     private  var otheruserLocations :List<ShopMap> = mutableListOf()
     private  lateinit var mycontext : Context
     private   var lastKnownLocation : Location? = null
@@ -139,6 +139,7 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
                                 JsonDeserializer.decodeFromString<List<ShopMap>>(
                                     result.get()
                                 )
+
                         }
                         is Result.Failure -> {
                             Log.d("Error",  getError(response))
@@ -187,6 +188,8 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
                                                 JsonDeserializer.decodeFromString<List<ShopMap>>(
                                                     result.get()
                                                 )
+                                            if(otheruserLocations.size == Maxnumber && context != null)
+                                                Toast.makeText(requireContext(),"Es gibt keine Weiteren Hilfesuchenden mehr in der Umgebung",Toast.LENGTH_LONG).show()
                                         }
                                         is Result.Failure -> {
                                             Log.d(
@@ -275,56 +278,62 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
 
     lateinit var  scaleBarPlugin : ScaleBarPlugin
     override fun onMapReady(mapboxMap: MapboxMap) {
-        GlobalScope.launch (Dispatchers.IO){
-            this@MapFragment.mapboxMap = mapboxMap
-            if (!PermissionsManager.areLocationPermissionsGranted(mycontext)) {
-                permissionsManager = PermissionsManager( this@MapFragment)
-                permissionsManager.requestLocationPermissions(activity)
+        try {
+            GlobalScope.launch(Dispatchers.IO) {
+                this@MapFragment.mapboxMap = mapboxMap
+                if (!PermissionsManager.areLocationPermissionsGranted(mycontext)) {
+                    permissionsManager = PermissionsManager(this@MapFragment)
+                    permissionsManager.requestLocationPermissions(activity)
+                }
+                while (!PermissionsManager.areLocationPermissionsGranted(mycontext)) {
+                }
+                withContext(Dispatchers.Main) {
+                    mapboxMap.setStyle(
+                            Style.MAPBOX_STREETS
+                    ) { style ->
+                        mystyle = style
+                        mapboxMap.setMinZoomPreference(5.89);
+                        mapboxMap.setMaxZoomPreference(16.0);
+
+                        mapboxMap.uiSettings.isTiltGesturesEnabled = false
+                        //mapboxMap.uiSettings.isRotateGesturesEnabled = false
+                        mapboxMap.uiSettings.isZoomGesturesEnabled = false
+                        mapboxMap.uiSettings.isScrollGesturesEnabled = false
+                        enableLocationComponent(style)
+                        initFeatureCollection();
+                        // initMarkerIcons(style);
+                        createOtherUser(style)
+                        setUpMarkerLayer(style);
+                        initRecyclerView();
+                        // Toast.makeText(this, "Done", Toast.LENGTH_SHORT).show();
+                        setUpInfoWindowLayer(style)
+
+
+                        scaleBarPlugin = ScaleBarPlugin(mapView!!, mapboxMap)
+
+                        val scaleBarOptions = ScaleBarOptions(mycontext)
+                        scaleBarOptions
+                                .setTextColor(R.color.black)
+                                .setTextSize(40f)
+                                .setBarHeight(15f)
+                                .setBorderWidth(5f)
+                                .setMetricUnit(true)
+                                .setRefreshInterval(15)
+                                .setMarginTop(30f)
+                                .setMarginLeft(16f)
+                                .setTextBarMargin(15f)
+
+                        // Give the plugin the ScaleBarOptions object to style the scale bar
+                        scaleBarPlugin.create(scaleBarOptions)
+
+
+                        mapboxMap.addOnMapClickListener(this@MapFragment);
+
+                    }
+                }
             }
-            while (!PermissionsManager.areLocationPermissionsGranted(mycontext)){}
-            withContext(Dispatchers.Main){
-            mapboxMap.setStyle(
-                    Style.MAPBOX_STREETS
-            ) { style ->
-                mystyle = style
-                mapboxMap.setMinZoomPreference(5.89);
-                mapboxMap.setMaxZoomPreference(16.0);
+        }catch (ex: java.lang.Exception){
 
-                mapboxMap.uiSettings.isTiltGesturesEnabled = false
-                //mapboxMap.uiSettings.isRotateGesturesEnabled = false
-                mapboxMap.uiSettings.isZoomGesturesEnabled = false
-                mapboxMap.uiSettings.isScrollGesturesEnabled = false
-                enableLocationComponent(style)
-                initFeatureCollection();
-                // initMarkerIcons(style);
-                createOtherUser(style)
-                setUpMarkerLayer(style);
-                initRecyclerView();
-                // Toast.makeText(this, "Done", Toast.LENGTH_SHORT).show();
-                setUpInfoWindowLayer(style)
-
-
-                scaleBarPlugin = ScaleBarPlugin(mapView!!, mapboxMap)
-
-                val scaleBarOptions = ScaleBarOptions(mycontext)
-                scaleBarOptions
-                        .setTextColor(R.color.black)
-                        .setTextSize(40f)
-                        .setBarHeight(15f)
-                        .setBorderWidth(5f)
-                        .setMetricUnit(true)
-                        .setRefreshInterval(15)
-                        .setMarginTop(30f)
-                        .setMarginLeft(16f)
-                        .setTextBarMargin(15f)
-
-                // Give the plugin the ScaleBarOptions object to style the scale bar
-                scaleBarPlugin.create(scaleBarOptions)
-
-
-                mapboxMap.addOnMapClickListener(this@MapFragment);
-
-            }}
         }
     }
 
@@ -607,7 +616,7 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
     @SuppressLint("MissingPermission")
     private fun enableLocationComponent(loadedMapStyle: Style) {
 // Check if permissions are enabled and if not request
-        if (PermissionsManager.areLocationPermissionsGranted(mycontext)) {
+        if (PermissionsManager.areLocationPermissionsGranted(mycontext) && mystyle.isFullyLoaded) {
 
 // Create and customize the LocationComponent's options
             val customLocationComponentOptions = LocationComponentOptions.builder(mycontext)
@@ -732,12 +741,13 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
                         LatLng(lastKnownLocation!!.latitude, lastKnownLocation!!.longitude)
                         withContext(Dispatchers.Main) {
                             recyclerlist =  createRecyclerViewLocations()!!
-                            val locationAdapter = LocationRecyclerViewAdapter(
+                            if(context != null)
+                                recyclerView.adapter  = LocationRecyclerViewAdapter(
                                 recyclerlist,
                                 mapboxMap, mystyle,requireContext()
                             )
 
-                            recyclerView.adapter = locationAdapter
+
                             symbolManager.deleteAll()
                             createOtherUser(loadedMapStyle)
 
@@ -819,8 +829,10 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
                                 JsonDeserializer.decodeFromString<List<ShopMap>>(
                                     result.get()
                                 )
-
+                            Maxnumber = list.size
+                            if(activity != null)
                              requireActivity().runOnUiThread {
+
                                  maxlocation.text = "Max Hilfesuchende in 100km: ${list.size}"
                              }
                         }

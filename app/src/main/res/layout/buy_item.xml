@@ -59,12 +59,12 @@
             <ImageButton
                 android:id="@+id/buy_item_add"
                 android:layout_width="25dp"
-                android:src="@drawable/ic_add_box_24"
+                app:srcCompat="@drawable/ic_add_box_24"
                 android:layout_height="25dp"/>
             <ImageButton
                 android:id="@+id/buy_item_subtract"
                 android:layout_width="25dp"
-                android:src="@drawable/ic_minus_box_24"
+                app:srcCompat="@drawable/ic_minus_box_24"
                 android:layout_height="25dp"/>
         </LinearLayout>
     </RelativeLayout>

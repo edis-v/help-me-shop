@@ -1,6 +1,9 @@
 package io.moxd.shopforme.data
 
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -12,6 +15,7 @@ import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.coroutines.awaitObject
 import com.github.kittinunf.fuel.coroutines.awaitStringResponse
 import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
+import io.moxd.shopforme.ActitityMain
 import io.moxd.shopforme.JsonDeserializer
 import io.moxd.shopforme.data.AuthManager.PreferencesKeys.EMAIL
 import io.moxd.shopforme.data.AuthManager.PreferencesKeys.PASSWORD
@@ -19,6 +23,7 @@ import io.moxd.shopforme.data.AuthManager.PreferencesKeys.SESSION_ID
 import io.moxd.shopforme.data.dto.SessionDto
 import io.moxd.shopforme.data.model.UserME
 import io.moxd.shopforme.getError
+import io.moxd.shopforme.service.AlarmServiceSession
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -75,6 +80,15 @@ class AuthManager constructor(context: Context) {
                             preferences[EMAIL] = email
                             preferences[PASSWORD] = password
                         }
+
+                        val alarmManager = ActitityMain!!.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                        val intent = Intent(ActitityMain as Context, AlarmServiceSession::class.java)    //create an intent for the BroadcastReceiver Class
+                        val pendingIntent = PendingIntent.getBroadcast(         //create a Pending Intent (Broadcast Intent ) so the AlarmManager can execute my BroadcastReceiver
+                                ActitityMain?.applicationContext, 234, intent, 0
+                        )
+
+                        alarmManager[AlarmManager.RTC_WAKEUP, System.currentTimeMillis() +  30*60*1000 ] = pendingIntent
+
                         auth2()
                         eventChannel.send(Result.AuthSucess(session))
                     }

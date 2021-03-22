@@ -1,5 +1,6 @@
 package io.moxd.shopforme.adapter
 
+import android.app.Activity
 import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
@@ -24,6 +25,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
+import kotlin.concurrent.thread
 
 class AngebotHelperAdapter (private val context: Context, var itemModelArrayList: MutableList<AngebotHelper>) :
         RecyclerView.Adapter<AngebotHelperAdapter.Viewholder>() {
@@ -42,11 +44,26 @@ class AngebotHelperAdapter (private val context: Context, var itemModelArrayList
 
         holder.date.text = FormatDate( model.creation_date)
         holder.user.text =  model.shop.helpsearcher.firstname + " "+model.shop.helpsearcher.name
-        Picasso.get().load(model.shop.helpsearcher.profile_pic).into(holder.profilepic);
+     val imgurl = model.shop.helpsearcher.profile_pic
+
+        Log.d("URLIMG",imgurl)
+        val pic = Picasso.get()
+        pic.isLoggingEnabled = true
+
+            Thread {
+                val bm = Picasso.get().load(imgurl).get()
+
+                ( context as Activity).runOnUiThread {
+                    holder.profilepic.setImageBitmap(bm)
+                }
+
+            }.start()
+
+
         if(model.viewed)
             if(model.approve) {
                 holder.status.setImageResource(R.drawable.ic_done)
-                holder.status.setColorFilter(ContextCompat.getColor(context, R.color.green_200), android.graphics.PorterDuff.Mode.SRC_IN);
+                holder.status.setColorFilter(ContextCompat.getColor(context, R.color.green_200), android.graphics.PorterDuff.Mode.SRC_IN); // change color right
             }
             else{
                 holder.status.setImageResource(R.drawable.ic_wrong)

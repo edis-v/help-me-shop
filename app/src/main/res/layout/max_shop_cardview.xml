@@ -92,7 +92,7 @@
             app:layout_constraintTop_toBottomOf="@id/max_shop_cardview_Preis"
             android:layout_marginTop="10dp"
             android:layout_marginRight="25dp"
-            app:tint="@color/green_200" />
+          />
 
 
         <androidx.recyclerview.widget.RecyclerView

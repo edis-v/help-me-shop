@@ -50,7 +50,18 @@ class ProfileFragment : Fragment()  {
 
     }
     private lateinit var profilepic : ImageView
-
+    private  lateinit var name : EditText
+    private  lateinit var firstname : EditText
+    private  lateinit var email : EditText
+    private  lateinit var street : EditText
+    private  lateinit var phonenumber : EditText
+    private  lateinit var plz : EditText
+    private  lateinit var city : EditText
+    private  lateinit var usertype : Spinner
+    private  lateinit var updatebtn : FloatingActionButton
+    private  lateinit var savebtn : Button
+    private  lateinit var cancel : Button
+    private  lateinit var newpicbtn : FloatingActionButton
     var usertypes_txt = arrayListOf<String>("Helfer", "Hilfesuchender")
     var usertypes = arrayListOf<String>("HF", "HFS")
 
@@ -62,19 +73,19 @@ class ProfileFragment : Fragment()  {
     ): View? {
         val root = inflater.inflate(R.layout.auth_profile_fragment, container, false)
 
-        val name = root.findViewById<EditText>(R.id.name_field)
-        val firstname = root.findViewById<EditText>(R.id.firstname_field)
-        val email = root.findViewById<EditText>(R.id.email_field)
-        val street = root.findViewById<EditText>(R.id.Street_field)
-        val phonenumber = root.findViewById<EditText>(R.id.phonenumber_field)
-        val plz = root.findViewById<EditText>(R.id.plz_field)
-        val city = root.findViewById<EditText>(R.id.City_field)
-        val usertype = root.findViewById<Spinner>(R.id.usertype_field)
+         name = root.findViewById<EditText>(R.id.name_field)
+          firstname = root.findViewById<EditText>(R.id.firstname_field)
+          email = root.findViewById<EditText>(R.id.email_field)
+          street = root.findViewById<EditText>(R.id.Street_field)
+         phonenumber = root.findViewById<EditText>(R.id.phonenumber_field)
+         plz = root.findViewById<EditText>(R.id.plz_field)
+        city = root.findViewById<EditText>(R.id.City_field)
+         usertype = root.findViewById<Spinner>(R.id.usertype_field)
         profilepic = root.findViewById<ImageView>(R.id.ProfilePic_field)
-        val updatebtn = root.findViewById<FloatingActionButton>(R.id.updateProfile_btn)
-        val savebtn = root.findViewById<Button>(R.id.saveProfile_btn)
-        val cancel = root.findViewById<Button>(R.id.cancelProfile_btn)
-        val newpicbtn = root.findViewById<FloatingActionButton>(R.id.uploadnewpic)
+          updatebtn = root.findViewById<FloatingActionButton>(R.id.updateProfile_btn)
+          savebtn = root.findViewById<Button>(R.id.saveProfile_btn)
+          cancel = root.findViewById<Button>(R.id.cancelProfile_btn)
+          newpicbtn = root.findViewById<FloatingActionButton>(R.id.uploadnewpic)
 
 
         val ad = ArrayAdapter<String>(root.context, R.layout.support_simple_spinner_dropdown_item, usertypes_txt)
@@ -114,8 +125,9 @@ class ProfileFragment : Fragment()  {
                     ).responseString { request, response, result ->
                         when (result) {
                             is Result.Failure -> {
-
+                                getUser()
                                 Toast.makeText(root.context, getError(response), Toast.LENGTH_LONG).show()
+
                                 Log.d("Update", getError(response))
                             }
                             is Result.Success -> {
@@ -188,49 +200,59 @@ class ProfileFragment : Fragment()  {
 
         }
 
+       getUser()
+
+
+
+
+        return  root;
+    }
+
+    fun getUser(){
         val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
-                requireAuthManager().SessionID().take(1).collect {
-                    //do actions
+            requireAuthManager().SessionID().take(1).collect {
+                //do actions
 
-                    Fuel.get(
-                            RestPath.user(it)
-                    ).responseString { _, response, result ->
+                Fuel.get(
+                        RestPath.user(it)
+                ).responseString { _, response, result ->
 
-                        when (result) {
+                    when (result) {
 
 
-                            is Result.Failure -> {
-                                this@ProfileFragment.activity?.runOnUiThread() {
-                                    Log.d("Error", getError(response))
-                                    Toast.makeText(root.context, getError(response), Toast.LENGTH_LONG).show()
-                                }
+                        is Result.Failure -> {
+                            this@ProfileFragment.activity?.runOnUiThread() {
+                                Log.d("Error", getError(response))
+                                Toast.makeText(requireContext(), getError(response), Toast.LENGTH_LONG).show()
+
                             }
-                            is Result.Success -> {
-                                val data = result.get()
+                        }
+                        is Result.Success -> {
+                            val data = result.get()
 
-                                Log.d("USerProfile", data)
+                            Log.d("USerProfile", data)
 
-                                this@ProfileFragment.activity?.runOnUiThread() {
+                            this@ProfileFragment.activity?.runOnUiThread() {
 
-                                    val Profile = JsonDeserializer.decodeFromString<UserME>(data);
-                                    Picasso.get().load(Profile.profile_pic).into(profilepic)
-                                    //does actions on Ui-Thread u neeed it because Ui-elements can only be edited in Main/Ui-Thread
+                                val Profile = JsonDeserializer.decodeFromString<UserME>(data);
+                                Picasso.get().load(Profile.profile_pic).into(profilepic)
+                                //does actions on Ui-Thread u neeed it because Ui-elements can only be edited in Main/Ui-Thread
 
-                                    name.setText(Profile.name)
-                                    firstname.setText(Profile.firstname)
-                                    email.setText(Profile.email)
-                                    street.setText(Profile.Street)
-                                    phonenumber.setText(Profile.phone_number)
-                                    plz.setText(Profile.plz.toString())
-                                    city.setText(Profile.City)
-                                    if (Profile.usertype_txt == "Helfer")
-                                        usertype.setSelection(0)
-                                    else
-                                        usertype.setSelection(1)
+                                name.setText(Profile.name)
+                                firstname.setText(Profile.firstname)
+                                email.setText(Profile.email)
+                                street.setText(Profile.Street)
+                                phonenumber.setText(Profile.phone_number)
+                                plz.setText(Profile.plz.toString())
+                                city.setText(Profile.City)
+                                if (Profile.usertype_txt == "Helfer")
+                                    usertype.setSelection(0)
+                                else
+                                    usertype.setSelection(1)
 
-                                }
                             }
-                            }
+                        }
+                    }
                 }.join()
 
 
@@ -238,11 +260,6 @@ class ProfileFragment : Fragment()  {
 
         }
         job.start()
-
-
-
-
-        return  root;
     }
     override fun onRequestPermissionsResult(
             requestCode: Int,
@@ -291,6 +308,7 @@ class ProfileFragment : Fragment()  {
                             when (result) {
                                 is Result.Failure -> {
                                     Toast.makeText(this@ProfileFragment.context, getError(response), Toast.LENGTH_LONG).show()
+                                    getUser()
                                 }
                                 is Result.Success -> {
                                     Toast.makeText(this@ProfileFragment.context, "Picture Update Sucess", Toast.LENGTH_LONG).show()

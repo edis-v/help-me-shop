@@ -104,7 +104,7 @@
                 android:id="@+id/shopcart_filter_exit"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:src="@drawable/ic_wrong"
+                app:srcCompat="@drawable/ic_wrong"
                 app:tint="@color/black" />
 
             <TextView

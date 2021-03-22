@@ -33,6 +33,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ActitityMain = this
         setContentView(R.layout.activity)
 
         // Eine AuthManager Instanz erzeugen (benötigt context ggf. für DataStore)

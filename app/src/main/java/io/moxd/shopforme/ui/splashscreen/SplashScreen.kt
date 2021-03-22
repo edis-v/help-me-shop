@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.github.kittinunf.fuel.core.FuelManager
+import io.moxd.shopforme.ActitityMain
 import io.moxd.shopforme.MainActivity
 import io.moxd.shopforme.R
 import io.moxd.shopforme.data.AuthManager
@@ -38,11 +39,11 @@ class SplashScreen : AppCompatActivity() {
             registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()
             ) {
                 it.forEach{ map ->  Log.d("PErmissions: ${map.key}", map.value.toString())}
-                if(it.all { it.component2() == true }){
-                    Toast.makeText(this, "All Permission Success", Toast.LENGTH_LONG).show()
+                if(it.filter { it.key != "com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE" }.all { it.component2() == true }){
+                 //   Toast.makeText(this, "All Permission Success", Toast.LENGTH_LONG).show()
                     loginSplash()
                 }else{
-                    Toast.makeText(this, "All Permission not Success", Toast.LENGTH_LONG).show()
+                  //  Toast.makeText(this, "All Permission not Success", Toast.LENGTH_LONG).show()
                 }
 
             }
@@ -50,6 +51,7 @@ class SplashScreen : AppCompatActivity() {
 
 
         super.onCreate(savedInstanceState)
+        ActitityMain = this
         setContentView(R.layout.splashscreen)
         authManager = AuthManager(this)
         userManager = UserManager(this)

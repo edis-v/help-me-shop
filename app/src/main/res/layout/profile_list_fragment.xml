@@ -17,7 +17,7 @@
     <com.google.android.material.button.MaterialButton
         android:id="@+id/profilelist_profile"
         style="@style/Widget.ShopForMe.Button.big"
-        android:backgroundTint="@color/loginFragmentBackgroundColor"
+        app:backgroundTint="@color/loginFragmentBackgroundColor"
         android:elevation="20dp"
         android:text="@string/profile"
         app:icon="@drawable/ic_baseline_person_24"
@@ -28,7 +28,7 @@
     <com.google.android.material.button.MaterialButton
         android:id="@+id/profilelist_notification"
         android:text="@string/notification"
-        android:backgroundTint="@color/colorPrimary"
+        app:backgroundTint="@color/colorPrimary"
         style="@style/Widget.ShopForMe.Button.big"
         app:icon="@drawable/ic_baseline_edit_notifications_24"
         app:layout_constraintStart_toStartOf="@+id/profilelist_profile"
@@ -39,7 +39,7 @@
     <com.google.android.material.button.MaterialButton
         android:id="@+id/profilelist_ausloggen"
         android:text="@string/ausloggen"
-        android:backgroundTint="@color/colorPrimaryDark"
+        app:backgroundTint="@color/colorPrimaryDark"
         style="@style/Widget.ShopForMe.Button.big"
         app:icon="@drawable/ic_baseline_login_24"
         app:layout_constraintStart_toStartOf="@+id/profilelist_notification"

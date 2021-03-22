@@ -75,8 +75,8 @@
             android:layout_height="50dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:src="@drawable/ic_done"
-            app:tint="@color/green_500" />
+            app:srcCompat="@drawable/ic_done"
+            />
 
     </RelativeLayout>
 

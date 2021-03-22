@@ -1,5 +1,6 @@
 package io.moxd.shopforme
 
+import android.app.Activity
 import android.graphics.Color
 import android.text.TextPaint
 import android.text.method.LinkMovementMethod
@@ -16,11 +17,9 @@ import io.moxd.shopforme.data.RestPath
 import io.moxd.shopforme.data.model.ErrorField
 import io.moxd.shopforme.service.MyFirebaseMessagingService
 import io.moxd.shopforme.ui.splashscreen.SplashScreen
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import java.text.SimpleDateFormat
@@ -31,7 +30,7 @@ import kotlin.math.abs
 
 fun requireUserManager() = SplashScreen.userManager!!
 fun requireAuthManager() = SplashScreen.authManager!!
-
+var ActitityMain : Activity? = null
 val JsonDeserializer = Json {
     ignoreUnknownKeys = true // Nicht alle Keys müssen im Dto/Model vorhanden sein
     ;coerceInputValues = true
@@ -39,50 +38,20 @@ val JsonDeserializer = Json {
 
 
 
-fun getError(response: Response) : String{
-   val data =  response.body().asString("application/json")
-    Log.d("getErrorData" , data)
-    return if(data.contains("non_field_errors"))
-        JsonDeserializer.decodeFromString<ErrorField>(data).Error()
-    else
-        data.replace("[\"","").replace("\"]","")
-}
-fun sendRegistrationToServer(token: String?) {
-    // TODO: Implement this method to send token to your app server.
-    //api send token to db
-    GlobalScope.launch(context = Dispatchers.IO) {
-        requireAuthManager().SessionID().take(1).collect {
+fun getError(response: Response) : String = runBlocking{
+    withContext(Dispatchers.IO) {
+        val data = response.body().asString("application/json")
+        Log.d("getErrorData", data)
 
-            val url = RestPath.firebasetoken(it)
+        /*   if(data.contains("Invalid Sessionid"))
+        GlobalScope.launch {  requireAuthManager().auth2() }
 
-            Log.d("URL", url)
-
-            Fuel.put(
-                url, listOf("firebase_token" to token)
-            ).responseString { request, response, result ->
-
-                when (result) {
-                    is Result.Success -> {
-                        Log.d("result", result.get())
-
-                    }
-                    is Result.Failure -> {
-                        Log.d(
-                            "Failed",
-                            result.getException().message.toString()
-                        )
-                    }
-
-                }
-
-
-            }.join()
-
-
-        }
-
+*/
+        return@withContext if (data.contains("non_field_errors"))
+            JsonDeserializer.decodeFromString<ErrorField>(data).Error()
+        else
+            data.replace("[\"", "").replace("\"]", "")
     }
-    Log.d("Firebase", "sendRegistrationTokenToServer($token)")
 }
 
 fun FormatDate(date: String) : String{

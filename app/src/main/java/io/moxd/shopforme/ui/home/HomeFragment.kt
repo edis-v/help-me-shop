@@ -37,12 +37,9 @@ import io.moxd.shopforme.ui.map.MapFragment
 import io.moxd.shopforme.ui.profile_list.ProfileListFragment
 import io.moxd.shopforme.ui.shopangebot.ShopAngebotFragment
 import io.moxd.shopforme.ui.shopbuylist.Shopcart
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 
@@ -87,10 +84,11 @@ class HomeFragment: Fragment(R.layout.main_home_fragment) {
 
 
                         is Result.Failure -> {
-                            this@HomeFragment.activity?.runOnUiThread() {
-                                Log.d("Error", getError(response))
 
+                            GlobalScope.launch(Dispatchers.IO) {
+                                Log.d("Error", getError(response))
                             }
+
                         }
                         is Result.Success -> {
                             val data = result.get()
@@ -165,12 +163,14 @@ class HomeFragment: Fragment(R.layout.main_home_fragment) {
                                                 )
 
                                             Log.d("URL", url)
+
                                             val data = LocationData(
                                                 type = "Point", coordinates = listOf(
                                                     lat,
                                                     long
                                                 ) as List<Double>
                                             )
+                                            if(it.isNullOrEmpty())
                                             Fuel.put(
                                                 url, listOf(
                                                     "location" to JsonDeserializer.encodeToString(
