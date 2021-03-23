@@ -16,8 +16,6 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.*
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.fragment.app.Fragment
@@ -25,14 +23,17 @@ import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.FileDataPart
 import com.github.kittinunf.fuel.core.Method
 import com.github.kittinunf.result.Result
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.squareup.picasso.Picasso
 import io.moxd.shopforme.JsonDeserializer
 import io.moxd.shopforme.R
+import io.moxd.shopforme.data.AuthManager
 import io.moxd.shopforme.data.RestPath
 import io.moxd.shopforme.data.model.UserME
 import io.moxd.shopforme.getError
 import io.moxd.shopforme.requireAuthManager
+import io.moxd.shopforme.ui.splashscreen.SplashScreen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
@@ -40,7 +41,6 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
 
 
 class ProfileFragment : Fragment()  {
@@ -119,6 +119,10 @@ class ProfileFragment : Fragment()  {
                 requireAuthManager().SessionID().take(1).collect {
                     //do actions
 
+
+
+
+
                     val asyncupload = Fuel.upload(RestPath.userUpdate(it), Method.PUT, //"public" to "${name.text}" ,
                             listOf("name" to "${name.text}", "firstname" to "${firstname.text}", "phone_number" to "${phonenumber.text}", "Street" to "${street.text}", "plz" to "${plz.text}", "City" to "${city.text}", "usertype" to usertypes[usertype.selectedItemPosition])
 
@@ -131,7 +135,18 @@ class ProfileFragment : Fragment()  {
                                 Log.d("Update", getError(response))
                             }
                             is Result.Success -> {
+                                if (AuthManager.User?.usertype_txt != usertypes_txt[usertype.selectedItemPosition])
+                                    MaterialAlertDialogBuilder(requireContext())
+                                            .setTitle("Usertype Geändert")
+                                            .setMessage("App muss neustarten")
 
+                                            .setPositiveButton("OK") { _, _ ->
+
+                                                val intent = Intent(requireContext(), SplashScreen::class.java)
+                                                requireActivity().finish()
+                                                requireActivity().startActivity(intent)
+
+                                            }.show()
 
                                 Toast.makeText(root.context, "Update Sucess", Toast.LENGTH_LONG).show()
                             }
@@ -292,7 +307,7 @@ class ProfileFragment : Fragment()  {
                 val uri = it.data!!.data
 
             profilepic.setImageURI(uri)
-            Log.d("Picturerun",  getPath(uri)!!)
+            Log.d("Picturerun", getPath(uri)!!)
 
 
 
