@@ -871,6 +871,9 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
             if (activity != null) {
                 val location = result.lastLocation ?: return
 
+                if(activity.lastKnownLocation == null)
+                    return
+
 // Create a Toast which displays the new location's coordinates
                 if(activity.lastKnownLocation?.latitude != location.latitude && activity.lastKnownLocation?.longitude != location.longitude  )
                     activity.enableLocationComponent(activity.mystyle)

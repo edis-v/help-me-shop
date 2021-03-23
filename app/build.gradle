@@ -6,6 +6,7 @@ plugins {
     id 'com.google.protobuf' version '0.8.12'
     id 'kotlinx-serialization'
     id 'androidx.navigation.safeargs'
+    id 'com.google.firebase.crashlytics'
 }
 android {
     compileSdkVersion 30
@@ -76,6 +77,8 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1'
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.google.firebase:firebase-messaging:21.0.1'
+    implementation 'com.google.firebase:firebase-crashlytics:17.4.0'
+    implementation 'com.google.firebase:firebase-analytics:18.0.2'
 
     testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
