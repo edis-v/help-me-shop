@@ -9,9 +9,9 @@ import io.moxd.shopforme.data.model.UserType
 import java.io.InputStream
 import java.io.OutputStream
 
-object ProtoUserSerializer : Serializer<ProtoUser> {
+/*object ProtoUserSerializer : Serializer<ProtoUser> {
     override val defaultValue: ProtoUser = ProtoUser.getDefaultInstance()
-    override fun readFrom(input: InputStream): ProtoUser {
+/*    override fun readFrom(input: InputStream): ProtoUser {
         try {
             return  ProtoUser.parseFrom(input)
         } catch (exception: InvalidProtocolBufferException) {
@@ -19,9 +19,9 @@ object ProtoUserSerializer : Serializer<ProtoUser> {
         }
     }
 
-    override fun writeTo(t: ProtoUser, output: OutputStream) = t.writeTo(output)
+    override fun writeTo(t: ProtoUser, output: OutputStream) = t.writeTo(output)*/
 }
-
+*/
 fun ProtoUser.exists() = name.isNotEmpty()
 
 fun ProtoUser.toModel() = User(

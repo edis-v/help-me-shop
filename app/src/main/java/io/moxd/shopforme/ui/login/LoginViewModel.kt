@@ -42,28 +42,7 @@ class LoginViewModel(
     // Öffentlicher Flow auf Basis des EventChannels um asynchron mit dem Fragment zu kommunizieren
     val events = eventChannel.receiveAsFlow()
 
-    init {
-        // Authentifizierungsversuch (gelingt wenn eine Session gespeichert ist)
-        viewModelScope.launch {
-            authManager.auth() // sessionId in dataStore?
-        }
 
-        // Auf Events des AuthManagers in Coroutine reagieren
-        viewModelScope.launch {
-            authManager.events.collect { result ->
-                when(result) {
-                    is AuthManager.Result.AuthSucess -> {
-                        // User Manager mit neuer Session initialisieren
-                        requireUserManager().initSession(result.session)
-                        // Fragment über erfolgreichen Login benachrichtigen
-                        eventChannel.send(LoginEvent.LoginSuccess(result.session))
-                    }
-                    is AuthManager.Result.AuthError -> eventChannel.send(LoginEvent.LoginFailed(result.exception))
-                    else -> Unit
-                }.exhaustive
-            }
-        }
-    }
 
     // Beim Login Eingaben auf verschiedene Dinge checken und im Erfolgsfall einloggen (alles Events)
     fun onLoginClick() = viewModelScope.launch {
@@ -74,7 +53,7 @@ class LoginViewModel(
             !PatternsCompat.EMAIL_ADDRESS.matcher(loginEmail).matches() -> eventChannel.send(LoginEvent.MalformedEmail)
             else -> {
                 eventChannel.send(LoginEvent.LoggingIn)
-                authManager.login(loginEmail, loginPassword)
+                authManager.login2(loginEmail, loginPassword)
             }
         }
     }

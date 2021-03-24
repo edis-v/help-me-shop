@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    android:layout_marginTop="8dp"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="@color/card_background"
+    >
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_margin="16dp"
+    android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/angebot_helper_user"
+        android:layout_width="wrap_content"
+        android:layout_toRightOf="@id/angebot_helper_user_pic"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        android:text="Adam Omari"
+        />
+    <TextView
+        android:id="@+id/angebot_helper_shop"
+        android:layout_width="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/angebot_helper_user"
+        android:layout_height="wrap_content"
+        android:textSize="18dp"
+        android:text="Einkauf vom 22-07-1999 22:48"
+        android:layout_marginRight="10dp"
+        android:layout_toLeftOf="@id/angebot_helper_status"
+        android:layout_toRightOf="@id/angebot_helper_user_pic"
+        />
+    <ImageView
+        android:id="@+id/angebot_helper_user_pic"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginRight="10dp"
+        android:scaleType="fitXY"
+        />
+
+    <ImageView
+        android:id="@+id/angebot_helper_status"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:layout_centerVertical="true"
+        app:srcCompat="@drawable/ic_done"
+
+
+        />
+
+</RelativeLayout>
+</com.google.android.material.card.MaterialCardView>

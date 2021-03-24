@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:shapeAppearance="@style/ShapeAppearance.MaterialComponents.LargeComponent">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/buy_item_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Toast"
+            android:textSize="20dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginLeft="25dp"
+            />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/buy_item_price"
+            android:layout_below="@id/buy_item_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="25dp"
+            android:layout_marginTop="6dp"
+            android:text="Preis: 1€"
+            />
+        <com.google.android.material.textfield.TextInputLayout
+
+            android:layout_width="70dp"
+            android:layout_height="60dp"
+            android:layout_toLeftOf="@id/buy_item_selectfield"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_marginRight="10dp"
+            android:layout_centerVertical="true"
+            android:hint="Anzahl">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/buy_item_select"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+
+                android:text="0" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"/>
+
+        <LinearLayout android:id="@+id/buy_item_selectfield"
+            android:layout_width="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+            <ImageButton
+                android:id="@+id/buy_item_add"
+                android:layout_width="25dp"
+                app:srcCompat="@drawable/ic_add_box_24"
+                android:layout_height="25dp"/>
+            <ImageButton
+                android:id="@+id/buy_item_subtract"
+                android:layout_width="25dp"
+                app:srcCompat="@drawable/ic_minus_box_24"
+                android:layout_height="25dp"/>
+        </LinearLayout>
+    </RelativeLayout>
+
+</com.google.android.material.card.MaterialCardView>

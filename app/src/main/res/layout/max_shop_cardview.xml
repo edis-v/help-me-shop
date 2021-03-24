@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="16dp"
+    android:transitionName="shopdetail"
+    android:layout_height="match_parent"
+    app:cardBackgroundColor="@color/card_background"
+    >
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+
+        <ImageView
+            android:id="@+id/max_shop_cardview_exit"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+
+            app:srcCompat="@drawable/ic_wrong"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/colorPrimaryDark" />
+
+        <TextView
+
+            android:id="@+id/max_shop_cardview_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="Einkauf vom 22.78.68"
+            android:textColor="@color/black"
+
+            android:textSize="24dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintLeft_toRightOf="@id/max_shop_cardview_exit"
+            app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:id="@+id/max_shop_cardview_anzahl"
+
+            android:layout_width="wrap_content"
+            android:textSize="20dp"
+
+            android:layout_height="wrap_content"
+
+            android:text="Items 22"
+            android:layout_marginBottom="10dp"
+
+            app:layout_constraintLeft_toRightOf="@id/max_shop_cardview_exit"
+            app:layout_constraintTop_toBottomOf="@id/max_shop_cardview_title"
+            />
+        <TextView
+            android:id="@+id/max_shop_cardview_Preis"
+
+            android:layout_width="wrap_content"
+            android:textSize="20dp"
+            android:layout_marginStart="10dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toRightOf="@id/max_shop_cardview_anzahl"
+            app:layout_constraintTop_toBottomOf="@id/max_shop_cardview_title"
+
+            android:text="Preis: 22€"
+            />
+        <TextView
+            android:id="@+id/max_shop_cardview_bezahlt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:text="Bezahlt am 22.7.99"
+
+            app:layout_constraintLeft_toRightOf="@id/max_shop_cardview_exit"
+            app:layout_constraintTop_toBottomOf="@id/max_shop_cardview_anzahl"
+            />
+        <TextView
+            android:id="@+id/max_shop_cardview_phonenumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:text="222222222"
+            android:autoLink="phone"
+            android:linksClickable="true"
+            app:layout_constraintLeft_toRightOf="@id/max_shop_cardview_exit"
+            app:layout_constraintTop_toBottomOf="@id/max_shop_cardview_bezahlt"/>
+        <ImageView
+            android:id="@+id/max_shop_cardview_status"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            app:srcCompat="@drawable/ic_done"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/max_shop_cardview_Preis"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="25dp"
+          />
+
+
+        <androidx.recyclerview.widget.RecyclerView
+
+            android:id="@+id/max_shop_cardview_menu_buylist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintHeight_max="300dp"
+            app:layout_constraintLeft_toRightOf="@id/max_shop_cardview_exit"
+            app:layout_constraintTop_toBottomOf="@id/max_shop_cardview_status" />
+
+        <LinearLayout
+            android:id="@+id/max_shop_cardview_menu_options1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/max_shop_cardview_exit"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/max_shop_cardview_menu_buylist">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/max_shop_cardview_menu_delete"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+
+                android:layout_alignParentBottom="true"
+                android:layout_marginLeft="10dp"
+                android:backgroundTint="@color/colorPrimaryDark"
+                android:elevation="4dp"
+                android:shadowColor="@color/colorSecondary"
+                android:text="Löschen"
+                android:textColor="@color/white"
+                android:textSize="16dp"
+
+                />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/max_shop_cardview_menu_shop"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginLeft="10dp"
+                android:backgroundTint="@color/green_200"
+                android:elevation="4dp"
+                android:text="Fertig"
+                android:textColor="@color/white"
+                android:textSize="16dp"
+
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/max_shop_cardview_exit"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/max_shop_cardview_menu_options1">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/max_shop_cardview_menu_report"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginLeft="10dp"
+                android:backgroundTint="@color/mapbox_blue"
+                android:elevation="4dp"
+                android:text="Report"
+                android:textColor="@color/white"
+                android:textSize="16dp"
+
+                />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/max_shop_cardview_menu_payed"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginLeft="10dp"
+                android:backgroundTint="@color/mapbox_blue"
+                android:elevation="4dp"
+                android:text="Bezahlt"
+                android:textColor="@color/white"
+                android:textSize="16dp"
+
+                />
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

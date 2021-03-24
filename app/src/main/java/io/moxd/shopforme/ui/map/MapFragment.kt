@@ -19,6 +19,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -32,6 +33,7 @@ import androidx.recyclerview.widget.*
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.FuelManager
 import com.github.kittinunf.result.Result
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.slider.Slider
 import com.mapbox.android.core.location.*
 import com.mapbox.android.core.permissions.PermissionsListener
@@ -64,13 +66,11 @@ import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import com.mapbox.pluginscalebar.ScaleBarOptions
 import com.mapbox.pluginscalebar.ScaleBarPlugin
 import com.squareup.picasso.Picasso
-import io.moxd.shopforme.JsonDeserializer
-import io.moxd.shopforme.MainActivity
-import io.moxd.shopforme.R
+import io.moxd.shopforme.*
 import io.moxd.shopforme.data.RestPath
 import io.moxd.shopforme.data.model.LocationData
 import io.moxd.shopforme.data.model.OtherUser
-import io.moxd.shopforme.requireAuthManager
+import io.moxd.shopforme.data.model.ShopMap
 import io.moxd.shopforme.ui.profile.ProfileFragment
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
@@ -85,6 +85,7 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
     private lateinit var mapboxMap: MapboxMap
     private lateinit var mapView : MapView
     private  lateinit var  symbolManager : SymbolManager
+    private  lateinit var  maxlocation : TextView
     private  lateinit var mystyle  : Style
     private val SYMBOL_ICON_ID = "SYMBOL_ICON_ID"
     private val SOURCE_ID = "SOURCE_ID"
@@ -95,8 +96,8 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
     private val MARKER_IMAGE_ID = "MARKER_IMAGE_ID"
     private val MARKER_LAYER_ID = "MARKER_LAYER_ID"
     private val PROPERTY_CAPITAL = "capital"
-
-    private  var otheruserLocations :List<OtherUser> = mutableListOf()
+    private  var Maxnumber  = -1
+    private  var otheruserLocations :List<ShopMap> = mutableListOf()
     private  lateinit var mycontext : Context
     private   var lastKnownLocation : Location? = null
     var recyclerlist : List<SingleRecyclerViewLocation> = mutableListOf()
@@ -115,6 +116,7 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
 
 
         mapView = root.findViewById(R.id.map_View)
+        maxlocation = root.findViewById(R.id.map_maxlocations)
         val slider = root.findViewById<Slider>(R.id.slider_km)
         val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
             requireAuthManager().SessionID().take(1).collect {
@@ -134,13 +136,14 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
                         is Result.Success -> {
                             Log.d("result", result.get())
                             otheruserLocations =
-                                JsonDeserializer.decodeFromString<List<OtherUser>>(
+                                JsonDeserializer.decodeFromString<List<ShopMap>>(
                                     result.get()
                                 )
+
                         }
                         is Result.Failure -> {
-                            Log.d("result", result.getException().message.toString())
-                            Toast.makeText(mycontext, "Failure", Toast.LENGTH_LONG)
+                            Log.d("Error",  getError(response))
+                            Toast.makeText(mycontext,  getError(response), Toast.LENGTH_LONG).show()
                         }
 
                     }
@@ -182,16 +185,18 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
                                         is Result.Success -> {
                                             Log.d("result", result.get())
                                             otheruserLocations =
-                                                JsonDeserializer.decodeFromString<List<OtherUser>>(
+                                                JsonDeserializer.decodeFromString<List<ShopMap>>(
                                                     result.get()
                                                 )
+                                            if(otheruserLocations.size == Maxnumber && context != null)
+                                                Toast.makeText(requireContext(),"Es gibt keine Weiteren Hilfesuchenden mehr in der Umgebung",Toast.LENGTH_LONG).show()
                                         }
                                         is Result.Failure -> {
                                             Log.d(
-                                                "result",
-                                                result.getException().message.toString()
+                                                "Error",
+                                                    getError(response)
                                             )
-                                            Toast.makeText(mycontext, "Failure", Toast.LENGTH_LONG)
+                                            Toast.makeText(mycontext,  getError(response), Toast.LENGTH_LONG).show()
                                             otheruserLocations = mutableListOf()
                                         }
 
@@ -213,7 +218,7 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
                             recyclerlist = createRecyclerViewLocations()!!
                             val locationAdapter = LocationRecyclerViewAdapter(
                                 recyclerlist,
-                                mapboxMap, mystyle
+                                mapboxMap, mystyle ,requireContext()
                             )
 
                             recyclerView.adapter = locationAdapter
@@ -224,7 +229,7 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
                                 val bounds = LatLngBounds.Builder()
 
                                 for (i in otheruserLocations)
-                                    bounds.include(i.location.getLatLong())
+                                    bounds.include(i.helpsearcher.location.getLatLong())
                                 bounds.include(
                                     LatLng(
                                         lastKnownLocation!!.latitude,
@@ -273,61 +278,69 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
 
     lateinit var  scaleBarPlugin : ScaleBarPlugin
     override fun onMapReady(mapboxMap: MapboxMap) {
-        GlobalScope.launch (Dispatchers.IO){
-            this@MapFragment.mapboxMap = mapboxMap
-            if (!PermissionsManager.areLocationPermissionsGranted(mycontext)) {
-                permissionsManager = PermissionsManager( this@MapFragment)
-                permissionsManager.requestLocationPermissions(activity)
+        try {
+            GlobalScope.launch(Dispatchers.IO) {
+                this@MapFragment.mapboxMap = mapboxMap
+                if (!PermissionsManager.areLocationPermissionsGranted(mycontext)) {
+                    permissionsManager = PermissionsManager(this@MapFragment)
+                    permissionsManager.requestLocationPermissions(activity)
+                }
+                while (!PermissionsManager.areLocationPermissionsGranted(mycontext)) {
+                }
+                withContext(Dispatchers.Main) {
+                    mapboxMap.setStyle(
+                            Style.MAPBOX_STREETS
+                    ) { style ->
+                        mystyle = style
+                        mapboxMap.setMinZoomPreference(5.89);
+                        mapboxMap.setMaxZoomPreference(16.0);
+
+                        mapboxMap.uiSettings.isTiltGesturesEnabled = false
+                        //mapboxMap.uiSettings.isRotateGesturesEnabled = false
+                        mapboxMap.uiSettings.isZoomGesturesEnabled = false
+                        mapboxMap.uiSettings.isScrollGesturesEnabled = false
+                        enableLocationComponent(style)
+                        initFeatureCollection();
+                        // initMarkerIcons(style);
+                        createOtherUser(style)
+                        setUpMarkerLayer(style);
+                        initRecyclerView();
+                        // Toast.makeText(this, "Done", Toast.LENGTH_SHORT).show();
+                        setUpInfoWindowLayer(style)
+
+
+                        scaleBarPlugin = ScaleBarPlugin(mapView!!, mapboxMap)
+
+                        val scaleBarOptions = ScaleBarOptions(mycontext)
+                        scaleBarOptions
+                                .setTextColor(R.color.black)
+                                .setTextSize(40f)
+                                .setBarHeight(15f)
+                                .setBorderWidth(5f)
+                                .setMetricUnit(true)
+                                .setRefreshInterval(15)
+                                .setMarginTop(30f)
+                                .setMarginLeft(16f)
+                                .setTextBarMargin(15f)
+
+                        // Give the plugin the ScaleBarOptions object to style the scale bar
+                        scaleBarPlugin.create(scaleBarOptions)
+
+
+                        mapboxMap.addOnMapClickListener(this@MapFragment);
+
+                    }
+                }
             }
-            while (!PermissionsManager.areLocationPermissionsGranted(mycontext)){}
-            withContext(Dispatchers.Main){
-            mapboxMap.setStyle(
-                    Style.MAPBOX_STREETS
-            ) { style ->
-                mystyle = style
-                mapboxMap.setMinZoomPreference(5.89);
-                mapboxMap.setMaxZoomPreference(16.0);
+        }catch (ex: java.lang.Exception){
 
-                mapboxMap.uiSettings.isTiltGesturesEnabled = false
-                //mapboxMap.uiSettings.isRotateGesturesEnabled = false
-                mapboxMap.uiSettings.isZoomGesturesEnabled = false
-                mapboxMap.uiSettings.isScrollGesturesEnabled = false
-                enableLocationComponent(style)
-                initFeatureCollection();
-                // initMarkerIcons(style);
-                createOtherUser(style)
-                setUpMarkerLayer(style);
-                initRecyclerView();
-                // Toast.makeText(this, "Done", Toast.LENGTH_SHORT).show();
-                setUpInfoWindowLayer(style)
-
-
-                scaleBarPlugin = ScaleBarPlugin(mapView!!, mapboxMap)
-
-                val scaleBarOptions = ScaleBarOptions(mycontext)
-                scaleBarOptions
-                        .setTextColor(R.color.black)
-                        .setTextSize(40f)
-                        .setBarHeight(15f)
-                        .setBorderWidth(5f)
-                        .setMetricUnit(true)
-                        .setRefreshInterval(15)
-                        .setMarginTop(30f)
-                        .setMarginLeft(16f)
-                        .setTextBarMargin(15f)
-
-                // Give the plugin the ScaleBarOptions object to style the scale bar
-                scaleBarPlugin.create(scaleBarOptions)
-
-
-                mapboxMap.addOnMapClickListener(this@MapFragment);
-
-            }}
         }
     }
 
     fun createOtherUser(style: Style){
 
+        if(!style.isFullyLoaded)
+            return
         symbolManager = SymbolManager(mapView, mapboxMap, style)
         style.addImage(
             SYMBOL_ICON_ID, BitmapFactory.decodeResource(
@@ -340,7 +353,7 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
         for (user in otheruserLocations)
             symbolManager.create(
                 SymbolOptions()
-                    .withLatLng(user.location.getLatLong())
+                    .withLatLng(user.helpsearcher.location.getLatLong())
                     .withIconImage(SYMBOL_ICON_ID)
                     .withIconSize(1.0f)
 
@@ -517,7 +530,7 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
             featureList.add(
                 Feature.fromGeometry(
                     Point.fromLngLat(
-                        user.location.getLatLong().latitude, user.location.getLatLong().longitude
+                        user.helpsearcher.location.getLatLong().latitude, user.helpsearcher.location.getLatLong().longitude
                     )
                 )
             )
@@ -531,7 +544,7 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
         recyclerlist =  createRecyclerViewLocations()!!
         val locationAdapter = LocationRecyclerViewAdapter(
             recyclerlist,
-            mapboxMap, mystyle
+            mapboxMap, mystyle,requireContext()
         )
         recyclerView.layoutManager = LinearLayoutManager(
             mycontext,
@@ -582,11 +595,16 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
         val locationList: ArrayList<SingleRecyclerViewLocation> = ArrayList()
         for (user in otheruserLocations) {
             val singleLocation = SingleRecyclerViewLocation()
-            singleLocation.name =  user.City
-            singleLocation.bedInfo = user.usertype_txt
-            singleLocation.profilepic = user.profile_pic
+            singleLocation.id = user.id
+            singleLocation.name =  user.helpsearcher.firstname + " "+  user.helpsearcher.name
+            singleLocation.price =  "Preis: ${ String.format(
+                    "%.2f",
+                    user.buylist.articles.sumOf { (it.count * it.item.cost) })} €"
+            singleLocation.count = "Anzahl: ${ user.buylist.articles.sumBy {  it.count  } }"
+            singleLocation.createdate = user.creation_date
+            singleLocation.profilepic = user.helpsearcher.profile_pic
 
-            singleLocation.locationCoordinates =user.location.getLatLong()
+            singleLocation.locationCoordinates =user.helpsearcher.location.getLatLong()
             locationList.add(singleLocation)
         }
         return locationList
@@ -598,7 +616,7 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
     @SuppressLint("MissingPermission")
     private fun enableLocationComponent(loadedMapStyle: Style) {
 // Check if permissions are enabled and if not request
-        if (PermissionsManager.areLocationPermissionsGranted(mycontext)) {
+        if (PermissionsManager.areLocationPermissionsGranted(mycontext) && mystyle.isFullyLoaded) {
 
 // Create and customize the LocationComponent's options
             val customLocationComponentOptions = LocationComponentOptions.builder(mycontext)
@@ -656,10 +674,10 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
                                         }
                                         is Result.Failure -> {
                                             Log.d(
-                                                "result",
-                                                result.getException().message.toString()
+                                                "Error",
+                                                    getError(response)
                                             )
-                                            Toast.makeText(mycontext, "Failure", Toast.LENGTH_LONG)
+                                            Toast.makeText(mycontext,  getError(response), Toast.LENGTH_LONG).show()
                                             otheruserLocations = mutableListOf()
                                         }
 
@@ -693,16 +711,16 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
                                         is Result.Success -> {
                                             Log.d("result", result.get())
                                             otheruserLocations =
-                                                JsonDeserializer.decodeFromString<List<OtherUser>>(
+                                                JsonDeserializer.decodeFromString<List<ShopMap>>(
                                                     result.get()
                                                 )
                                         }
                                         is Result.Failure -> {
                                             Log.d(
                                                 "result",
-                                                result.getException().message.toString()
+                                                    getError(response)
                                             )
-                                            Toast.makeText(mycontext, "Failure", Toast.LENGTH_LONG)
+                                            Toast.makeText(mycontext,  getError(response), Toast.LENGTH_LONG).show()
                                             otheruserLocations = mutableListOf()
                                         }
 
@@ -716,27 +734,29 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
 
                         }
                         job.join()
+                        getMaxLocation()
                         initFeatureCollection();
 
                         Log.d("OtherUserCount", otheruserLocations.size.toString())
                         LatLng(lastKnownLocation!!.latitude, lastKnownLocation!!.longitude)
                         withContext(Dispatchers.Main) {
                             recyclerlist =  createRecyclerViewLocations()!!
-                            val locationAdapter = LocationRecyclerViewAdapter(
+                            if(context != null)
+                                recyclerView.adapter  = LocationRecyclerViewAdapter(
                                 recyclerlist,
-                                mapboxMap, mystyle
+                                mapboxMap, mystyle,requireContext()
                             )
 
-                            recyclerView.adapter = locationAdapter
+
                             symbolManager.deleteAll()
-                            createOtherUser(mystyle)
+                            createOtherUser(loadedMapStyle)
 
                             if(otheruserLocations.isNotEmpty()) {
 
                                 val bounds = LatLngBounds.Builder()
 
                                 for (i in otheruserLocations)
-                                    bounds.include(i.location.getLatLong())
+                                    bounds.include(i.helpsearcher.location.getLatLong())
                                 bounds.include(
                                     LatLng(
                                         lastKnownLocation!!.latitude,
@@ -787,6 +807,55 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
         locationEngine!!.getLastLocation(callback)
     }
 
+    fun getMaxLocation(){
+        val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
+            requireAuthManager().SessionID().take(1).collect {
+
+                val url = FuelManager.instance.basePath + RestPath.otherUsers(
+                    it,
+                    100.toString()
+                )
+
+                Log.d("URL", url)
+
+                Fuel.get(
+                    url
+                ).responseString { request, response, result ->
+
+                    when (result) {
+                        is Result.Success -> {
+                            Log.d("result", result.get())
+                             val list =
+                                JsonDeserializer.decodeFromString<List<ShopMap>>(
+                                    result.get()
+                                )
+                            Maxnumber = list.size
+                            if(activity != null)
+                             requireActivity().runOnUiThread {
+
+                                 maxlocation.text = "Max Hilfesuchende in 100km: ${list.size}"
+                             }
+                        }
+                        is Result.Failure -> {
+                            Log.d(
+                                "Error",
+                                    getError(response)
+                            )
+
+
+                        }
+
+                    }
+
+
+                }.join()
+
+
+            }
+
+        }
+        job.start()
+    }
 
     private class LocationChangeListeningActivityLocationCallback internal constructor(activity: MapFragment) :
         LocationEngineCallback<LocationEngineResult> {
@@ -801,6 +870,9 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
             val activity: MapFragment? = activityWeakReference.get()
             if (activity != null) {
                 val location = result.lastLocation ?: return
+
+                if(activity.lastKnownLocation == null)
+                    return
 
 // Create a Toast which displays the new location's coordinates
                 if(activity.lastKnownLocation?.latitude != location.latitude && activity.lastKnownLocation?.longitude != location.longitude  )
@@ -848,6 +920,10 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
         )
                 .show()
     }
+
+
+
+
 
     override fun onExplanationNeeded(permissionsToExplain: List<String>) {
         Toast.makeText(mycontext, R.string.user_location_permission_explanation, Toast.LENGTH_LONG).show()
@@ -913,16 +989,18 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
 
     class SingleRecyclerViewLocation {
 
-
+        var id : Int = -1
         var name: String? = null
-        var bedInfo: String? = null
+        var price: String? = null
+        var count : String?   = null
+        var createdate : String? = null
         var locationCoordinates: LatLng? = null
         var profilepic : String ? = null
     }
 
     internal class LocationRecyclerViewAdapter(
         private val locationList: List<SingleRecyclerViewLocation>,
-        private val map: MapboxMap, private val style: Style
+        private val map: MapboxMap, private val style: Style, private val context: Context
     ) :
         RecyclerView.Adapter<LocationRecyclerViewAdapter.MyViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -934,8 +1012,65 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
         override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
             val singleRecyclerViewLocation = locationList[position]
             holder.name.text = singleRecyclerViewLocation.name
-            holder.numOfBeds.text = singleRecyclerViewLocation.bedInfo
+            holder.price.text = singleRecyclerViewLocation.price
+            holder.count.text = singleRecyclerViewLocation.count
+            holder.createdate.text = FormatDate( singleRecyclerViewLocation.createdate!!)
             Picasso.get().load(singleRecyclerViewLocation.profilepic).into(holder.profilepic);
+
+            holder.btn.setOnClickListener {
+                MaterialAlertDialogBuilder(context)
+                        .setTitle("Hilfe anbieten")
+                        .setMessage("Willst du ${singleRecyclerViewLocation.name} helfen?")
+                        .setNeutralButton("Abbrechen") { dialog, which ->
+                            // Respond to neutral button press
+                        }
+                        .setPositiveButton("Ja") { dialog, which ->
+                            // Respond to positive button press
+                            //create an antrag with firebase or with a new api table
+                            GlobalScope.launch(Dispatchers.IO) {
+                                requireAuthManager().SessionID().take(1).collect {
+                                    Fuel.post(
+                                           RestPath.angebotadd, listOf("session_id" to it , "shop" to singleRecyclerViewLocation.id)
+                                    ).responseString { request, response, result ->
+
+                                        when (result) {
+
+
+                                            is Result.Failure -> {
+                                                (context as Activity).runOnUiThread() {
+                                                    Log.d(
+                                                            "Error",
+                                                            getError(response)
+                                                    )
+                                                    Toast.makeText(
+                                                            context,
+                                                            getError(response),
+                                                            Toast.LENGTH_LONG
+                                                    )
+                                                            .show()
+
+
+                                                    Log.d("Angebot", request.headers.toString())
+                                                }
+                                            }
+                                            is Result.Success -> {
+                                                val data = result.get()
+
+                                                Log.d("Angebot", data)
+
+                                                (context as Activity).runOnUiThread {
+                                                     ///show snack
+                                                }
+
+                                            }
+                                        }
+                                    }.join()
+
+                                }}
+                          }
+                        .show()
+            }
+
             holder.setClickListener(object : ItemClickListener {
                 override fun onClick(view: View?, position: Int) {
                     val selectedLocationLatLng = locationList[position].locationCoordinates
@@ -969,9 +1104,12 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
         internal class MyViewHolder(view: View) : RecyclerView.ViewHolder(view),
             View.OnClickListener {
             var name: TextView
-            var numOfBeds: TextView
+            var count: TextView
+            var createdate: TextView
+            var price: TextView
             var singleCard: CardView
             var profilepic : ImageView
+            var btn : Button
             var clickListener: ItemClickListener? = null
             @JvmName("setClickListener1")
             fun setClickListener(itemClickListener: ItemClickListener) {
@@ -983,10 +1121,14 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
             }
 
             init {
-                name = view.findViewById(R.id.location_title_tv)
-                numOfBeds = view.findViewById(R.id.location_num_of_beds_tv)
+                name = view.findViewById(R.id.username_cardview)
+                count = view.findViewById(R.id.anzahl_cardview)
                 singleCard = view.findViewById(R.id.single_location_cardview)
                 profilepic = view.findViewById(R.id.profilepic_cardview)
+                price = view.findViewById(R.id.price_cardview)
+                createdate = view.findViewById(R.id.create_cardview)
+                btn = view.findViewById(R.id.helpbtn_cardview)
+
                 singleCard.setOnClickListener(this)
             }
         }

@@ -1,49 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="300dp"
-    android:layout_height="150dp"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="140dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/single_location_cardview"
-    android:layout_marginEnd="8dp"
-    android:layout_marginLeft="8dp"
-    android:layout_marginRight="8dp"
-    android:layout_marginStart="8dp"
-    android:alpha="0.7"
-    android:layout_marginTop="8dp">
+    android:layout_margin="5dp"
+    app:elevation="4dp"
+    >
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
-
+        android:layout_margin="16dp"
         >
-            <ImageView
-                android:id="@+id/profilepic_cardview"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_alignParentLeft="true"
-                android:layout_margin="20dp"
-                />
+        <ImageView
+            android:id="@+id/profilepic_cardview"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_alignParentLeft="true"
+            android:layout_marginRight="10dp"
+            android:layout_margin="10dp"
+            />
         <TextView
-            android:id="@+id/location_title_tv"
+            android:id="@+id/username_cardview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/profilepic_cardview"
-            android:layout_margin="16dp"
-            android:textColor="@color/black"
-            android:textSize="20sp"/>
+            android:layout_marginBottom="10dp"
+            android:text="Adam Omari"
+            android:textSize="24sp"/>
 
         <TextView
             android:layout_toRightOf="@id/profilepic_cardview"
-            android:id="@+id/location_num_of_beds_tv"
-            android:layout_below="@id/location_title_tv"
+            android:id="@+id/anzahl_cardview"
+            android:layout_below="@id/username_cardview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:textColor="@color/mapbox"
-            android:textSize="14sp"/>
+            android:text="Anzahl 4"
+            android:layout_marginRight="10dp"
+            android:textSize="18dp"/>
+        <TextView
+            android:layout_toRightOf="@id/anzahl_cardview"
+            android:id="@+id/price_cardview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/username_cardview"
+            android:text="Preis 22€"
+            android:textSize="18sp"/>
+        <TextView
+            android:layout_centerHorizontal="true"
+            android:id="@+id/create_cardview"
+            android:layout_toRightOf="@id/profilepic_cardview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/anzahl_cardview"
 
+            android:text="heute"
+            android:textSize="18dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/helpbtn_cardview"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/price_cardview"
+            android:layout_alignParentRight="true"
+
+
+            android:elevation="8dp"
+
+            android:text="Help"
+            android:textColor="@color/white"
+            android:textSize="18dp"
+            app:backgroundTint="@color/colorPrimaryDark" />
     </RelativeLayout>
 
 
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

@@ -16,8 +16,6 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.*
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.fragment.app.Fragment
@@ -25,11 +23,17 @@ import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.FileDataPart
 import com.github.kittinunf.fuel.core.Method
 import com.github.kittinunf.result.Result
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.squareup.picasso.Picasso
+import io.moxd.shopforme.JsonDeserializer
 import io.moxd.shopforme.R
+import io.moxd.shopforme.data.AuthManager
 import io.moxd.shopforme.data.RestPath
 import io.moxd.shopforme.data.model.UserME
+import io.moxd.shopforme.getError
 import io.moxd.shopforme.requireAuthManager
+import io.moxd.shopforme.ui.splashscreen.SplashScreen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
@@ -37,7 +41,6 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
 
 
 class ProfileFragment : Fragment()  {
@@ -47,7 +50,18 @@ class ProfileFragment : Fragment()  {
 
     }
     private lateinit var profilepic : ImageView
-
+    private  lateinit var name : EditText
+    private  lateinit var firstname : EditText
+    private  lateinit var email : EditText
+    private  lateinit var street : EditText
+    private  lateinit var phonenumber : EditText
+    private  lateinit var plz : EditText
+    private  lateinit var city : EditText
+    private  lateinit var usertype : Spinner
+    private  lateinit var updatebtn : FloatingActionButton
+    private  lateinit var savebtn : Button
+    private  lateinit var cancel : Button
+    private  lateinit var newpicbtn : FloatingActionButton
     var usertypes_txt = arrayListOf<String>("Helfer", "Hilfesuchender")
     var usertypes = arrayListOf<String>("HF", "HFS")
 
@@ -59,19 +73,19 @@ class ProfileFragment : Fragment()  {
     ): View? {
         val root = inflater.inflate(R.layout.auth_profile_fragment, container, false)
 
-        val name = root.findViewById<EditText>(R.id.name_field)
-        val firstname = root.findViewById<EditText>(R.id.firstname_field)
-        val email = root.findViewById<EditText>(R.id.email_field)
-        val street = root.findViewById<EditText>(R.id.Street_field)
-        val phonenumber = root.findViewById<EditText>(R.id.phonenumber_field)
-        val plz = root.findViewById<EditText>(R.id.plz_field)
-        val city = root.findViewById<EditText>(R.id.City_field)
-        val usertype = root.findViewById<Spinner>(R.id.usertype_field)
+        name = root.findViewById<EditText>(R.id.name_field)
+        firstname = root.findViewById<EditText>(R.id.firstname_field)
+        email = root.findViewById<EditText>(R.id.email_field)
+        street = root.findViewById<EditText>(R.id.Street_field)
+        phonenumber = root.findViewById<EditText>(R.id.phonenumber_field)
+        plz = root.findViewById<EditText>(R.id.plz_field)
+        city = root.findViewById<EditText>(R.id.City_field)
+        usertype = root.findViewById<Spinner>(R.id.usertype_field)
         profilepic = root.findViewById<ImageView>(R.id.ProfilePic_field)
-        val updatebtn = root.findViewById<Button>(R.id.updateProfile_btn)
-        val savebtn = root.findViewById<Button>(R.id.saveProfile_btn)
-        val cancel = root.findViewById<Button>(R.id.cancelProfile_btn)
-        val newpicbtn = root.findViewById<Button>(R.id.uploadnewpic)
+        updatebtn = root.findViewById<FloatingActionButton>(R.id.updateProfile_btn)
+        savebtn = root.findViewById<Button>(R.id.saveProfile_btn)
+        cancel = root.findViewById<Button>(R.id.cancelProfile_btn)
+        newpicbtn = root.findViewById<FloatingActionButton>(R.id.uploadnewpic)
 
 
         val ad = ArrayAdapter<String>(root.context, R.layout.support_simple_spinner_dropdown_item, usertypes_txt)
@@ -105,18 +119,34 @@ class ProfileFragment : Fragment()  {
                 requireAuthManager().SessionID().take(1).collect {
                     //do actions
 
+
+
+
+
                     val asyncupload = Fuel.upload(RestPath.userUpdate(it), Method.PUT, //"public" to "${name.text}" ,
                             listOf("name" to "${name.text}", "firstname" to "${firstname.text}", "phone_number" to "${phonenumber.text}", "Street" to "${street.text}", "plz" to "${plz.text}", "City" to "${city.text}", "usertype" to usertypes[usertype.selectedItemPosition])
 
                     ).responseString { request, response, result ->
                         when (result) {
                             is Result.Failure -> {
+                                getUser()
+                                Toast.makeText(root.context, getError(response), Toast.LENGTH_LONG).show()
 
-                                Toast.makeText(root.context, "Update Failed", Toast.LENGTH_LONG).show()
-                                Log.d("Update", result.getException().message.toString())
+                                Log.d("Update", getError(response))
                             }
                             is Result.Success -> {
+                                if (AuthManager.User?.usertype_txt != usertypes_txt[usertype.selectedItemPosition])
+                                    MaterialAlertDialogBuilder(requireContext())
+                                            .setTitle("Usertype Geändert")
+                                            .setMessage("App muss neustarten")
 
+                                            .setPositiveButton("OK") { _, _ ->
+
+                                                val intent = Intent(requireContext(), SplashScreen::class.java)
+                                                requireActivity().finish()
+                                                requireActivity().startActivity(intent)
+
+                                            }.show()
 
                                 Toast.makeText(root.context, "Update Sucess", Toast.LENGTH_LONG).show()
                             }
@@ -185,21 +215,31 @@ class ProfileFragment : Fragment()  {
 
         }
 
+        getUser()
+
+
+
+
+        return  root;
+    }
+
+    fun getUser(){
         val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
             requireAuthManager().SessionID().take(1).collect {
                 //do actions
 
                 Fuel.get(
                         RestPath.user(it)
-                ).responseString { _, _, result ->
+                ).responseString { _, response, result ->
 
                     when (result) {
 
 
                         is Result.Failure -> {
                             this@ProfileFragment.activity?.runOnUiThread() {
-                                Log.d("Error", result.getException().message.toString())
-                                Toast.makeText(root.context, "Login Failed", Toast.LENGTH_LONG).show()
+                                Log.d("Error", getError(response))
+                                Toast.makeText(requireContext(), getError(response), Toast.LENGTH_LONG).show()
+
                             }
                         }
                         is Result.Success -> {
@@ -209,7 +249,7 @@ class ProfileFragment : Fragment()  {
 
                             this@ProfileFragment.activity?.runOnUiThread() {
 
-                                val Profile = Json.decodeFromString<UserME>(data);
+                                val Profile = JsonDeserializer.decodeFromString<UserME>(data);
                                 Picasso.get().load(Profile.profile_pic).into(profilepic)
                                 //does actions on Ui-Thread u neeed it because Ui-elements can only be edited in Main/Ui-Thread
 
@@ -227,19 +267,14 @@ class ProfileFragment : Fragment()  {
 
                             }
                         }
-                        }
-            }.join()
+                    }
+                }.join()
 
 
             }
 
         }
         job.start()
-
-
-
-
-        return  root;
     }
     override fun onRequestPermissionsResult(
             requestCode: Int,
@@ -266,40 +301,41 @@ class ProfileFragment : Fragment()  {
 
 
 
-            Log.d("Picturerun", "Running")
-            if(  it.resultCode == Activity.RESULT_OK  ){
+        Log.d("Picturerun", "Running")
+        if(  it.resultCode == Activity.RESULT_OK  ){
 
-                val uri = it.data!!.data
+            val uri = it.data!!.data
 
             profilepic.setImageURI(uri)
-            Log.d("Picturerun",  getPath(uri)!!)
+            Log.d("Picturerun", getPath(uri)!!)
 
 
 
             val data = FileDataPart.from(getPath(uri)!!, name = "profile_pic")
             // from(data?.data?.encodedPath.toString() , name = "profile_pic")
-        val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
-            requireAuthManager().SessionID().take(1).collect {
-                //do actions
+            val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
+                requireAuthManager().SessionID().take(1).collect {
+                    //do actions
 
-                val asyncupload = Fuel.upload(RestPath.userUpdate(it), Method.PUT)
-                        .add(data)
-                        .responseString { _, _, result ->
-                            when (result) {
-                                is Result.Failure -> {
-                                    Toast.makeText(this@ProfileFragment.context, "Picture Update Failed", Toast.LENGTH_LONG).show()
-                                }
-                                is Result.Success -> {
-                                    Toast.makeText(this@ProfileFragment.context, "Picture Update Sucess", Toast.LENGTH_LONG).show()
+                    val asyncupload = Fuel.upload(RestPath.userUpdate(it), Method.PUT)
+                            .add(data)
+                            .responseString { _, response, result ->
+                                when (result) {
+                                    is Result.Failure -> {
+                                        Toast.makeText(this@ProfileFragment.context, getError(response), Toast.LENGTH_LONG).show()
+                                        getUser()
+                                    }
+                                    is Result.Success -> {
+                                        Toast.makeText(this@ProfileFragment.context, "Picture Update Sucess", Toast.LENGTH_LONG).show()
+                                    }
                                 }
                             }
-                        }
-                asyncupload.join();
-            }}
-        job.start()
+                    asyncupload.join();
+                }}
+            job.start()
 
 
-    }}
+        }}
 
     fun chooseImageGallery() {
         val intent = Intent()

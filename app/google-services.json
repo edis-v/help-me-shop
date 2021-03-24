@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "658256487858",
+    "project_id": "help-me-shop-2c19d",
+    "storage_bucket": "help-me-shop-2c19d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:658256487858:android:79e5806a09c3767356b0ab",
+        "android_client_info": {
+          "package_name": "io.moxd.shopforme"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "658256487858-gv3oafanppv5jal29vmis0l95465d2o7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAV82_oe-7Olj-bAgP2cHXv3EPlvIW-C0o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "658256487858-gv3oafanppv5jal29vmis0l95465d2o7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

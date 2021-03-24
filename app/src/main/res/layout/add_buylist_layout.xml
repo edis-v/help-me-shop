@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:elevation="2dp"
+    >
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/buy_item_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/buylist_info"
+         />
+    <RelativeLayout
+        android:id="@+id/buylist_info"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:elevation="4dp"
+        android:background="@color/colorSecondaryLight">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buylist_create"
+            style="@style/Widget.ShopForMe.Button"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_alignBottom="@+id/buylist_info_price"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="27dp"
+            android:layout_marginBottom="13dp"
+            android:text="Create"
+            android:textAppearance="@style/TextAppearance.ShopForMe.Button" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/buylist_info_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Anzahl: 0"
+            android:textSize="24dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginLeft="25dp"
+            />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/buylist_info_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Preis 0.0€"
+            android:textSize="24dp"
+            android:layout_below="@id/buylist_info_count"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="25dp"
+            />
+    </RelativeLayout>
+</RelativeLayout>
