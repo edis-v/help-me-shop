@@ -208,15 +208,13 @@ class AuthManager constructor(context: Context) {
                     is com.github.kittinunf.result.Result.Success -> {
 
                         GlobalScope.launch {
-                            eventChannel.send(Result.RegisterSuccess)
+                            eventChannel.send(Result.RegisterSuccess(registration.email, registration.password))
                         }
                     }
                     is com.github.kittinunf.result.Result.Failure -> {
-                        getAllError(response).forEach {
-                            Log.d("Error",it)
-                        }
+                        val errorMessages = getAllError(response)
                         GlobalScope.launch {
-                            eventChannel.send(Result.RegisterError(result.getException()))
+                            eventChannel.send(Result.RegisterError(result.getException(), errorMessages))
                         }
                     }
                 }
@@ -257,7 +255,7 @@ class AuthManager constructor(context: Context) {
         object UnauthSucess : Result()
         data class AuthSucess(val session: SessionDto) : Result()
         data class AuthError(val exception: Exception) : Result()
-        object RegisterSuccess : Result()
-        data class RegisterError(val exception: Exception) : Result()
+        data class RegisterSuccess(val email: String, val password: String) : Result()
+        data class RegisterError(val exception: Exception, val errorMessages: List<String>) : Result()
     }
 }

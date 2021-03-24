@@ -74,12 +74,10 @@ class RegistrationViewModel(
             registerFlow.collectLatest { result ->
                 when(result) {
                     is AuthManager.Result.RegisterSuccess -> {
-                        eventChannel.send(RegistrationEvent.Success)
-                        Log.d("Success", "Success")
+                        eventChannel.send(RegistrationEvent.Success(result.email, result.password))
                     }
                     is AuthManager.Result.RegisterError -> {
-                        eventChannel.send(RegistrationEvent.Error)
-                        Log.d("Error", "Error")
+                        eventChannel.send(RegistrationEvent.Error(result.errorMessages.first()))
                     }
                 }
             }
@@ -142,7 +140,7 @@ class RegistrationViewModel(
         object FeedbackPasswordTooWeak : RegistrationEvent()
         object FeedbackPasswordNotIdentical : RegistrationEvent()
         object FeedbackAddressNotParsable : RegistrationEvent()
-        object Success: RegistrationEvent()
-        object Error: RegistrationEvent()
+        data class Success(val email: String, val password: String): RegistrationEvent()
+        data class Error(val lastError: String): RegistrationEvent()
     }
 }
