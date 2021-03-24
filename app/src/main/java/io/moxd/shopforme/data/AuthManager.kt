@@ -65,7 +65,7 @@ class AuthManager constructor(context: Context) {
         var User : UserME? = null //switch not normal objects
     }
     suspend fun login2(email: String, password: String) {
-            unauth()
+             
         val log = Fuel.post(
                 RestPath.login,
                 listOf("email" to email, "password" to password)

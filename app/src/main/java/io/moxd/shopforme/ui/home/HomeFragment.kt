@@ -111,27 +111,30 @@ class HomeFragment: Fragment(R.layout.main_home_fragment) {
                                     ft.commit()
                                 }
                                 Firebase.messaging.isAutoInitEnabled = true
+                                try {
+                                    FirebaseMessaging.getInstance().token.addOnCompleteListener(
+                                            OnCompleteListener { task ->
+                                                if (!task.isSuccessful) {
+                                                    Log.w(
+                                                            "Firebase",
+                                                            "Fetching FCM registration token failed",
+                                                            task.exception
+                                                    )
+                                                    return@OnCompleteListener
+                                                }
 
-                                FirebaseMessaging.getInstance().token.addOnCompleteListener(
-                                    OnCompleteListener { task ->
-                                        if (!task.isSuccessful) {
-                                            Log.w(
-                                                "Firebase",
-                                                "Fetching FCM registration token failed",
-                                                task.exception
-                                            )
-                                            return@OnCompleteListener
-                                        }
+                                                // Get new FCM registration token
+                                                val token = task.result
 
-                                        // Get new FCM registration token
-                                        val token = task.result
+                                                // sendRegistrationToServer(token)
+                                                // Log and toast
+                                                val msg = getString(R.string.msg_token_fmt, token)
+                                                Log.d("Firebase", msg)
+                                                //    Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+                                            })
+                                }catch (ex:Exception){
 
-                                        // sendRegistrationToServer(token)
-                                        // Log and toast
-                                        val msg = getString(R.string.msg_token_fmt, token)
-                                        Log.d("Firebase", msg)
-                                        //    Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
-                                    })
+                                }
 
                                 updateNavbar()
                                 val nManager: LocationManager =
