@@ -21,11 +21,9 @@ import io.moxd.shopforme.data.AuthManager.PreferencesKeys.EMAIL
 import io.moxd.shopforme.data.AuthManager.PreferencesKeys.PASSWORD
 import io.moxd.shopforme.data.AuthManager.PreferencesKeys.SESSION_ID
 import io.moxd.shopforme.data.dto.SessionDto
-import io.moxd.shopforme.data.model.Registration
-import io.moxd.shopforme.data.model.User
-import io.moxd.shopforme.data.model.UserME
-import io.moxd.shopforme.data.model.UserType
+import io.moxd.shopforme.data.model.*
 import io.moxd.shopforme.data.proto_serializer.toProto
+import io.moxd.shopforme.getAllError
 import io.moxd.shopforme.getError
 import io.moxd.shopforme.service.AlarmServiceSession
 import kotlinx.coroutines.GlobalScope
@@ -142,7 +140,7 @@ class AuthManager constructor(context: Context) {
                         RestPath.user(sessionId)
                 ).responseString { request, response, result ->
                     when (result) {
-                        is com.github.kittinunf.result.Result -> {
+                        is com.github.kittinunf.result.Result.Success -> {
                             GlobalScope.launch {
                                 try {
 
@@ -189,12 +187,12 @@ class AuthManager constructor(context: Context) {
     }
 
     fun register(registration: Registration) {
-        try {
+
             Fuel.post(
                 RestPath.register,
                 listOf(
                     "name" to registration.name,
-                    "fistname" to  registration.firstName,
+                    "firstname" to  registration.firstName,
                     "password" to registration.password,
                     "password2" to registration.password,
                     "email" to registration.email,
@@ -203,25 +201,27 @@ class AuthManager constructor(context: Context) {
                     "profile_pic" to null,
                     "plz" to 51373, // TODO Change Layout
                     "City" to "Leverkusen", // TODO Change Layout
-                    "Usertype" to UserType.Hilfesuchender // TODO Change Layout
+                    "usertype" to UserType2.Type[0].second// TODO Change Layout
                 )
             ).responseString { request, response, result ->
                 when (result) {
-                    is com.github.kittinunf.result.Result -> {
+                    is com.github.kittinunf.result.Result.Success -> {
+
                         GlobalScope.launch {
                             eventChannel.send(Result.RegisterSuccess)
                         }
                     }
                     is com.github.kittinunf.result.Result.Failure -> {
+                        getAllError(response).forEach {
+                            Log.d("Error",it)
+                        }
                         GlobalScope.launch {
                             eventChannel.send(Result.RegisterError(result.getException()))
                         }
                     }
                 }
-            }
-        } catch (exception: Exception) {
+            }.join()
 
-        }
     }
 
     private object PreferencesKeys {

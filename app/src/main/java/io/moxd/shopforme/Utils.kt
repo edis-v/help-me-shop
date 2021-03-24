@@ -54,14 +54,27 @@ fun getError(response: Response) : String = runBlocking{
         val data = response.body().asString("application/json")
         Log.d("getErrorData", data)
 
-        /*   if(data.contains("Invalid Sessionid"))
-        GlobalScope.launch {  requireAuthManager().auth2() }
 
-*/
         return@withContext if (data.contains("non_field_errors"))
             JsonDeserializer.decodeFromString<ErrorField>(data).Error()
         else
             data.replace("[\"", "").replace("\"]", "")
+    }
+}
+
+
+fun getAllError(response: Response) : List<String> = runBlocking{
+    withContext(Dispatchers.IO) {
+
+        val data = response.body().asString("application/json")
+        Log.d("getErrorData", data)
+
+
+         if (data.contains("non_field_errors"))
+             return@withContext JsonDeserializer.decodeFromString<ErrorField>(data).non_field_errors
+        else
+             return@withContext data.replace("[\"", "").replace("\"]", "").split(",")
+
     }
 }
 

@@ -5,7 +5,13 @@ import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-enum class UserType { Helfer, Hilfesuchender }
+enum class UserType { Helfer, Hilfesuchender  }
+
+class UserType2 {
+    companion object{
+        val Type : List<Pair<String,String>> = listOf(Pair("Hilfesuchender","HFS"),Pair("Helfer","HF"))
+    }
+}
 
 @Parcelize
 @Serializable
