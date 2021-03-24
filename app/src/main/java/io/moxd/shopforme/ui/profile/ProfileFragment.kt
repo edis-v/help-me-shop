@@ -175,7 +175,7 @@ class ProfileFragment : Fragment()  {
             city.isEnabled = false
             cancel.visibility = GONE
             savebtn.visibility = GONE
-            newpicbtn.visibility = GONE
+       //     newpicbtn.visibility = GONE
             updatebtn.visibility = VISIBLE
 
         }
@@ -193,7 +193,7 @@ class ProfileFragment : Fragment()  {
             city.isEnabled = false
             cancel.visibility = GONE
             savebtn.visibility = GONE
-            newpicbtn.visibility = GONE
+       //     newpicbtn.visibility = GONE
             updatebtn.visibility = VISIBLE
         }
 
@@ -211,7 +211,7 @@ class ProfileFragment : Fragment()  {
             updatebtn.visibility = GONE
             cancel.visibility = VISIBLE
             savebtn.visibility = VISIBLE
-            newpicbtn.visibility = VISIBLE
+      //      newpicbtn.visibility = VISIBLE
 
         }
 

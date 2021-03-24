@@ -21,6 +21,7 @@ import io.moxd.shopforme.MainActivity
 import io.moxd.shopforme.R
 import io.moxd.shopforme.data.RestPath
 import io.moxd.shopforme.requireAuthManager
+import io.moxd.shopforme.ui.splashscreen.SplashScreen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
@@ -157,7 +158,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         }
 
-        val intent = Intent(this, MainActivity::class.java)
+        val intent = Intent(this, SplashScreen::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         val pendingIntent = PendingIntent.getActivity(
             this, 0 /* Request code */, intent,

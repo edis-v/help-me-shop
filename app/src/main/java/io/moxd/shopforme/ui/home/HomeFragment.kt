@@ -111,7 +111,7 @@ class HomeFragment: Fragment(R.layout.main_home_fragment) {
                                     ft.commit()
                                 }
                                 Firebase.messaging.isAutoInitEnabled = true
-                                try {
+
                                     FirebaseMessaging.getInstance().token.addOnCompleteListener(
                                             OnCompleteListener { task ->
                                                 if (!task.isSuccessful) {
@@ -123,6 +123,7 @@ class HomeFragment: Fragment(R.layout.main_home_fragment) {
                                                     return@OnCompleteListener
                                                 }
 
+                                                try {
                                                 // Get new FCM registration token
                                                 val token = task.result
 
@@ -130,11 +131,12 @@ class HomeFragment: Fragment(R.layout.main_home_fragment) {
                                                 // Log and toast
                                                 val msg = getString(R.string.msg_token_fmt, token)
                                                 Log.d("Firebase", msg)
+                                            }catch (ex:Exception){
+
+                                    }
                                                 //    Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                                             })
-                                }catch (ex:Exception){
 
-                                }
 
                                 updateNavbar()
                                 val nManager: LocationManager =
