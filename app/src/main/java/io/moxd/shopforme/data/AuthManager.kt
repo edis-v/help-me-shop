@@ -21,7 +21,11 @@ import io.moxd.shopforme.data.AuthManager.PreferencesKeys.EMAIL
 import io.moxd.shopforme.data.AuthManager.PreferencesKeys.PASSWORD
 import io.moxd.shopforme.data.AuthManager.PreferencesKeys.SESSION_ID
 import io.moxd.shopforme.data.dto.SessionDto
+import io.moxd.shopforme.data.model.Registration
+import io.moxd.shopforme.data.model.User
 import io.moxd.shopforme.data.model.UserME
+import io.moxd.shopforme.data.model.UserType
+import io.moxd.shopforme.data.proto_serializer.toProto
 import io.moxd.shopforme.getError
 import io.moxd.shopforme.service.AlarmServiceSession
 import kotlinx.coroutines.GlobalScope
@@ -184,6 +188,42 @@ class AuthManager constructor(context: Context) {
     //    eventChannel.send(Result.UnauthSucess)
     }
 
+    fun register(registration: Registration) {
+        try {
+            Fuel.post(
+                RestPath.register,
+                listOf(
+                    "name" to registration.name,
+                    "fistname" to  registration.firstName,
+                    "password" to registration.password,
+                    "password2" to registration.password,
+                    "email" to registration.email,
+                    "phone_number" to registration.phoneNumber,
+                    "Street" to registration.address,
+                    "profile_pic" to null,
+                    "plz" to 51373, // TODO Change Layout
+                    "City" to "Leverkusen", // TODO Change Layout
+                    "Usertype" to UserType.Hilfesuchender // TODO Change Layout
+                )
+            ).responseString { request, response, result ->
+                when (result) {
+                    is com.github.kittinunf.result.Result -> {
+                        GlobalScope.launch {
+                            eventChannel.send(Result.RegisterSuccess)
+                        }
+                    }
+                    is com.github.kittinunf.result.Result.Failure -> {
+                        GlobalScope.launch {
+                            eventChannel.send(Result.RegisterError(result.getException()))
+                        }
+                    }
+                }
+            }
+        } catch (exception: Exception) {
+
+        }
+    }
+
     private object PreferencesKeys {
         val SESSION_ID = stringPreferencesKey("session_id")
         val EMAIL = stringPreferencesKey("email")
@@ -217,5 +257,7 @@ class AuthManager constructor(context: Context) {
         object UnauthSucess : Result()
         data class AuthSucess(val session: SessionDto) : Result()
         data class AuthError(val exception: Exception) : Result()
+        object RegisterSuccess : Result()
+        data class RegisterError(val exception: Exception) : Result()
     }
 }
