@@ -73,19 +73,19 @@ class ProfileFragment : Fragment()  {
     ): View? {
         val root = inflater.inflate(R.layout.auth_profile_fragment, container, false)
 
-         name = root.findViewById<EditText>(R.id.name_field)
-          firstname = root.findViewById<EditText>(R.id.firstname_field)
-          email = root.findViewById<EditText>(R.id.email_field)
-          street = root.findViewById<EditText>(R.id.Street_field)
-         phonenumber = root.findViewById<EditText>(R.id.phonenumber_field)
-         plz = root.findViewById<EditText>(R.id.plz_field)
+        name = root.findViewById<EditText>(R.id.name_field)
+        firstname = root.findViewById<EditText>(R.id.firstname_field)
+        email = root.findViewById<EditText>(R.id.email_field)
+        street = root.findViewById<EditText>(R.id.Street_field)
+        phonenumber = root.findViewById<EditText>(R.id.phonenumber_field)
+        plz = root.findViewById<EditText>(R.id.plz_field)
         city = root.findViewById<EditText>(R.id.City_field)
-         usertype = root.findViewById<Spinner>(R.id.usertype_field)
+        usertype = root.findViewById<Spinner>(R.id.usertype_field)
         profilepic = root.findViewById<ImageView>(R.id.ProfilePic_field)
-          updatebtn = root.findViewById<FloatingActionButton>(R.id.updateProfile_btn)
-          savebtn = root.findViewById<Button>(R.id.saveProfile_btn)
-          cancel = root.findViewById<Button>(R.id.cancelProfile_btn)
-          newpicbtn = root.findViewById<FloatingActionButton>(R.id.uploadnewpic)
+        updatebtn = root.findViewById<FloatingActionButton>(R.id.updateProfile_btn)
+        savebtn = root.findViewById<Button>(R.id.saveProfile_btn)
+        cancel = root.findViewById<Button>(R.id.cancelProfile_btn)
+        newpicbtn = root.findViewById<FloatingActionButton>(R.id.uploadnewpic)
 
 
         val ad = ArrayAdapter<String>(root.context, R.layout.support_simple_spinner_dropdown_item, usertypes_txt)
@@ -215,7 +215,7 @@ class ProfileFragment : Fragment()  {
 
         }
 
-       getUser()
+        getUser()
 
 
 
@@ -301,10 +301,10 @@ class ProfileFragment : Fragment()  {
 
 
 
-            Log.d("Picturerun", "Running")
-            if(  it.resultCode == Activity.RESULT_OK  ){
+        Log.d("Picturerun", "Running")
+        if(  it.resultCode == Activity.RESULT_OK  ){
 
-                val uri = it.data!!.data
+            val uri = it.data!!.data
 
             profilepic.setImageURI(uri)
             Log.d("Picturerun", getPath(uri)!!)
@@ -313,29 +313,29 @@ class ProfileFragment : Fragment()  {
 
             val data = FileDataPart.from(getPath(uri)!!, name = "profile_pic")
             // from(data?.data?.encodedPath.toString() , name = "profile_pic")
-        val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
-            requireAuthManager().SessionID().take(1).collect {
-                //do actions
+            val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
+                requireAuthManager().SessionID().take(1).collect {
+                    //do actions
 
-                val asyncupload = Fuel.upload(RestPath.userUpdate(it), Method.PUT)
-                        .add(data)
-                        .responseString { _, response, result ->
-                            when (result) {
-                                is Result.Failure -> {
-                                    Toast.makeText(this@ProfileFragment.context, getError(response), Toast.LENGTH_LONG).show()
-                                    getUser()
-                                }
-                                is Result.Success -> {
-                                    Toast.makeText(this@ProfileFragment.context, "Picture Update Sucess", Toast.LENGTH_LONG).show()
+                    val asyncupload = Fuel.upload(RestPath.userUpdate(it), Method.PUT)
+                            .add(data)
+                            .responseString { _, response, result ->
+                                when (result) {
+                                    is Result.Failure -> {
+                                        Toast.makeText(this@ProfileFragment.context, getError(response), Toast.LENGTH_LONG).show()
+                                        getUser()
+                                    }
+                                    is Result.Success -> {
+                                        Toast.makeText(this@ProfileFragment.context, "Picture Update Sucess", Toast.LENGTH_LONG).show()
+                                    }
                                 }
                             }
-                        }
-                asyncupload.join();
-            }}
-        job.start()
+                    asyncupload.join();
+                }}
+            job.start()
 
 
-    }}
+        }}
 
     fun chooseImageGallery() {
         val intent = Intent()

@@ -38,7 +38,7 @@
         android:id="@+id/shopangebot_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#FFFFFF">
+        >
 
     </androidx.recyclerview.widget.RecyclerView>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
@@ -52,7 +52,6 @@
         <com.nambimobile.widgets.efab.Overlay
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
             app:overlay_orientation="portrait"
 
             />

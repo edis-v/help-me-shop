@@ -1,35 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="175dp"
+    android:layout_height="wrap_content"
+    android:minHeight="140dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/single_location_cardview"
-     android:layout_margin="5dp"
-    android:elevation="4dp"
-   >
+    android:layout_margin="5dp"
+    app:elevation="4dp"
+    >
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
         android:layout_margin="16dp"
         >
-            <ImageView
-                android:id="@+id/profilepic_cardview"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_alignParentLeft="true"
-                android:layout_marginRight="10dp"
-                />
+        <ImageView
+            android:id="@+id/profilepic_cardview"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_alignParentLeft="true"
+            android:layout_marginRight="10dp"
+            android:layout_margin="10dp"
+            />
         <TextView
             android:id="@+id/username_cardview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/profilepic_cardview"
             android:layout_marginBottom="10dp"
-            android:textColor="@color/black"
             android:text="Adam Omari"
-            android:textSize="20sp"/>
+            android:textSize="24sp"/>
 
         <TextView
             android:layout_toRightOf="@id/profilepic_cardview"
@@ -37,21 +37,17 @@
             android:layout_below="@id/username_cardview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
-            android:textColor="@color/mapbox"
             android:text="Anzahl 4"
             android:layout_marginRight="10dp"
             android:textSize="18dp"/>
         <TextView
             android:layout_toRightOf="@id/anzahl_cardview"
             android:id="@+id/price_cardview"
-
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/username_cardview"
-            android:textColor="@color/mapbox"
             android:text="Preis 22€"
-            android:textSize="18dp"/>
+            android:textSize="18sp"/>
         <TextView
             android:layout_centerHorizontal="true"
             android:id="@+id/create_cardview"
@@ -59,22 +55,25 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/anzahl_cardview"
-            android:textColor="@color/mapbox"
-            android:text="Erstellt um 18:56 am 22-07-2021"
+
+            android:text="heute"
             android:textSize="18dp"/>
 
-            <com.google.android.material.button.MaterialButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/helpbtn_cardview"
-                style="?attr/materialButtonOutlinedStyle"
-                android:text="Help"
-                android:textSize="18dp"
-                android:textColor="@color/mapbox"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentBottom="true"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/helpbtn_cardview"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/price_cardview"
+            android:layout_alignParentRight="true"
 
-                />
+
+            android:elevation="8dp"
+
+            android:text="Help"
+            android:textColor="@color/white"
+            android:textSize="18dp"
+            app:backgroundTint="@color/colorPrimaryDark" />
     </RelativeLayout>
 
 

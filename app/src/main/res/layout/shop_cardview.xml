@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/shop_cardview"
     android:layout_width="match_parent"
@@ -20,7 +21,6 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:text="Einkauf vom 22.78.68"
-            android:textAppearance="@style/TextAppearance.ShopForMe.Headline6"
             android:textSize="24dp"
 
             android:transitionName="shoptitle"
@@ -33,7 +33,6 @@
 
         <TextView
             android:id="@+id/shop_cardview_anzahl"
-            android:textAppearance="@style/TextAppearance.ShopForMe.Subtitle1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/shop_cardview_title"
@@ -52,14 +51,14 @@
             android:layout_marginRight="10dp"
             android:layout_toRightOf="@id/shop_cardview_anzahl"
             android:text="Preis: 22€"
-            android:textAppearance="@style/TextAppearance.ShopForMe.Subtitle1"
+
             android:textSize="20dp"
             android:textStyle="normal"
             android:transitionName="shopprice" />
 
         <TextView
             android:id="@+id/shop_cardview_bezahlt"
-            android:textAppearance="@style/TextAppearance.ShopForMe.Subtitle1"
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/shop_cardview_anzahl"

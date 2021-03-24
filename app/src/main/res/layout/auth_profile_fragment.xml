@@ -8,154 +8,152 @@
 
 
 
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
 
 
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/ProfilePic_field"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:layout_marginTop="4dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:shapeAppearanceOverlay="@style/circleImageView"
-                />
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/ProfilePic_field"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_marginTop="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/circleImageView"
+            />
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/uploadnewpic"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:layout_marginStart="236dp"
-                android:layout_marginTop="148dp"
-                android:clickable="true"
-                app:elevation="4dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_add" />
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/uploadnewpic"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="236dp"
+            android:layout_marginTop="148dp"
+            android:clickable="true"
+            app:elevation="4dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_add" />
 
-            <EditText
-                android:id="@+id/name_field"
-                android:layout_width="200dp"
-                android:layout_height="50dp"
-
-                android:enabled="false"
-                android:text="TextView"
-                app:layout_constraintStart_toStartOf="@+id/ProfilePic_field"
-                app:layout_constraintTop_toBottomOf="@+id/ProfilePic_field" />
-
-
-            <EditText
-                android:id="@+id/firstname_field"
-                android:layout_width="200dp"
-                android:layout_height="50dp"
-                android:enabled="false"
-                android:text="TextView"
-                app:layout_constraintStart_toStartOf="@+id/name_field"
-                app:layout_constraintTop_toBottomOf="@id/name_field" />
-
-            <EditText
-                android:id="@+id/phonenumber_field"
-                android:layout_width="200dp"
-                android:layout_height="50dp"
-                android:enabled="false"
-                android:text="TextView"
-                app:layout_constraintStart_toStartOf="@+id/firstname_field"
-                app:layout_constraintTop_toBottomOf="@id/firstname_field" />
-
-            <EditText
-                android:id="@+id/email_field"
-                android:layout_width="200dp"
-                android:layout_height="50dp"
-                android:layout_marginTop="8dp"
-                android:enabled="false"
-                android:text="TextView"
-                app:layout_constraintStart_toStartOf="@+id/phonenumber_field"
-                app:layout_constraintTop_toBottomOf="@id/phonenumber_field" />
-
-            <EditText
-                android:id="@+id/Street_field"
-                android:layout_width="200dp"
-                android:layout_height="50dp"
-                android:enabled="false"
-                android:text="TextView"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/email_field"
-                app:layout_constraintTop_toBottomOf="@+id/email_field"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <EditText
-                android:id="@+id/City_field"
-                android:layout_width="200dp"
-                android:layout_height="50dp"
-                android:enabled="false"
-                android:text="TextView"
-                app:layout_constraintStart_toStartOf="@+id/Street_field"
-                app:layout_constraintTop_toBottomOf="@+id/Street_field" />
-
-
-    <EditText
-        android:id="@+id/plz_field"
-        android:layout_width="200dp"
-        android:layout_height="50dp"
-        android:layout_gravity="center"
-        android:enabled="false"
-        android:text="TextView"
-        app:layout_constraintStart_toStartOf="@+id/City_field"
-        app:layout_constraintTop_toBottomOf="@+id/City_field" />
-
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/updateProfile_btn"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="100dp"
-        android:clickable="true"
-        app:layout_constraintStart_toEndOf="@+id/usertype_field"
-        app:layout_constraintTop_toTopOf="@+id/plz_field"
-        app:srcCompat="@drawable/ic_add" />
-
-    <Spinner
-                android:id="@+id/usertype_field"
-                android:layout_width="200dp"
-                android:layout_height="50dp"
-
-                android:clickable="false"
-                android:enabled="false"
-                app:layout_constraintStart_toStartOf="@+id/plz_field"
-                app:layout_constraintTop_toBottomOf="@+id/plz_field" />
-
-    <GridLayout
-        android:layout_width="200dp"
-        android:layout_height="50dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="4dp"
-        app:layout_constraintStart_toStartOf="@+id/usertype_field"
-        app:layout_constraintTop_toBottomOf="@+id/usertype_field">
-
-        <Button
-            android:id="@+id/saveProfile_btn"
-            android:layout_width="100dp"
+        <EditText
+            android:id="@+id/name_field"
+            android:layout_width="200dp"
             android:layout_height="50dp"
-            android:layout_gravity="right"
-            android:text="Save"
-            android:visibility="gone" />
 
-        <Button
-            android:id="@+id/cancelProfile_btn"
-            android:layout_width="100dp"
+            android:enabled="false"
+            android:text="TextView"
+            app:layout_constraintStart_toStartOf="@+id/ProfilePic_field"
+            app:layout_constraintTop_toBottomOf="@+id/ProfilePic_field" />
+
+
+        <EditText
+            android:id="@+id/firstname_field"
+            android:layout_width="200dp"
             android:layout_height="50dp"
-            android:layout_gravity="left"
-            android:text="Cancel"
-            android:visibility="gone" />
+            android:enabled="false"
+            android:text="TextView"
+            app:layout_constraintStart_toStartOf="@+id/name_field"
+            app:layout_constraintTop_toBottomOf="@id/name_field" />
 
-    </GridLayout>
+        <EditText
+            android:id="@+id/phonenumber_field"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
+            android:enabled="false"
+            android:text="TextView"
+            app:layout_constraintStart_toStartOf="@+id/firstname_field"
+            app:layout_constraintTop_toBottomOf="@id/firstname_field" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <EditText
+            android:id="@+id/email_field"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="8dp"
+            android:enabled="false"
+            android:text="TextView"
+            app:layout_constraintStart_toStartOf="@+id/phonenumber_field"
+            app:layout_constraintTop_toBottomOf="@id/phonenumber_field" />
+
+        <EditText
+            android:id="@+id/Street_field"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
+            android:enabled="false"
+            android:text="TextView"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/email_field"
+            app:layout_constraintTop_toBottomOf="@+id/email_field"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <EditText
+            android:id="@+id/City_field"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
+            android:enabled="false"
+            android:text="TextView"
+            app:layout_constraintStart_toStartOf="@+id/Street_field"
+            app:layout_constraintTop_toBottomOf="@+id/Street_field" />
+
+
+        <EditText
+            android:id="@+id/plz_field"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:enabled="false"
+            android:text="TextView"
+            app:layout_constraintStart_toStartOf="@+id/City_field"
+            app:layout_constraintTop_toBottomOf="@+id/City_field" />
+
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/updateProfile_btn"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="100dp"
+            android:clickable="true"
+            app:layout_constraintStart_toEndOf="@+id/usertype_field"
+            app:layout_constraintTop_toTopOf="@+id/plz_field"
+            app:srcCompat="@drawable/ic_add" />
+
+        <Spinner
+            android:id="@+id/usertype_field"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
+
+            android:clickable="false"
+            android:enabled="false"
+            app:layout_constraintStart_toStartOf="@+id/plz_field"
+            app:layout_constraintTop_toBottomOf="@+id/plz_field" />
+
+        <GridLayout
+            android:layout_width="200dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="4dp"
+            app:layout_constraintStart_toStartOf="@+id/usertype_field"
+            app:layout_constraintTop_toBottomOf="@+id/usertype_field">
+
+            <Button
+                android:id="@+id/saveProfile_btn"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_gravity="right"
+                android:text="Save"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/cancelProfile_btn"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_gravity="left"
+                android:text="Cancel"
+                android:visibility="gone" />
+
+        </GridLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
-
-

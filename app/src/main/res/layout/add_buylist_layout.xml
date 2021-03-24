@@ -18,7 +18,8 @@
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="150dp"
-        android:elevation="4dp">
+        android:elevation="4dp"
+        android:background="@color/colorSecondaryLight">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buylist_create"
@@ -26,9 +27,9 @@
             android:layout_width="100dp"
             android:layout_height="50dp"
             android:layout_alignBottom="@+id/buylist_info_price"
-            android:layout_marginStart="143dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="27dp"
             android:layout_marginBottom="13dp"
-            android:layout_toEndOf="@+id/buylist_info_count"
             android:text="Create"
             android:textAppearance="@style/TextAppearance.ShopForMe.Button" />
 

@@ -9,6 +9,10 @@
     app:cardBackgroundColor="@color/colorSecondaryLight"
     >
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -17,9 +21,9 @@
     <com.google.android.material.button.MaterialButton
         android:id="@+id/profilelist_profile"
         style="@style/Widget.ShopForMe.Button.big"
-        app:backgroundTint="@color/loginFragmentBackgroundColor"
         android:elevation="20dp"
         android:text="@string/profile"
+        app:backgroundTint="@color/loginFragmentBackgroundColor"
         app:icon="@drawable/ic_baseline_person_24"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -49,5 +53,5 @@
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
+    </ScrollView>
 </com.google.android.material.card.MaterialCardView>

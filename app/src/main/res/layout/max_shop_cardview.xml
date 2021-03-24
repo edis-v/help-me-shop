@@ -98,7 +98,7 @@
         <androidx.recyclerview.widget.RecyclerView
 
             android:id="@+id/max_shop_cardview_menu_buylist"
-            android:layout_width="300dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintHeight_max="300dp"
             app:layout_constraintLeft_toRightOf="@id/max_shop_cardview_exit"
