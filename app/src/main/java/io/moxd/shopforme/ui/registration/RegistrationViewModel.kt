@@ -50,16 +50,22 @@ class RegistrationViewModel(
             field = value
             state.set("address", value)
         }
+    var postalCode = state.get<String>("postalCode") ?: ""
+        set(value) {
+            field = value
+            state.set("postalCode", value)
+        }
+
+    var city = state.get<String>("city") ?: ""
+        set(value) {
+            field = value
+            state.set("city", value)
+        }
+
     var phoneNum = state.get<String>("phoneNum") ?: ""
         set(value) {
             field = value
             state.set("phoneNum", value)
-        }
-
-    var noError = state.get<String>("noError") ?: true
-        set(value) {
-            field = value
-            state.set("noError", value)
         }
 
     // Privater Channel für Events
@@ -92,6 +98,8 @@ class RegistrationViewModel(
                 lastName,
                 firstName,
                 address,
+                postalCode,
+                city,
                 phoneNum
         )))
     }
@@ -105,6 +113,8 @@ class RegistrationViewModel(
         if (lastName.isEmpty()) fields.add("lastName")
         if (firstName.isEmpty()) fields.add("firstName")
         if (address.isEmpty()) fields.add("address")
+        if (postalCode.isEmpty()) fields.add("postalCode")
+        if (city.isEmpty()) fields.add("city")
         if (phoneNum.isEmpty()) fields.add("phoneNum")
 
         if(fields.isNotEmpty()) {
@@ -135,7 +145,7 @@ class RegistrationViewModel(
     }
 
     fun performRegistration() = viewModelScope.launch {
-        requireAuthManager().register(Registration(email, pw, lastName, firstName, address, phoneNum))
+        requireAuthManager().register(Registration(email, pw, lastName, firstName, address, postalCode, city, phoneNum))
     }
 
     // Eventübersicht (data class wenn Argumente nötig)

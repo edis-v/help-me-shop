@@ -199,9 +199,9 @@ class AuthManager constructor(context: Context) {
                     "phone_number" to registration.phoneNumber,
                     "Street" to registration.address,
                     "profile_pic" to null,
-                    "plz" to 51373, // TODO Change Layout
-                    "City" to "Leverkusen", // TODO Change Layout
-                    "usertype" to UserType2.Type[0].second// TODO Change Layout
+                    "plz" to registration.postalCode,
+                    "City" to registration.city,
+                    "usertype" to UserType2.Type[0].second
                 )
             ).responseString { request, response, result ->
                 when (result) {

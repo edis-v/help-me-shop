@@ -160,6 +160,38 @@
         <com.google.android.material.textfield.TextInputLayout
             android:textAppearance="@style/TextAppearance.ShopForMe.Subtitle2"
             style ="@style/Widget.ShopForMe.TextInputLayout"
+            android:id="@+id/register_txt_input_postalcode"
+            app:counterMaxLength="15"
+            app:errorEnabled="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_postal_code"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:textAppearance="@style/TextAppearance.ShopForMe.Subtitle2"
+            style ="@style/Widget.ShopForMe.TextInputLayout"
+            android:id="@+id/register_txt_input_city"
+            app:counterMaxLength="15"
+            app:errorEnabled="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_city"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:textAppearance="@style/TextAppearance.ShopForMe.Subtitle2"
+            style ="@style/Widget.ShopForMe.TextInputLayout"
             android:id="@+id/register_txt_input_phone_num"
             app:counterMaxLength="15"
             app:errorEnabled="true"

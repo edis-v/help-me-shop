@@ -44,6 +44,8 @@ class RegistrationFragment: Fragment(R.layout.auth_registration_fragment) {
             registerTxtInputLastname.editText?.addTextChangedListener { viewModel.lastName = it.toString() }
             registerTxtInputFirstname.editText?.addTextChangedListener { viewModel.firstName = it.toString() }
             registerTxtInputAddress.editText?.addTextChangedListener { viewModel.address = it.toString() }
+            registerTxtInputPostalcode.editText?.addTextChangedListener { viewModel.postalCode = it.toString() }
+            registerTxtInputCity.editText?.addTextChangedListener { viewModel.city = it.toString() }
             registerTxtInputPhoneNum.editText?.addTextChangedListener { viewModel.phoneNum = it.toString() }
 
             registerTxtInputFirstname.editText?.setOnFocusChangeListener { _, hasFocus ->
@@ -53,9 +55,13 @@ class RegistrationFragment: Fragment(R.layout.auth_registration_fragment) {
                 if(hasFocus) { registerTxtInputLastname.error = null }
             }
             registerTxtInputAddress.editText?.setOnFocusChangeListener { _, hasFocus ->
-                if(hasFocus) {
-                    registerTxtInputAddress.error = null
-                }
+                if(hasFocus) { registerTxtInputAddress.error = null }
+            }
+            registerTxtInputPostalcode.editText?.setOnFocusChangeListener { _, hasFocus ->
+                if(hasFocus) { registerTxtInputPostalcode.error = null }
+            }
+            registerTxtInputCity.editText?.setOnFocusChangeListener { _, hasFocus ->
+                if(hasFocus) { registerTxtInputCity.error = null }
             }
 
             registerTxtInputEmail.editText?.setOnFocusChangeListener { _, hasFocus ->
@@ -113,6 +119,8 @@ class RegistrationFragment: Fragment(R.layout.auth_registration_fragment) {
                             if (registerTxtInputLastname.error != null) noError = false
                             if (registerTxtInputFirstname.error != null) noError = false
                             if (registerTxtInputAddress.error != null) noError = false
+                            if (registerTxtInputPostalcode.error != null) noError = false
+                            if (registerTxtInputCity.error != null) noError = false
                             if (registerTxtInputPhoneNum.error != null) noError = false
 
                             if(noError) {
@@ -132,6 +140,8 @@ class RegistrationFragment: Fragment(R.layout.auth_registration_fragment) {
                                     "lastName" -> registerTxtInputLastname.error = "Pflichtfeld"
                                     "firstName" -> registerTxtInputFirstname.error = "Pflichtfeld"
                                     "address" -> registerTxtInputAddress.error = "Pflichtfeld"
+                                    "postalCode" -> registerTxtInputPostalcode.error = "Pflichtfeld"
+                                    "city" -> registerTxtInputCity.error = "Pflichtfeld"
                                     "phoneNum" -> registerTxtInputPhoneNum.error = "Pflichtfeld"
                                 }
                             }
