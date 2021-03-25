@@ -127,7 +127,7 @@ class ShopAdd : Fragment() {
                                     when (model!!.payed) {
                                         true -> { // green arrow
                                             status.setImageResource(R.drawable.ic_done)
-                                            status.setColorFilter(ContextCompat.getColor(requireContext(), R.color.green_200), android.graphics.PorterDuff.Mode.SRC_IN);
+                                            status.setColorFilter(ContextCompat.getColor(requireContext(), R.color.IconAccept), android.graphics.PorterDuff.Mode.SRC_IN);
                                         }
                                         false -> {//red X
                                             status.setImageResource(R.drawable.ic_wrong)

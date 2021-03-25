@@ -6,7 +6,7 @@
     android:layout_margin="16dp"
     android:transitionName="shopdetail"
     android:layout_height="match_parent"
-    app:cardBackgroundColor="@color/card_background"
+    app:cardBackgroundColor="@color/white"
     >
     <ScrollView android:layout_width="match_parent" android:layout_height="match_parent">
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -140,7 +140,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_alignParentBottom="true"
                 android:layout_marginLeft="10dp"
-                android:backgroundTint="@color/green_200"
+                android:backgroundTint="@color/LightGreenButton"
                 android:elevation="4dp"
                 android:text="Fertig"
                 android:textColor="@color/white"

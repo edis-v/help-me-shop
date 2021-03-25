@@ -25,6 +25,8 @@ import com.github.kittinunf.fuel.core.Method
 import com.github.kittinunf.result.Result
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import com.squareup.picasso.Picasso
 import io.moxd.shopforme.*
 import io.moxd.shopforme.data.AuthManager
@@ -57,8 +59,8 @@ class ProfileFragment : Fragment()  {
     private  lateinit var city : EditText
     private  lateinit var usertype : Spinner
     private  lateinit var updatebtn : FloatingActionButton
-    private  lateinit var savebtn : Button
-    private  lateinit var cancel : Button
+    private  lateinit var savebtn : FloatingActionButton
+    private  lateinit var cancel : FloatingActionButton
     private  lateinit var newpicbtn : FloatingActionButton
     var usertypes_txt = arrayListOf<String>("Helfer", "Hilfesuchender")
     var usertypes = arrayListOf<String>("HF", "HFS")
@@ -81,11 +83,11 @@ class ProfileFragment : Fragment()  {
         usertype = root.findViewById<Spinner>(R.id.usertype_field)
         profilepic = root.findViewById<ImageView>(R.id.ProfilePic_field)
         updatebtn = root.findViewById<FloatingActionButton>(R.id.updateProfile_btn)
-        savebtn = root.findViewById<Button>(R.id.saveProfile_btn)
-        cancel = root.findViewById<Button>(R.id.cancelProfile_btn)
+        savebtn = root.findViewById<FloatingActionButton>(R.id.saveProfile_btn)
+        cancel = root.findViewById<FloatingActionButton>(R.id.cancelProfile_btn)
         newpicbtn = root.findViewById<FloatingActionButton>(R.id.uploadnewpic)
 
-        root.findViewById<TextView>(R.id.profile_buttonBack).setOnClickListener{
+        root.findViewById<ImageButton>(R.id.profile_buttonBack).setOnClickListener{
             val ft = (requireActivity() as MainActivity).getSupportFragmentManager().beginTransaction()
             ft.replace(R.id.mainframe, ProfileListFragment())
             ft.commit()
