@@ -56,7 +56,7 @@ class ShopAdapter(private val context: Context, val itemModelArrayList: List<Sho
             when(model.payed){
                 true -> { // green arrow
                     holder.status.setImageResource(R.drawable.ic_done)
-                    holder.status.setColorFilter(ContextCompat.getColor(context, R.color.green_200), android.graphics.PorterDuff.Mode.SRC_IN);
+                    holder.status.setColorFilter(ContextCompat.getColor(context, R.color.IconAccept), android.graphics.PorterDuff.Mode.SRC_IN);
                 }
                 false -> {//red X
                     holder.status.setImageResource(R.drawable.ic_wrong)

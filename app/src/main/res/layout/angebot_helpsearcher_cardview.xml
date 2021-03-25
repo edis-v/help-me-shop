@@ -7,7 +7,7 @@
     android:layout_margin="4dp"
     android:layout_marginTop="8dp"
     app:cardElevation="4dp"
-    app:cardBackgroundColor="@color/card_background"
+    app:cardBackgroundColor="@color/white"
     >
 <RelativeLayout
     android:layout_width="match_parent"
@@ -51,7 +51,7 @@
         android:layout_centerVertical="true"
         app:srcCompat="@drawable/ic_done"
 
-        app:tint="@color/green_200"
+        app:tint="@color/IconAccept"
         />
     <ImageView
         android:id="@+id/angebot_helpsearcher_wrong"
