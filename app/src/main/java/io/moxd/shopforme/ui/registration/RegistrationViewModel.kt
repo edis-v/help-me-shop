@@ -84,9 +84,16 @@ class RegistrationViewModel(
         }
     }
 
-    fun onRegistrationConfirmClick(registration: Registration) = viewModelScope.launch {
+    fun onRegistrationConfirmClick() = viewModelScope.launch {
         checkRequiredFields()
-        eventChannel.send(RegistrationEvent.CheckErrors(registration))
+        eventChannel.send(RegistrationEvent.CheckErrors(Registration(
+                email,
+                pw,
+                lastName,
+                firstName,
+                address,
+                phoneNum
+        )))
     }
 
     private fun checkRequiredFields() = viewModelScope.launch {

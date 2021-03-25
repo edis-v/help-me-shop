@@ -35,14 +35,7 @@ class RegistrationFragment: Fragment(R.layout.auth_registration_fragment) {
         binding.apply {
             // ViewModel benachrichtigen wenn FAB geklickt wird
             registerFabConfirm.setOnClickListener {
-                viewModel.onRegistrationConfirmClick(Registration(
-                    email = registerTxtInputEmail.editText?.text.toString(),
-                    password = registerTxtInputPw.editText?.text.toString(),
-                    name = registerTxtInputLastname.editText?.text.toString(),
-                    firstName = registerTxtInputFirstname.editText?.text.toString(),
-                    address = registerTxtInputAddress.editText?.text.toString(),
-                    phoneNumber = registerTxtInputPhoneNum.editText?.text.toString()
-                ))
+                viewModel.onRegistrationConfirmClick()
             }
 
             registerTxtInputEmail.editText?.addTextChangedListener { viewModel.email = it.toString() }
