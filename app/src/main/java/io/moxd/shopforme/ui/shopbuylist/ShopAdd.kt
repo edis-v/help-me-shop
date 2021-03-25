@@ -34,9 +34,11 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialContainerTransform
 import com.squareup.picasso.Picasso
 import io.moxd.shopforme.*
+import io.moxd.shopforme.adapter.BelegeAdapter
 import io.moxd.shopforme.adapter.BuyListMinAdapter
 import io.moxd.shopforme.data.AuthManager
 import io.moxd.shopforme.data.RestPath
+import io.moxd.shopforme.data.model.Beleg
 import io.moxd.shopforme.data.model.Shop
 import io.moxd.shopforme.data.model.UserME
 import kotlinx.coroutines.Dispatchers
@@ -60,6 +62,7 @@ class ShopAdd : Fragment() {
     lateinit var status :ImageView
     lateinit var buylist : RecyclerView
     lateinit var exit : ImageView
+    lateinit var belegRecView : RecyclerView
     //options
     lateinit var delete : Button
     lateinit var report : Button
@@ -105,6 +108,7 @@ class ShopAdd : Fragment() {
 
                                 buylist.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
                                 buylist.adapter = BuyListMinAdapter(requireContext(), model!!.buylist.articles.toMutableList())
+                                createBelege()
                                 title.text = FormatDate(model!!.creation_date)
                                 phonenumber.text = if(AuthManager.User?.usertype_txt == "Helfer") model!!.helpsearcher.phone_number else  if( model!!.helper != null) model!!.helper?.phone_number else "Kein Helfer"
                                 bezahlt.text = if(model!!.payed) "Bezahlt" else   "Zu Bezahlen"
@@ -182,6 +186,7 @@ class ShopAdd : Fragment() {
         }
 
         ViewCompat.setTransitionName(root, "max_shop${model!!.id}")
+        belegRecView = root.findViewById(R.id.max_shop_imagerecycler)
         price = root.findViewById(R.id.max_shop_cardview_Preis)
         count = root.findViewById(R.id.max_shop_cardview_anzahl)
         bezahlt = root.findViewById(R.id.max_shop_cardview_bezahlt)
@@ -195,6 +200,7 @@ class ShopAdd : Fragment() {
         pay = root.findViewById(R.id.max_shop_cardview_menu_payed)
         report = root.findViewById(R.id.max_shop_cardview_menu_report)
         getmodel()
+
         delete.setOnClickListener { delete() }
         done.setOnClickListener { done() }
         pay.setOnClickListener { payed() }
@@ -212,6 +218,20 @@ class ShopAdd : Fragment() {
         return root
     }
 
+
+    fun createBelege(){
+
+        val belege : MutableList<Beleg> = mutableListOf()
+
+        if(!model?.bill_hf.isNullOrEmpty())
+            belege.add(Beleg("K",model?.helper!!,model?.bill_hf!!))
+        if(!model?.bill_hfs.isNullOrEmpty())
+            belege.add(Beleg("K",model?.helpsearcher!!,model?.bill_hfs!!))
+        if(!model?.payed_prove.isNullOrEmpty())
+            belege.add(Beleg("P",model?.helpsearcher!!,model?.payed_prove!!))
+        belegRecView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        belegRecView.adapter = BelegeAdapter(requireContext(), belege)
+    }
 
     fun exit(){
 

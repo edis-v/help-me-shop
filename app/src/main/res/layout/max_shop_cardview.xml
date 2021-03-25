@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -7,7 +8,7 @@
     android:layout_height="match_parent"
     app:cardBackgroundColor="@color/card_background"
     >
-
+    <ScrollView android:layout_width="match_parent" android:layout_height="match_parent">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -150,7 +151,7 @@
         </LinearLayout>
 
         <LinearLayout
-
+            android:id="@+id/max_shop_cardview_menu_options2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -191,8 +192,18 @@
                 android:textSize="16dp"
 
                 />
+
+
+
         </LinearLayout>
-
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/max_shop_imagerecycler"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/max_shop_cardview_menu_options2"
+            />
     </androidx.constraintlayout.widget.ConstraintLayout>
-
+    </ScrollView>
 </com.google.android.material.card.MaterialCardView>

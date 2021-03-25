@@ -9,11 +9,11 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
+import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import android.view.*
 import android.widget.FrameLayout
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
@@ -21,12 +21,14 @@ import androidx.lifecycle.lifecycleScope
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.FuelManager
 import com.github.kittinunf.result.Result
+import com.google.android.gms.location.*
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.ktx.messaging
 import io.moxd.shopforme.*
+import io.moxd.shopforme.R
 import io.moxd.shopforme.data.AuthManager
 import io.moxd.shopforme.data.RestPath
 import io.moxd.shopforme.data.model.LocationData
@@ -50,7 +52,7 @@ class HomeFragment: Fragment(R.layout.main_home_fragment) {
     lateinit var binding: MainHomeFragmentBinding
     lateinit var bottomNavigationView: BottomNavigationView
     lateinit var mainframe: FrameLayout
-
+    lateinit var mFusedLocationClient: FusedLocationProviderClient
 
     var last = 0
     override fun onCreateView(
@@ -62,12 +64,92 @@ class HomeFragment: Fragment(R.layout.main_home_fragment) {
         return super.onCreateView(inflater, container, savedInstanceState)
 
     }
+    @SuppressLint("MissingPermission")
+    private fun requestNewLocationData() {
+
+        // Initializing LocationRequest
+        // object with appropriate methods
+        val mLocationRequest = LocationRequest()
+        mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        mLocationRequest.interval = 5
+        mLocationRequest.fastestInterval = 0
+        mLocationRequest.numUpdates = 1
+
+        // setting LocationRequest
+        // on FusedLocationClient
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+        mFusedLocationClient.requestLocationUpdates(
+            mLocationRequest,
+            mLocationCallback,
+            Looper.myLooper()
+        )
+    }
+
+    private val mLocationCallback: LocationCallback = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult) {
+            val mLastLocation = locationResult.lastLocation
+            val lat: Double = mLastLocation.latitude
+            val long: Double = mLastLocation.longitude
+            GlobalScope.launch(context = Dispatchers.IO) {
+                requireAuthManager().SessionID().take(1)
+                    .collect {
+
+                        val url =
+                            FuelManager.instance.basePath + RestPath.locationUpdate(
+                                it
+                            )
+
+                        Log.d("URL", url)
+                        Log.d("HomeLocation", "$lat $long")
+                        val data = LocationData(
+                            type = "Point",
+                            coordinates = listOf(
+                                lat,
+                                long
+                            ) as List<Double>
+                        )
+                        if (it.isNullOrEmpty())
+                            Fuel.put(
+                                url, listOf(
+                                    "location" to JsonDeserializer.encodeToString(
+                                        data
+                                    )
+                                )
+                            )
+                                .responseString { request, response, result ->
+
+                                    when (result) {
+                                        is Result.Success -> {
+                                            Log.d(
+                                                "result",
+                                                result.get()
+                                            )
+
+                                        }
+                                        is Result.Failure -> {
+                                            Log.d(
+                                                "Error",
+                                                getError(
+                                                    response
+                                                )
+                                            )
+
+
+                                        }
+
+                                    }
+
+
+                                }.join()
+        }
+    }}}
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = MainHomeFragmentBinding.bind(view)
        // ft = (requireActivity() as MainActivity).getSupportFragmentManager().beginTransaction()
-
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
+        requestNewLocationData()
         mainframe = view.findViewById(R.id.mainframe)
         bottomNavigationView = view.findViewById(R.id.bottom_navigation)
 
@@ -111,109 +193,148 @@ class HomeFragment: Fragment(R.layout.main_home_fragment) {
                                     ft.commit()
                                 }
                                 Firebase.messaging.isAutoInitEnabled = true
-                                try {
-                                    FirebaseMessaging.getInstance().token.addOnCompleteListener(
-                                            OnCompleteListener { task ->
-                                                if (!task.isSuccessful) {
-                                                    Log.w(
-                                                            "Firebase",
-                                                            "Fetching FCM registration token failed",
-                                                            task.exception
-                                                    )
-                                                    return@OnCompleteListener
-                                                }
 
-                                                // Get new FCM registration token
-                                                val token = task.result
+                                FirebaseMessaging.getInstance().token.addOnCompleteListener(
+                                    OnCompleteListener { task ->
+                                        if (!task.isSuccessful) {
+                                            Log.w(
+                                                "Firebase",
+                                                "Fetching FCM registration token failed",
+                                                task.exception
+                                            )
+                                            return@OnCompleteListener
+                                        }
 
-                                                // sendRegistrationToServer(token)
-                                                // Log and toast
-                                                val msg = getString(R.string.msg_token_fmt, token)
-                                                Log.d("Firebase", msg)
-                                                //    Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
-                                            })
-                                }catch (ex:Exception){
+                                        try {
+                                            // Get new FCM registration token
+                                            val token = task.result
 
-                                }
+                                            // sendRegistrationToServer(token)
+                                            // Log and toast
+                                            val msg = getString(R.string.msg_token_fmt, token)
+                                            Log.d("Firebase", msg)
+                                        } catch (ex: Exception) {
+
+                                        }
+                                        //    Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+                                    })
+
 
                                 updateNavbar()
                                 val nManager: LocationManager =
                                     requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
-                                    if (!nManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
-                                        OnGPS();
+                                if (!nManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+                                    OnGPS();
 
-                                    if (ActivityCompat.checkSelfPermission(
-                                            requireContext(),
-                                            Manifest.permission.ACCESS_FINE_LOCATION
-                                        ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                                            requireContext(),
-                                            Manifest.permission.ACCESS_COARSE_LOCATION
-                                        ) != PackageManager.PERMISSION_GRANTED
-                                    ) {
+                                if (ActivityCompat.checkSelfPermission(
+                                        requireContext(),
+                                        Manifest.permission.ACCESS_FINE_LOCATION
+                                    ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                                        requireContext(),
+                                        Manifest.permission.ACCESS_COARSE_LOCATION
+                                    ) != PackageManager.PERMISSION_GRANTED
+                                ) {
 
-                                    }
-                                else {val locationGPS: Location? = nManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-                                if (locationGPS != null) {
-                                    val lat: Double = locationGPS.getLatitude()
-                                    val long: Double = locationGPS.getLongitude()
-                                    GlobalScope.launch(context = Dispatchers.IO) {
-                                        requireAuthManager().SessionID().take(1).collect {
+                                } else {
 
-                                            val url =
-                                                FuelManager.instance.basePath + RestPath.locationUpdate(
-                                                    it
-                                                )
+                                    mFusedLocationClient.lastLocation
+                                        .addOnSuccessListener { location: Location? ->
+                                            // Got last known location. In some rare situations this can be null.
+                                            if (location != null) {
+                                                val lat: Double = location.latitude
+                                                val long: Double = location.longitude
+                                                GlobalScope.launch(context = Dispatchers.IO) {
+                                                    requireAuthManager().SessionID().take(1)
+                                                        .collect {
 
-                                            Log.d("URL", url)
+                                                            val url =
+                                                                FuelManager.instance.basePath + RestPath.locationUpdate(
+                                                                    it
+                                                                )
 
-                                            val data = LocationData(
-                                                type = "Point", coordinates = listOf(
-                                                    lat,
-                                                    long
-                                                ) as List<Double>
-                                            )
-                                            if(it.isNullOrEmpty())
-                                            Fuel.put(
-                                                url, listOf(
-                                                    "location" to JsonDeserializer.encodeToString(
-                                                        data
-                                                    )
-                                                )
-                                            ).responseString { request, response, result ->
+                                                            Log.d("URL", url)
+                                                            Log.d("HomeLocation", "$lat $long")
+                                                            val data = LocationData(
+                                                                type = "Point",
+                                                                coordinates = listOf(
+                                                                    lat,
+                                                                    long
+                                                                ) as List<Double>
+                                                            )
+                                                            if (it.isNullOrEmpty())
+                                                                Fuel.put(
+                                                                    url, listOf(
+                                                                        "location" to JsonDeserializer.encodeToString(
+                                                                            data
+                                                                        )
+                                                                    )
+                                                                )
+                                                                    .responseString { request, response, result ->
 
-                                                when (result) {
-                                                    is Result.Success -> {
-                                                        Log.d("result", result.get())
+                                                                        when (result) {
+                                                                            is Result.Success -> {
+                                                                                Log.d(
+                                                                                    "result",
+                                                                                    result.get()
+                                                                                )
 
-                                                    }
-                                                    is Result.Failure -> {
-                                                        Log.d("Error", getError(response))
+                                                                            }
+                                                                            is Result.Failure -> {
+                                                                                Log.d(
+                                                                                    "Error",
+                                                                                    getError(
+                                                                                        response
+                                                                                    )
+                                                                                )
 
 
+                                                                            }
 
-                                                    }
+                                                                        }
 
+
+                                                                    }.join()
+                                                        }
                                                 }
+                                            } else {
+                                                val mLocationRequest = LocationRequest()
+                                                mLocationRequest.priority =
+                                                    LocationRequest.PRIORITY_HIGH_ACCURACY
+                                                mLocationRequest.interval = 5
+                                                mLocationRequest.fastestInterval = 0
+                                                mLocationRequest.numUpdates = 1
 
+                                                // setting LocationRequest
+                                                // on FusedLocationClient
 
-                                            }.join()}
+                                                // setting LocationRequest
+                                                // on FusedLocationClient
+                                                mFusedLocationClient =
+                                                    LocationServices.getFusedLocationProviderClient(
+                                                        requireContext()
+                                                    )
+                                                mFusedLocationClient.requestLocationUpdates(
+                                                    mLocationRequest,
+                                                    mLocationCallback,
+                                                    Looper.myLooper()
+                                                )
+                                            }
                                         }
-                                    }
-                                        else
-                                        Toast.makeText(requireContext(), "Unable to find location.", Toast.LENGTH_SHORT).show();
 
 
-                                    }
-
+                                }
                             }
+
                         }
+                    }
+                }
 
-                    }}}
 
-
+            }
         }
         job.start()
+
 
 
 
