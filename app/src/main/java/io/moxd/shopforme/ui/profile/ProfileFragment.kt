@@ -26,13 +26,11 @@ import com.github.kittinunf.result.Result
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.squareup.picasso.Picasso
-import io.moxd.shopforme.JsonDeserializer
-import io.moxd.shopforme.R
+import io.moxd.shopforme.*
 import io.moxd.shopforme.data.AuthManager
 import io.moxd.shopforme.data.RestPath
 import io.moxd.shopforme.data.model.UserME
-import io.moxd.shopforme.getError
-import io.moxd.shopforme.requireAuthManager
+import io.moxd.shopforme.ui.profile_list.ProfileListFragment
 import io.moxd.shopforme.ui.splashscreen.SplashScreen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -86,6 +84,12 @@ class ProfileFragment : Fragment()  {
         savebtn = root.findViewById<Button>(R.id.saveProfile_btn)
         cancel = root.findViewById<Button>(R.id.cancelProfile_btn)
         newpicbtn = root.findViewById<FloatingActionButton>(R.id.uploadnewpic)
+
+        root.findViewById<TextView>(R.id.profile_buttonBack).setOnClickListener{
+            val ft = (requireActivity() as MainActivity).getSupportFragmentManager().beginTransaction()
+            ft.replace(R.id.mainframe, ProfileListFragment())
+            ft.commit()
+        }
 
 
         val ad = ArrayAdapter<String>(root.context, R.layout.support_simple_spinner_dropdown_item, usertypes_txt)

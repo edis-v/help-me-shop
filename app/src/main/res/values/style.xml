@@ -128,4 +128,14 @@
         <item name="android:fontFamily">@font/roboto</item>
         <item name="android:textSize">10sp</item>
     </style>
+    
+    
+    
+    //shape
+    <style name="BackButton" parent="Widget.MaterialComponents.Button">
+        <item name="cornerFamilyTopLeft">cut</item>
+        <item name="cornerFamilyBottomLeft">cut</item>
+        <item name="cornerSizeTopLeft">9dp</item>
+        <item name="cornerSizeBottomLeft">9dp</item>
+    </style>
 </resources>
