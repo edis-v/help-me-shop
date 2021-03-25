@@ -1,6 +1,7 @@
 package io.moxd.shopforme.ui.shopbuylist
 
 import android.app.Activity
+import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -10,6 +11,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.net.Uri
 import android.os.Bundle
+import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.provider.MediaStore.Images
 import android.util.Log
@@ -364,9 +366,9 @@ class ShopAdd : Fragment() {
             val uri = it.data!!.data
 
 
-            Log.d("Picturerun", getpath2(uri!!)!!)
+            Log.d("Picturerun", getPath(uri!!)!!)
 
-            val data = FileDataPart.from(getpath2(uri!!)!!, name = "payed_prove")
+            val data = FileDataPart.from(getPath(uri!!)!!, name = "payed_prove")
             // from(data?.data?.encodedPath.toString() , name = "profile_pic")
 
             val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
@@ -407,7 +409,7 @@ class ShopAdd : Fragment() {
             val tempUri = getImageUri(this.requireActivity().applicationContext, photo)
 
 
-                val data = FileDataPart.from((getRealPathFromURI(tempUri))!!, name = "payed_prove")
+                val data = FileDataPart.from(getRealPathFromURI(tempUri!!)!!, name = "payed_prove")
 
 
             // from(data?.data?.encodedPath.toString() , name = "profile_pic")
@@ -450,9 +452,9 @@ class ShopAdd : Fragment() {
             val uri = it.data!!.data
 
 
-            Log.d("Picturerun", getpath2(uri!!)!!)
+            Log.d("Picturerun", getPath( uri!!)!!)
 
-            val data = FileDataPart.from(getpath2(uri!!)!!, name = if (AuthManager.User?.usertype_txt == "Helfer") "bill_hf" else "bill_hfs")
+            val data = FileDataPart.from(getPath(uri!!)!!, name = if (AuthManager.User?.usertype_txt == "Helfer") "bill_hf" else "bill_hfs")
             // from(data?.data?.encodedPath.toString() , name = "profile_pic")
 
             val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
@@ -493,7 +495,7 @@ class ShopAdd : Fragment() {
             val tempUri = getImageUri(this.requireActivity().applicationContext, photo)
 
 
-            val data = FileDataPart.from((getRealPathFromURI(tempUri))!!, name = if (AuthManager.User?.usertype_txt == "Helfer") "bill_hf" else "bill_hfs")
+            val data = FileDataPart.from(getRealPathFromURI(tempUri!!)!!, name = if (AuthManager.User?.usertype_txt == "Helfer") "bill_hf" else "bill_hfs")
             // from(data?.data?.encodedPath.toString() , name = "profile_pic")
 
             val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
@@ -537,16 +539,10 @@ class ShopAdd : Fragment() {
         return path
     }
 
-    private fun getpath2(contentUri: Uri): String? {
-        val projection = arrayOf(Images.Media.DATA)
-        // import android.support.v4.content.CursorLoader; i import this for CursorLoader
-        val loader = CursorLoader(requireActivity().getApplicationContext(), contentUri,
-                projection, null, null, null)
-        val cursor: Cursor? = loader.loadInBackground()
-        val column_index = cursor?.getColumnIndexOrThrow(Images.Media.INTERNAL_CONTENT_URI)
-        cursor?.moveToFirst()
-        return cursor?.getString(column_index!!)
-    }
+
+
+
+
 
 
     fun ParseDate(Date: Date) : String{

@@ -52,7 +52,7 @@
             android:clickable="true"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_add" />
+            app:srcCompat="@drawable/ic_baseline_edit_24" />
 
         <EditText
             android:id="@+id/name_field"
@@ -135,7 +135,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/usertype_field"
             app:layout_constraintTop_toTopOf="@+id/plz_field"
-            app:srcCompat="@drawable/ic_add" />
+            app:srcCompat="@drawable/ic_baseline_edit_24" />
 
         <Spinner
             android:id="@+id/usertype_field"
