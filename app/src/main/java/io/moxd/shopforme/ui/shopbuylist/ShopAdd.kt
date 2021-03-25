@@ -24,6 +24,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
+import androidx.loader.content.CursorLoader
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.kittinunf.fuel.Fuel
@@ -32,7 +33,6 @@ import com.github.kittinunf.fuel.core.Method
 import com.github.kittinunf.result.Result
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialContainerTransform
-import com.squareup.picasso.Picasso
 import io.moxd.shopforme.*
 import io.moxd.shopforme.adapter.BelegeAdapter
 import io.moxd.shopforme.adapter.BuyListMinAdapter
@@ -40,7 +40,6 @@ import io.moxd.shopforme.data.AuthManager
 import io.moxd.shopforme.data.RestPath
 import io.moxd.shopforme.data.model.Beleg
 import io.moxd.shopforme.data.model.Shop
-import io.moxd.shopforme.data.model.UserME
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
@@ -91,8 +90,8 @@ class ShopAdd : Fragment() {
                         is Result.Failure -> {
                             this@ShopAdd.activity?.runOnUiThread() {
 
-                                Log.d("Error",  getError(response))
-                                Toast.makeText(requireContext(),  getError(response), Toast.LENGTH_LONG).show()
+                                Log.d("Error", getError(response))
+                                Toast.makeText(requireContext(), getError(response), Toast.LENGTH_LONG).show()
                             }
                         }
                         is Result.Success -> {
@@ -102,7 +101,7 @@ class ShopAdd : Fragment() {
 
                             this@ShopAdd.activity?.runOnUiThread() {
 
-                                  model = JsonDeserializer.decodeFromString<Shop>(data);
+                                model = JsonDeserializer.decodeFromString<Shop>(data);
 
                                 //does actions on Ui-Thread u neeed it because Ui-elements can only be edited in Main/Ui-Thread
 
@@ -110,20 +109,20 @@ class ShopAdd : Fragment() {
                                 buylist.adapter = BuyListMinAdapter(requireContext(), model!!.buylist.articles.toMutableList())
                                 createBelege()
                                 title.text = FormatDate(model!!.creation_date)
-                                phonenumber.text = if(AuthManager.User?.usertype_txt == "Helfer") model!!.helpsearcher.phone_number else  if( model!!.helper != null) model!!.helper?.phone_number else "Kein Helfer"
-                                bezahlt.text = if(model!!.payed) "Bezahlt" else   "Zu Bezahlen"
-                                price.text =   "Preis: ${ String.format(
-                                        "%.2f",
-                                        model!!.buylist.articles.sumOf { (it.count * it.item.cost) })} €"
-                                count.text = "Anzahl: ${ model!!.buylist.articles.sumBy {  it.count  } }"
-                                if(model!!.helper == null)
-                                {
+                                phonenumber.text = if (AuthManager.User?.usertype_txt == "Helfer") model!!.helpsearcher.phone_number else if (model!!.helper != null) model!!.helper?.phone_number else "Kein Helfer"
+                                bezahlt.text = if (model!!.payed) "Bezahlt" else "Zu Bezahlen"
+                                price.text = "Preis: ${
+                                    String.format(
+                                            "%.2f",
+                                            model!!.buylist.articles.sumOf { (it.count * it.item.cost) })
+                                } €"
+                                count.text = "Anzahl: ${model!!.buylist.articles.sumBy { it.count }}"
+                                if (model!!.helper == null) {
                                     //searcvhing
                                     status.setImageResource(R.drawable.ic_baseline_person_search_24)
                                     status.setColorFilter(ContextCompat.getColor(requireContext(), R.color.divivder), android.graphics.PorterDuff.Mode.SRC_IN);
-                                }
-                                else if (model!!.done)
-                                    when(model!!.payed){
+                                } else if (model!!.done)
+                                    when (model!!.payed) {
                                         true -> { // green arrow
                                             status.setImageResource(R.drawable.ic_done)
                                             status.setColorFilter(ContextCompat.getColor(requireContext(), R.color.green_200), android.graphics.PorterDuff.Mode.SRC_IN);
@@ -224,11 +223,11 @@ class ShopAdd : Fragment() {
         val belege : MutableList<Beleg> = mutableListOf()
 
         if(!model?.bill_hf.isNullOrEmpty())
-            belege.add(Beleg("K",model?.helper!!,model?.bill_hf!!))
+            belege.add(Beleg("K", model?.helper!!, model?.bill_hf!!))
         if(!model?.bill_hfs.isNullOrEmpty())
-            belege.add(Beleg("K",model?.helpsearcher!!,model?.bill_hfs!!))
+            belege.add(Beleg("K", model?.helpsearcher!!, model?.bill_hfs!!))
         if(!model?.payed_prove.isNullOrEmpty())
-            belege.add(Beleg("P",model?.helpsearcher!!,model?.payed_prove!!))
+            belege.add(Beleg("P", model?.helpsearcher!!, model?.payed_prove!!))
         belegRecView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         belegRecView.adapter = BelegeAdapter(requireContext(), belege)
     }
@@ -365,9 +364,9 @@ class ShopAdd : Fragment() {
             val uri = it.data!!.data
 
 
-            Log.d("Picturerun", getPath(uri)!!)
+            Log.d("Picturerun", getpath2(uri!!)!!)
 
-            val data = FileDataPart.from(getPath(uri)!!, name = "payed_prove")
+            val data = FileDataPart.from(getpath2(uri!!)!!, name = "payed_prove")
             // from(data?.data?.encodedPath.toString() , name = "profile_pic")
 
             val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
@@ -381,7 +380,7 @@ class ShopAdd : Fragment() {
                                 when (result) {
                                     is Result.Failure -> {
                                         Log.d("error", getError(response))
-                                        Toast.makeText(this@ShopAdd.context,  getError(response), Toast.LENGTH_LONG).show()
+                                        Toast.makeText(this@ShopAdd.context, getError(response), Toast.LENGTH_LONG).show()
                                     }
                                     is Result.Success -> {
                                         Toast.makeText(this@ShopAdd.context, "Upload Sucess", Toast.LENGTH_LONG).show()
@@ -423,8 +422,8 @@ class ShopAdd : Fragment() {
                             .responseString { _, response, result ->
                                 when (result) {
                                     is Result.Failure -> {
-                                        Log.d("error",  getError(response))
-                                        Toast.makeText(this@ShopAdd.context,  getError(response), Toast.LENGTH_LONG).show()
+                                        Log.d("error", getError(response))
+                                        Toast.makeText(this@ShopAdd.context, getError(response), Toast.LENGTH_LONG).show()
                                     }
                                     is Result.Success -> {
                                         Toast.makeText(this@ShopAdd.context, "Upload Sucess", Toast.LENGTH_LONG).show()
@@ -451,9 +450,9 @@ class ShopAdd : Fragment() {
             val uri = it.data!!.data
 
 
-            Log.d("Picturerun", getPath(uri)!!)
+            Log.d("Picturerun", getpath2(uri!!)!!)
 
-            val data = FileDataPart.from(getPath(uri)!!, name = if (AuthManager.User?.usertype_txt == "Helfer") "bill_hf" else "bill_hfs")
+            val data = FileDataPart.from(getpath2(uri!!)!!, name = if (AuthManager.User?.usertype_txt == "Helfer") "bill_hf" else "bill_hfs")
             // from(data?.data?.encodedPath.toString() , name = "profile_pic")
 
             val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
@@ -466,7 +465,7 @@ class ShopAdd : Fragment() {
                             .responseString { _, response, result ->
                                 when (result) {
                                     is Result.Failure -> {
-                                        Log.d("error",  getError(response))
+                                        Log.d("error", getError(response))
                                         Toast.makeText(this@ShopAdd.context, getError(response), Toast.LENGTH_LONG).show()
                                     }
                                     is Result.Success -> {
@@ -508,7 +507,7 @@ class ShopAdd : Fragment() {
                                 when (result) {
                                     is Result.Failure -> {
                                         Log.d("error", getError(response))
-                                        Toast.makeText(this@ShopAdd.context,  getError(response), Toast.LENGTH_LONG).show()
+                                        Toast.makeText(this@ShopAdd.context, getError(response), Toast.LENGTH_LONG).show()
                                     }
                                     is Result.Success -> {
                                         Toast.makeText(this@ShopAdd.context, "Upload Sucess", Toast.LENGTH_LONG).show()
@@ -538,14 +537,25 @@ class ShopAdd : Fragment() {
         return path
     }
 
+    private fun getpath2(contentUri: Uri): String? {
+        val projection = arrayOf(Images.Media.DATA)
+        // import android.support.v4.content.CursorLoader; i import this for CursorLoader
+        val loader = CursorLoader(requireActivity().getApplicationContext(), contentUri,
+                projection, null, null, null)
+        val cursor: Cursor? = loader.loadInBackground()
+        val column_index = cursor?.getColumnIndexOrThrow(Images.Media.INTERNAL_CONTENT_URI)
+        cursor?.moveToFirst()
+        return cursor?.getString(column_index!!)
+    }
 
 
-    fun ParseDate(Date : Date) : String{
+    fun ParseDate(Date: Date) : String{
         val sdf2 = SimpleDateFormat("yyyy-MM-dd HH:mm.ss", Locale.getDefault())
         val stwentyfourhour = sdf2.format(Date)
-        Log.d("Parse Date" , stwentyfourhour.replace(" ","T").replace(".",":")+"Z")
-        return stwentyfourhour.replace(" ","T").replace(".",":")+"Z"
+        Log.d("Parse Date", stwentyfourhour.replace(" ", "T").replace(".", ":") + "Z")
+        return stwentyfourhour.replace(" ", "T").replace(".", ":")+"Z"
     }
+
 
 
     fun payed(){
@@ -572,8 +582,8 @@ class ShopAdd : Fragment() {
                                         .responseString { _, response, result ->
                                             when (result) {
                                                 is Result.Failure -> {
-                                                    Log.d("error",  getError(response))
-                                                    Toast.makeText(this@ShopAdd.context,  getError(response), Toast.LENGTH_LONG).show()
+                                                    Log.d("error", getError(response))
+                                                    Toast.makeText(this@ShopAdd.context, getError(response), Toast.LENGTH_LONG).show()
                                                 }
                                                 is Result.Success -> {
                                                     Toast.makeText(this@ShopAdd.context, "Update Sucess", Toast.LENGTH_LONG).show()
