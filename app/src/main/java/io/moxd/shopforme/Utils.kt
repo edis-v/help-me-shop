@@ -26,7 +26,18 @@ import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
+import java.util.regex.Pattern
 import kotlin.math.abs
+
+val PASSWORD_PATTERN =
+    Pattern.compile("^" +
+            "(?=.*[0-9])" +         //at least 1 digit
+            "(?=.*[a-z])" +         //at least 1 lower case letter
+            "(?=.*[A-Z])" +         //at least 1 upper case letter
+            "(?=.*[a-zA-Z])" +      //any letter
+            "(?=\\S+$)" +           //no white spaces
+            ".{4,}" +               //at least 4 characters
+            "$");
 
 fun requireUserManager() = SplashScreen.userManager!!
 fun requireAuthManager() = SplashScreen.authManager!!
@@ -43,14 +54,27 @@ fun getError(response: Response) : String = runBlocking{
         val data = response.body().asString("application/json")
         Log.d("getErrorData", data)
 
-        /*   if(data.contains("Invalid Sessionid"))
-        GlobalScope.launch {  requireAuthManager().auth2() }
 
-*/
         return@withContext if (data.contains("non_field_errors"))
             JsonDeserializer.decodeFromString<ErrorField>(data).Error()
         else
             data.replace("[\"", "").replace("\"]", "")
+    }
+}
+
+
+fun getAllError(response: Response) : List<String> = runBlocking{
+    withContext(Dispatchers.IO) {
+
+        val data = response.body().asString("application/json")
+        Log.d("getErrorData", data)
+
+
+         if (data.contains("non_field_errors"))
+             return@withContext JsonDeserializer.decodeFromString<ErrorField>(data).non_field_errors
+        else
+             return@withContext data.replace("[\"", "").replace("\"]", "").split(",")
+
     }
 }
 

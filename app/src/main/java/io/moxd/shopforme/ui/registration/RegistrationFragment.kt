@@ -3,12 +3,15 @@ package io.moxd.shopforme.ui.registration
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.snackbar.Snackbar
 import io.moxd.shopforme.R
 import io.moxd.shopforme.data.model.Registration
 import io.moxd.shopforme.databinding.AuthRegistrationFragmentBinding
+import io.moxd.shopforme.requireAuthManager
 import kotlinx.coroutines.flow.collect
 
 private const val TAG = "RegistrationFragment"
@@ -32,14 +35,63 @@ class RegistrationFragment: Fragment(R.layout.auth_registration_fragment) {
         binding.apply {
             // ViewModel benachrichtigen wenn FAB geklickt wird
             registerFabConfirm.setOnClickListener {
-                viewModel.onRegistrationConfirmClick(Registration(
-                    email = registerTxtInputEmail.editText?.text.toString(),
-                    password = registerTxtInputPw.editText?.text.toString(),
-                    name = registerTxtInputLastname.editText?.text.toString(),
-                    firstName = registerTxtInputFirstname.editText?.text.toString(),
-                    address = registerTxtInputAddress.editText?.text.toString(),
-                    phoneNumber = registerTxtInputPhoneNum.editText?.text.toString()
-                ))
+                viewModel.onRegistrationConfirmClick()
+            }
+
+            registerTxtInputEmail.editText?.addTextChangedListener { viewModel.email = it.toString() }
+            registerTxtInputPw.editText?.addTextChangedListener { viewModel.pw = it.toString() }
+            registerTxtInputPwConfirm.editText?.addTextChangedListener { viewModel.pwConfirmed = it.toString() }
+            registerTxtInputLastname.editText?.addTextChangedListener { viewModel.lastName = it.toString() }
+            registerTxtInputFirstname.editText?.addTextChangedListener { viewModel.firstName = it.toString() }
+            registerTxtInputAddress.editText?.addTextChangedListener { viewModel.address = it.toString() }
+            registerTxtInputPostalcode.editText?.addTextChangedListener { viewModel.postalCode = it.toString() }
+            registerTxtInputCity.editText?.addTextChangedListener { viewModel.city = it.toString() }
+            registerTxtInputPhoneNum.editText?.addTextChangedListener { viewModel.phoneNum = it.toString() }
+
+            registerTxtInputFirstname.editText?.setOnFocusChangeListener { _, hasFocus ->
+                if(hasFocus) { registerTxtInputFirstname.error = null }
+            }
+            registerTxtInputLastname.editText?.setOnFocusChangeListener { _, hasFocus ->
+                if(hasFocus) { registerTxtInputLastname.error = null }
+            }
+            registerTxtInputAddress.editText?.setOnFocusChangeListener { _, hasFocus ->
+                if(hasFocus) { registerTxtInputAddress.error = null }
+            }
+            registerTxtInputPostalcode.editText?.setOnFocusChangeListener { _, hasFocus ->
+                if(hasFocus) { registerTxtInputPostalcode.error = null }
+            }
+            registerTxtInputCity.editText?.setOnFocusChangeListener { _, hasFocus ->
+                if(hasFocus) { registerTxtInputCity.error = null }
+            }
+
+            registerTxtInputEmail.editText?.setOnFocusChangeListener { _, hasFocus ->
+                if(!hasFocus)
+                    viewModel.checkEmail()
+                else
+                    registerTxtInputEmail.error = null
+            }
+            registerTxtInputPw.editText?.setOnFocusChangeListener { _, hasFocus ->
+                if(!hasFocus) {
+                    viewModel.checkPw()
+                } else {
+                    registerTxtInputPw.error = null
+                    registerTxtInputPwConfirm.error = null
+                }
+            }
+            registerTxtInputPwConfirm.editText?.setOnFocusChangeListener { _, hasFocus ->
+                if(!hasFocus) {
+                    viewModel.checkPw()
+                } else {
+                    registerTxtInputPw.error = null
+                    registerTxtInputPwConfirm.error = null
+                }
+            }
+            registerTxtInputPhoneNum.editText?.setOnFocusChangeListener { _, hasFocus ->
+                if(!hasFocus) {
+                    viewModel.checkPhoneNum()
+                } else {
+                    registerTxtInputPhoneNum.error = null
+                }
             }
         }
 
@@ -57,15 +109,73 @@ class RegistrationFragment: Fragment(R.layout.auth_registration_fragment) {
                 // Navigation (innerhalb von nav_graph_auth)
 
                 when(event) {
-                    is RegistrationViewModel.RegistrationEvent.PerformRegistration -> {
-                        Log.i(TAG, "handleEvents: PerformRegistration")
+                    is RegistrationViewModel.RegistrationEvent.CheckErrors -> {
+                        binding.apply {
+                            var noError = true
+
+                            if (registerTxtInputEmail.error != null) noError = false
+                            if (registerTxtInputPw.error != null) noError = false
+                            if (registerTxtInputPwConfirm.error != null) noError = false
+                            if (registerTxtInputLastname.error != null) noError = false
+                            if (registerTxtInputFirstname.error != null) noError = false
+                            if (registerTxtInputAddress.error != null) noError = false
+                            if (registerTxtInputPostalcode.error != null) noError = false
+                            if (registerTxtInputCity.error != null) noError = false
+                            if (registerTxtInputPhoneNum.error != null) noError = false
+
+                            if(noError) {
+                                viewModel.performRegistration()
+                            } else {
+                                Snackbar.make(requireView(), "Überprüfen Sie Ihr Formular", Snackbar.LENGTH_SHORT).show()
+                            }
+                        }
                     }
-                    RegistrationViewModel.RegistrationEvent.FeedbackMalformedEmail -> TODO()
-                    RegistrationViewModel.RegistrationEvent.FeedbackMalformedPhoneNumber -> TODO()
-                    RegistrationViewModel.RegistrationEvent.FeedbackPasswordTooWeak -> TODO()
-                    RegistrationViewModel.RegistrationEvent.FeedbackPasswordNotIdentical -> TODO()
-                    RegistrationViewModel.RegistrationEvent.FeedbackFieldObligatory -> TODO()
-                    RegistrationViewModel.RegistrationEvent.FeedbackAddressNotParsable -> TODO()
+                    is RegistrationViewModel.RegistrationEvent.FeedbackFieldsRequired -> {
+                        binding.apply {
+                            event.field.forEach {
+                                when(it) {
+                                    "email" -> registerTxtInputEmail.error = "Pflichtfeld"
+                                    "pw" -> registerTxtInputPw.error = "Pflichtfeld"
+                                    "pwConfirm" -> registerTxtInputPwConfirm.error = "Pflichtfeld"
+                                    "lastName" -> registerTxtInputLastname.error = "Pflichtfeld"
+                                    "firstName" -> registerTxtInputFirstname.error = "Pflichtfeld"
+                                    "address" -> registerTxtInputAddress.error = "Pflichtfeld"
+                                    "postalCode" -> registerTxtInputPostalcode.error = "Pflichtfeld"
+                                    "city" -> registerTxtInputCity.error = "Pflichtfeld"
+                                    "phoneNum" -> registerTxtInputPhoneNum.error = "Pflichtfeld"
+                                }
+                            }
+                        }
+                    }
+                    RegistrationViewModel.RegistrationEvent.FeedbackMalformedEmail -> {
+                        binding.apply {
+                            registerTxtInputEmail.error = "Ungültige Email-Adresse"
+                        }
+                    }
+                    RegistrationViewModel.RegistrationEvent.FeedbackMalformedPhoneNumber -> {
+                        binding.apply {
+                            registerTxtInputPhoneNum.error = "Ungültige Telefonnummer"
+                        }
+                    }
+                    RegistrationViewModel.RegistrationEvent.FeedbackPasswordTooWeak -> {
+                        binding.apply {
+                            registerTxtInputPw.error = "Passwort zu schwach"
+                            registerTxtInputPwConfirm.error = "Passwort zu schwach"
+                        }
+                    }
+                    RegistrationViewModel.RegistrationEvent.FeedbackPasswordNotIdentical -> {
+                        binding.apply {
+                            registerTxtInputPw.error = "Passwörter nicht identisch"
+                            registerTxtInputPwConfirm.error = "Passwörter nicht identisch"
+                        }
+                    }
+                    is RegistrationViewModel.RegistrationEvent.Success -> {
+                        Snackbar.make(requireView(), "Erfolgreich registriert", Snackbar.LENGTH_LONG).show()
+                        requireAuthManager().login2(event.email, event.password)
+                    }
+                    is RegistrationViewModel.RegistrationEvent.Error -> {
+                        Snackbar.make(requireView(), event.lastError, Snackbar.LENGTH_LONG).show()
+                    }
                 }
             }
         }

@@ -21,7 +21,9 @@ import io.moxd.shopforme.data.AuthManager.PreferencesKeys.EMAIL
 import io.moxd.shopforme.data.AuthManager.PreferencesKeys.PASSWORD
 import io.moxd.shopforme.data.AuthManager.PreferencesKeys.SESSION_ID
 import io.moxd.shopforme.data.dto.SessionDto
-import io.moxd.shopforme.data.model.UserME
+import io.moxd.shopforme.data.model.*
+import io.moxd.shopforme.data.proto_serializer.toProto
+import io.moxd.shopforme.getAllError
 import io.moxd.shopforme.getError
 import io.moxd.shopforme.service.AlarmServiceSession
 import kotlinx.coroutines.GlobalScope
@@ -138,7 +140,7 @@ class AuthManager constructor(context: Context) {
                         RestPath.user(sessionId)
                 ).responseString { request, response, result ->
                     when (result) {
-                        is com.github.kittinunf.result.Result -> {
+                        is com.github.kittinunf.result.Result.Success -> {
                             GlobalScope.launch {
                                 try {
 
@@ -184,6 +186,42 @@ class AuthManager constructor(context: Context) {
     //    eventChannel.send(Result.UnauthSucess)
     }
 
+    fun register(registration: Registration) {
+
+            Fuel.post(
+                RestPath.register,
+                listOf(
+                    "name" to registration.name,
+                    "firstname" to  registration.firstName,
+                    "password" to registration.password,
+                    "password2" to registration.password,
+                    "email" to registration.email,
+                    "phone_number" to registration.phoneNumber,
+                    "Street" to registration.address,
+                    "profile_pic" to null,
+                    "plz" to registration.postalCode,
+                    "City" to registration.city,
+                    "usertype" to UserType2.Type[0].second
+                )
+            ).responseString { request, response, result ->
+                when (result) {
+                    is com.github.kittinunf.result.Result.Success -> {
+
+                        GlobalScope.launch {
+                            eventChannel.send(Result.RegisterSuccess(registration.email, registration.password))
+                        }
+                    }
+                    is com.github.kittinunf.result.Result.Failure -> {
+                        val errorMessages = getAllError(response)
+                        GlobalScope.launch {
+                            eventChannel.send(Result.RegisterError(result.getException(), errorMessages))
+                        }
+                    }
+                }
+            }.join()
+
+    }
+
     private object PreferencesKeys {
         val SESSION_ID = stringPreferencesKey("session_id")
         val EMAIL = stringPreferencesKey("email")
@@ -217,5 +255,7 @@ class AuthManager constructor(context: Context) {
         object UnauthSucess : Result()
         data class AuthSucess(val session: SessionDto) : Result()
         data class AuthError(val exception: Exception) : Result()
+        data class RegisterSuccess(val email: String, val password: String) : Result()
+        data class RegisterError(val exception: Exception, val errorMessages: List<String>) : Result()
     }
 }

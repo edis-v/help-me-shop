@@ -1,11 +1,11 @@
 plugins {
     id 'com.android.application'
-    id 'kotlin-android'
-    id 'com.google.gms.google-services'
-    id 'kotlin-parcelize'
-    id 'com.google.protobuf' version '0.8.12'
-    id 'kotlinx-serialization'
     id 'androidx.navigation.safeargs'
+    id 'kotlin-android'
+    id 'kotlin-parcelize'
+    id 'kotlinx-serialization'
+    id 'com.google.gms.google-services'
+    id 'com.google.protobuf' version '0.8.12'
     id 'com.google.firebase.crashlytics'
 }
 android {
@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId "io.moxd.shopforme"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
@@ -97,6 +97,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging-ktx'
 
     implementation 'android.arch.work:work-runtime:1.0.1'
+
+    implementation 'com.google.android.gms:play-services-location:18.0.0'
 
 }
 

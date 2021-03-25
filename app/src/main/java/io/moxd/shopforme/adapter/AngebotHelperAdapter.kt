@@ -63,7 +63,7 @@ class AngebotHelperAdapter (private val context: Context, var itemModelArrayList
         if(model.viewed)
             if(model.approve) {
                 holder.status.setImageResource(R.drawable.ic_done)
-                holder.status.setColorFilter(ContextCompat.getColor(context, R.color.green_200), android.graphics.PorterDuff.Mode.SRC_IN); // change color right
+                holder.status.setColorFilter(ContextCompat.getColor(context, R.color.IconAccept), android.graphics.PorterDuff.Mode.SRC_IN); // change color right
             }
             else{
                 holder.status.setImageResource(R.drawable.ic_wrong)
