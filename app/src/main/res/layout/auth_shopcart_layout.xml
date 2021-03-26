@@ -82,6 +82,13 @@
             app:srcCompat="@drawable/ic_filter_alt_24"
             android:layout_height="wrap_content"
             tools:ignore="VectorDrawableCompat" />
+        <com.nambimobile.widgets.efab.FabOption
+            android:layout_width="wrap_content"
+            app:label_text="Update Location"
+            android:id="@+id/shopcart_location"
+            app:srcCompat="@drawable/ic_baseline_my_location_24"
+            android:layout_height="wrap_content"
+            tools:ignore="VectorDrawableCompat" />
     </com.nambimobile.widgets.efab.ExpandableFabLayout>
 
     <com.google.android.material.card.MaterialCardView

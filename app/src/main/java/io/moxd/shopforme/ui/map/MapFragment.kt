@@ -14,6 +14,7 @@ import android.graphics.PointF
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
+import android.os.Looper
 import android.os.Looper.getMainLooper
 import android.util.Log
 import android.view.LayoutInflater
@@ -33,6 +34,7 @@ import androidx.recyclerview.widget.*
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.FuelManager
 import com.github.kittinunf.result.Result
+import com.google.android.gms.location.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.slider.Slider
 import com.mapbox.android.core.location.*
@@ -67,6 +69,8 @@ import com.mapbox.pluginscalebar.ScaleBarOptions
 import com.mapbox.pluginscalebar.ScaleBarPlugin
 import com.squareup.picasso.Picasso
 import io.moxd.shopforme.*
+import io.moxd.shopforme.R
+import io.moxd.shopforme.data.AuthManager
 import io.moxd.shopforme.data.RestPath
 import io.moxd.shopforme.data.model.LocationData
 import io.moxd.shopforme.data.model.OtherUser
@@ -97,11 +101,19 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
     private val MARKER_LAYER_ID = "MARKER_LAYER_ID"
     private val PROPERTY_CAPITAL = "capital"
     private  var Maxnumber  = -1
+    lateinit var mFusedLocationClient: FusedLocationProviderClient
     private  var otheruserLocations :List<ShopMap> = mutableListOf()
     private  lateinit var mycontext : Context
-    private   var lastKnownLocation : Location? = null
+    private   var lastKnownLocation2 : Location? = null
     var recyclerlist : List<SingleRecyclerViewLocation> = mutableListOf()
 
+
+
+    private val mLocationCallback: LocationCallback = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult) {
+            lastKnownLocation2 = locationResult.lastLocation
+             setup(mystyle)
+            }}
 
 
     override fun onCreateView(
@@ -155,8 +167,8 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
             }
 
         }
-        job.start()
-
+    //    job.start()
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
 
         slider.addOnSliderTouchListener(object : Slider.OnSliderTouchListener {
             override fun onStartTrackingTouch(slider: Slider) {
@@ -164,7 +176,7 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
             }
 
             override fun onStopTrackingTouch(slider: Slider) {
-                if (lastKnownLocation != null) {
+                if (lastKnownLocation2 != null) {
                     GlobalScope.launch {
                         // Responds to when slider's touch event is being stopped
                         val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
@@ -213,7 +225,7 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
                         initFeatureCollection();
 
                         Log.d("OtherUserCount", otheruserLocations.size.toString())
-                        LatLng(lastKnownLocation!!.latitude, lastKnownLocation!!.longitude)
+                        LatLng(lastKnownLocation2!!.latitude, lastKnownLocation2!!.longitude)
                         withContext(Dispatchers.Main) {
                             recyclerlist = createRecyclerViewLocations()!!
                             val locationAdapter = LocationRecyclerViewAdapter(
@@ -232,15 +244,15 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
                                     bounds.include(i.helpsearcher.location.getLatLong())
                                 bounds.include(
                                     LatLng(
-                                        lastKnownLocation!!.latitude,
-                                        lastKnownLocation!!.longitude
+                                        lastKnownLocation2!!.latitude,
+                                        lastKnownLocation2!!.longitude
                                     )
                                 )
                                 val position = CameraPosition.Builder()
                                     .target(
                                         LatLng(
-                                            lastKnownLocation!!.latitude,
-                                            lastKnownLocation!!.longitude
+                                            lastKnownLocation2!!.latitude,
+                                            lastKnownLocation2!!.longitude
                                         )
                                     )
                                     .zoom(16 - slider.value.toDouble())
@@ -572,7 +584,7 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
     private fun initMarkerIcons(loadedMapStyle: Style) {
         loadedMapStyle.addImage(
             SYMBOL_ICON_ID, BitmapFactory.decodeResource(
-                this.resources, R.drawable.icon_info
+                this.resources, R.drawable.ic_baseline_add_shopping_cart_24
             )
         )
         loadedMapStyle.addSource(GeoJsonSource(SOURCE_ID, featureCollection))
@@ -612,6 +624,27 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
 
 
 
+    @SuppressLint("MissingPermission")
+    private fun requestNewLocationData() {
+
+        // Initializing LocationRequest
+        // object with appropriate methods
+        val mLocationRequest = LocationRequest()
+        mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        mLocationRequest.interval = 5
+        mLocationRequest.fastestInterval = 0
+        mLocationRequest.numUpdates = 1
+
+        // setting LocationRequest
+        // on FusedLocationClient
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+        mFusedLocationClient.requestLocationUpdates(
+                mLocationRequest,
+                mLocationCallback,
+                Looper.myLooper()
+        )
+    }
+
 
     @SuppressLint("MissingPermission")
     private fun enableLocationComponent(loadedMapStyle: Style) {
@@ -647,149 +680,190 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
 // Set the LocationComponent's render mode
                 renderMode = RenderMode.NORMAL
                 if(lastKnownLocation != null){
-
-                    GlobalScope.launch {
-
-                        //update user Location
-                        val job0: Job = GlobalScope.launch(context = Dispatchers.IO) {
-                            requireAuthManager().SessionID().take(1).collect {
-
-                                val url = FuelManager.instance.basePath + RestPath.locationUpdate(it)
-
-                                Log.d("URL", url)
-                                val data = LocationData(
-                                    type = "Point", coordinates = listOf(
-                                        lastKnownLocation!!.latitude,
-                                        lastKnownLocation!!.longitude
-                                    ) as List<Double>
-                                )
-                                Fuel.put(
-                                    url, listOf("location" to JsonDeserializer.encodeToString(data))
-                                ).responseString { request, response, result ->
-
-                                    when (result) {
-                                        is Result.Success -> {
-                                            Log.d("result", result.get())
-                                            Toast.makeText(mycontext, "Success", Toast.LENGTH_LONG)
-                                        }
-                                        is Result.Failure -> {
-                                            Log.d(
-                                                "Error",
-                                                    getError(response)
-                                            )
-                                            Toast.makeText(mycontext,  getError(response), Toast.LENGTH_LONG).show()
-                                            otheruserLocations = mutableListOf()
-                                        }
-
-                                    }
-
-
-                                }.join()
-                                Log.d("COunt", otheruserLocations.size.toString())
-
-                            }
-
-                        }
-                        job0.join()
-
-                        // get other users
-                        val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
-                            requireAuthManager().SessionID().take(1).collect {
-
-                                val url = FuelManager.instance.basePath + RestPath.otherUsers(
-                                    it,
-                                    1.toString()
-                                )
-
-                                Log.d("URL", url)
-
-                                Fuel.get(
-                                    url
-                                ).responseString { request, response, result ->
-
-                                    when (result) {
-                                        is Result.Success -> {
-                                            Log.d("result", result.get())
-                                            otheruserLocations =
-                                                JsonDeserializer.decodeFromString<List<ShopMap>>(
-                                                    result.get()
-                                                )
-                                        }
-                                        is Result.Failure -> {
-                                            Log.d(
-                                                "result",
-                                                    getError(response)
-                                            )
-                                            Toast.makeText(mycontext,  getError(response), Toast.LENGTH_LONG).show()
-                                            otheruserLocations = mutableListOf()
-                                        }
-
-                                    }
-
-
-                                }.join()
-                                Log.d("COunt", otheruserLocations.size.toString())
-
-                            }
-
-                        }
-                        job.join()
-                        getMaxLocation()
-                        initFeatureCollection();
-
-                        Log.d("OtherUserCount", otheruserLocations.size.toString())
-                        LatLng(lastKnownLocation!!.latitude, lastKnownLocation!!.longitude)
-                        withContext(Dispatchers.Main) {
-                            recyclerlist =  createRecyclerViewLocations()!!
-                            if(context != null)
-                                recyclerView.adapter  = LocationRecyclerViewAdapter(
-                                recyclerlist,
-                                mapboxMap, mystyle,requireContext()
-                            )
-
-
-                            symbolManager.deleteAll()
-                            createOtherUser(loadedMapStyle)
-
-                            if(otheruserLocations.isNotEmpty()) {
-
-                                val bounds = LatLngBounds.Builder()
-
-                                for (i in otheruserLocations)
-                                    bounds.include(i.helpsearcher.location.getLatLong())
-                                bounds.include(
-                                    LatLng(
-                                        lastKnownLocation!!.latitude,
-                                        lastKnownLocation!!.longitude
-                                    )
-                                )
-
-                                val boundsbuild = bounds.build()
-                                mapboxMap.setLatLngBoundsForCameraTarget(boundsbuild)
-
-
-                                mapboxMap.easeCamera(
-                                    CameraUpdateFactory.newLatLngBounds(boundsbuild, 400),
-                                    1000
-                                )
-                            }
-                        }
-                    }
-
-                    this@MapFragment.lastKnownLocation = lastKnownLocation!!
-                    val position = CameraPosition.Builder()
-                        .target(LatLng(lastKnownLocation!!.latitude, lastKnownLocation!!.longitude))
-                        .zoom(16.0)
-                        .tilt(20.0)
-                        .build()
-                    mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000)
+                                lastKnownLocation2 = lastKnownLocation
+                    setup(loadedMapStyle)
                 }
+                else{
+                    requestNewLocationData()
+                   mFusedLocationClient.lastLocation
+                            .addOnSuccessListener { location: Location? ->
+                                // Got last known location. In some rare situations this can be null.
+                                if (location != null) {
+                                     lastKnownLocation2 = location
+                                        setup(loadedMapStyle)
+
+                                } else {
+                                    val mLocationRequest = LocationRequest()
+                                    mLocationRequest.priority =
+                                            LocationRequest.PRIORITY_HIGH_ACCURACY
+                                    mLocationRequest.interval = 5
+                                    mLocationRequest.fastestInterval = 0
+                                    mLocationRequest.numUpdates = 1
+
+                                    // setting LocationRequest
+                                    // on FusedLocationClient
+
+                                    // setting LocationRequest
+                                    // on FusedLocationClient
+                                    mFusedLocationClient =
+                                            LocationServices.getFusedLocationProviderClient(
+                                                    requireContext()
+                                            )
+                                    mFusedLocationClient.requestLocationUpdates(
+                                            mLocationRequest,
+                                            mLocationCallback,
+                                            Looper.myLooper()
+                                    )
+                                }
+                            }
+
+                }
+
+
             }
              initLocationEngine()
         } else {
             permissionsManager = PermissionsManager(this)
             permissionsManager.requestLocationPermissions(activity)
         }
+    }
+
+    fun setup(mstyle : Style){
+        GlobalScope.launch {
+
+            //update user Location
+            val job0: Job = GlobalScope.launch(context = Dispatchers.IO) {
+                requireAuthManager().SessionID().take(1).collect {
+
+                    val url = FuelManager.instance.basePath + RestPath.locationUpdate(it)
+
+                    Log.d("URL", url)
+                    val data = LocationData(
+                            type = "Point", coordinates = listOf(
+                            lastKnownLocation2!!.latitude,
+                            lastKnownLocation2!!.longitude
+                    ) as List<Double>
+                    )
+                    Fuel.put(
+                            url, listOf("location" to JsonDeserializer.encodeToString(data))
+                    ).responseString { request, response, result ->
+
+                        when (result) {
+                            is Result.Success -> {
+                                Log.d("result location", result.get())
+                                Toast.makeText(mycontext, "Success", Toast.LENGTH_LONG)
+                            }
+                            is Result.Failure -> {
+                                Log.d(
+                                        "Error",
+                                        getError(response)
+                                )
+                                Toast.makeText(mycontext,  getError(response), Toast.LENGTH_LONG).show()
+                                otheruserLocations = mutableListOf()
+                            }
+
+                        }
+
+
+                    }.join()
+                    Log.d("COunt", otheruserLocations.size.toString())
+
+                }
+
+            }
+            job0.join()
+
+            // get other users
+            val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
+                requireAuthManager().SessionID().take(1).collect {
+
+                    val url = FuelManager.instance.basePath + RestPath.otherUsers(
+                            it,
+                            1.toString()
+                    )
+
+                    Log.d("URL", url)
+
+                    Fuel.get(
+                            url
+                    ).responseString { request, response, result ->
+
+                        when (result) {
+                            is Result.Success -> {
+                                Log.d("result", result.get())
+                                otheruserLocations =
+                                        JsonDeserializer.decodeFromString<List<ShopMap>>(
+                                                result.get()
+                                        )
+                            }
+                            is Result.Failure -> {
+                                Log.d(
+                                        "result",
+                                        getError(response)
+                                )
+                                Toast.makeText(mycontext,  getError(response), Toast.LENGTH_LONG).show()
+                                otheruserLocations = mutableListOf()
+                            }
+
+                        }
+
+
+                    }.join()
+                    Log.d("COunt", otheruserLocations.size.toString())
+
+                }
+
+            }
+            job.join()
+            getMaxLocation()
+            initFeatureCollection();
+
+            Log.d("OtherUserCount", otheruserLocations.size.toString())
+            LatLng(lastKnownLocation2!!.latitude, lastKnownLocation2!!.longitude)
+            withContext(Dispatchers.Main) {
+                recyclerlist =  createRecyclerViewLocations()!!
+                if(context != null)
+                    recyclerView.adapter  = LocationRecyclerViewAdapter(
+                            recyclerlist,
+                            mapboxMap, mystyle,requireContext()
+                    )
+
+
+                symbolManager.deleteAll()
+                createOtherUser(mstyle)
+
+                if(otheruserLocations.isNotEmpty()) {
+
+                    val bounds = LatLngBounds.Builder()
+
+                    for (i in otheruserLocations)
+                        bounds.include(i.helpsearcher.location.getLatLong())
+                    bounds.include(
+                            LatLng(
+                                    lastKnownLocation2!!.latitude,
+                                    lastKnownLocation2!!.longitude
+                            )
+                    )
+
+                    val boundsbuild = bounds.build()
+                    mapboxMap.setLatLngBoundsForCameraTarget(boundsbuild)
+
+
+                    mapboxMap.easeCamera(
+                            CameraUpdateFactory.newLatLngBounds(boundsbuild, 400),
+                            1000
+                    )
+                }
+            }
+        }
+
+
+        val position = CameraPosition.Builder()
+                .target(LatLng(lastKnownLocation2!!.latitude, lastKnownLocation2!!.longitude))
+                .zoom(16.0)
+                .tilt(20.0)
+                .build()
+        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000)
     }
 
     private var locationEngine: LocationEngine? = null
@@ -871,11 +945,11 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
             if (activity != null) {
                 val location = result.lastLocation ?: return
 
-                if(activity.lastKnownLocation == null)
+                if(activity.lastKnownLocation2 == null)
                     return
 
 // Create a Toast which displays the new location's coordinates
-                if(activity.lastKnownLocation?.latitude != location.latitude && activity.lastKnownLocation?.longitude != location.longitude  )
+                if(activity.lastKnownLocation2?.latitude != location.latitude && activity.lastKnownLocation2?.longitude != location.longitude  )
                     activity.enableLocationComponent(activity.mystyle)
 
 // Pass the new location to the Maps SDK's LocationComponent
