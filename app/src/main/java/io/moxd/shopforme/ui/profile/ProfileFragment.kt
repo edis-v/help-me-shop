@@ -62,7 +62,7 @@ class ProfileFragment : Fragment()  {
     private  lateinit var savebtn : FloatingActionButton
     private  lateinit var cancel : FloatingActionButton
     private  lateinit var newpicbtn : FloatingActionButton
-    var usertypes_txt = arrayListOf<String>("Helfer", "Hilfesuchender")
+    var usertypes_txt = arrayListOf<String>("Helfer", "HilfeSuchender")
     var usertypes = arrayListOf<String>("HF", "HFS")
 
     private lateinit var viewModel: ProfileViewModel

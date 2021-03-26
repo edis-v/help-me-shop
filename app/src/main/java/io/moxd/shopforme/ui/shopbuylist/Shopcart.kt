@@ -1,7 +1,17 @@
 package io.moxd.shopforme.ui.shopbuylist
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
+import android.location.Location
+import android.location.LocationManager
 import android.os.Bundle
+import android.os.Looper
+import android.provider.Settings
 import androidx.transition.Slide
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,7 +19,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.cardview.widget.CardView
+import androidx.core.app.ActivityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.ViewGroupCompat
 import androidx.core.view.doOnPreDraw
@@ -20,7 +32,9 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import com.github.kittinunf.fuel.Fuel
+import com.github.kittinunf.fuel.core.FuelManager
 import com.github.kittinunf.result.Result
+import com.google.android.gms.location.*
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.transition.MaterialContainerTransform
@@ -28,10 +42,13 @@ import com.google.android.material.transition.MaterialElevationScale
 import com.nambimobile.widgets.efab.ExpandableFab
 import com.nambimobile.widgets.efab.ExpandableFabLayout
 import io.moxd.shopforme.*
+import io.moxd.shopforme.R
 import io.moxd.shopforme.adapter.BuyListAdapter
 import io.moxd.shopforme.adapter.ShopAdapter
+import io.moxd.shopforme.data.AuthManager
 import io.moxd.shopforme.data.RestPath
 import io.moxd.shopforme.data.model.BuyList
+import io.moxd.shopforme.data.model.LocationData
 import io.moxd.shopforme.data.model.Shop
 
 import kotlinx.coroutines.Dispatchers
@@ -40,6 +57,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 
 class Shopcart : Fragment() {
     lateinit var list : RecyclerView
@@ -47,6 +65,7 @@ class Shopcart : Fragment() {
     lateinit var  refreshlayout : SwipeRefreshLayout
     lateinit var shopfilterwindow :CardView
     lateinit var shopcartfab : ExpandableFab
+    lateinit var mFusedLocationClient: FusedLocationProviderClient
     var buylist: List<BuyList> = mutableListOf()
     var filtered = false //observe the data to enable disable reset filter or hard code
     lateinit var closewindow : ImageView
@@ -54,6 +73,97 @@ class Shopcart : Fragment() {
  //   lateinit var Shopadapter : ShopAdapter
     var shop: List<Shop> = mutableListOf()
 
+
+
+    @SuppressLint("MissingPermission")
+    private fun requestNewLocationData() {
+
+        // Initializing LocationRequest
+        // object with appropriate methods
+        val mLocationRequest = LocationRequest()
+        mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        mLocationRequest.interval = 5
+        mLocationRequest.fastestInterval = 0
+        mLocationRequest.numUpdates = 1
+
+        // setting LocationRequest
+        // on FusedLocationClient
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+        mFusedLocationClient.requestLocationUpdates(
+                mLocationRequest,
+                mLocationCallback,
+                Looper.myLooper()
+        )
+    }
+    private val mLocationCallback: LocationCallback = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult) {
+            val mLastLocation = locationResult.lastLocation
+            val lat: Double = mLastLocation.latitude
+            val long: Double = mLastLocation.longitude
+
+            GlobalScope.launch(context = Dispatchers.IO) {
+                    requireAuthManager().SessionID().take(1)
+                            .collect {
+
+                                val url =
+                                        FuelManager.instance.basePath + RestPath.locationUpdate(
+                                                it
+                                        )
+
+                                Log.d("URL", url)
+                                Log.d("HomeLocation", "$lat $long")
+                                val data = LocationData(
+                                        type = "Point",
+                                        coordinates = listOf(
+                                                lat,
+                                                long
+                                        ) as List<Double>
+                                )
+                                if (it.isEmpty())
+                                    Fuel.put(
+                                            url, listOf(
+                                            "location" to JsonDeserializer.encodeToString(
+                                                    data
+                                            )
+                                    )
+                                    )
+                                            .responseString { request, response, result ->
+
+                                                when (result) {
+                                                    is Result.Success -> {
+                                                        Log.d(
+                                                                "result",
+                                                                result.get()
+                                                        )
+
+                                                    }
+                                                    is Result.Failure -> {
+                                                        Log.d(
+                                                                "Error",
+                                                                getError(
+                                                                        response
+                                                                )
+                                                        )
+
+
+                                                    }
+
+                                                }
+
+
+                                            }.join()
+                            }
+                }}}
+
+    fun OnGPS() {
+        val builder: AlertDialog.Builder = AlertDialog.Builder(requireContext())
+        builder.setMessage("Enable GPS").setCancelable(false).setPositiveButton("Yes",
+                DialogInterface.OnClickListener { dialog, which -> startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)) })
+                .setNegativeButton("No",
+                        DialogInterface.OnClickListener { dialog, which -> dialog.cancel() })
+        val alertDialog: AlertDialog = builder.create()
+        alertDialog.show()
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -96,12 +206,121 @@ class Shopcart : Fragment() {
                 shopcartfab.visibility = View.GONE
 
         }
+
+        root.findViewById<com.nambimobile.widgets.efab.FabOption>(R.id.shopcart_filter).setOnClickListener {
+            requestNewLocationData()
+        }
+
         closewindow.setOnClickListener {
             shopfilterwindow.visibility = View.GONE
             shopcartfab.visibility = View.VISIBLE
         }
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
+        requestNewLocationData()
+
+        val nManager: LocationManager =
+                requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+        if (!nManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+            OnGPS();
+
+        if (ActivityCompat.checkSelfPermission(
+                        requireContext(),
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                        requireContext(),
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+        ) {
+
+        } else {
+
+            mFusedLocationClient.lastLocation
+                    .addOnSuccessListener { location: Location? ->
+                        // Got last known location. In some rare situations this can be null.
+                        if (location != null) {
+                            val lat: Double = location.latitude
+                            val long: Double = location.longitude
+                            GlobalScope.launch(context = Dispatchers.IO) {
+                                requireAuthManager().SessionID().take(1)
+                                        .collect {
+
+                                            val url =
+                                                    FuelManager.instance.basePath + RestPath.locationUpdate(
+                                                            it
+                                                    )
+
+                                            Log.d("URL", url)
+                                            Log.d("HomeLocation", "$lat $long")
+                                            val data = LocationData(
+                                                    type = "Point",
+                                                    coordinates = listOf(
+                                                            lat,
+                                                            long
+                                                    ) as List<Double>
+                                            )
+                                            if (!it.isEmpty())
+                                                Fuel.put(
+                                                        url, listOf(
+                                                        "location" to JsonDeserializer.encodeToString(
+                                                                data
+                                                        )
+                                                )
+                                                )
+                                                        .responseString { request, response, result ->
+
+                                                            when (result) {
+                                                                is Result.Success -> {
+                                                                    Log.d(
+                                                                            "result",
+                                                                            result.get()
+                                                                    )
+
+                                                                }
+                                                                is Result.Failure -> {
+                                                                    Log.d(
+                                                                            "Error",
+                                                                            getError(
+                                                                                    response
+                                                                            )
+                                                                    )
 
 
+                                                                }
+
+                                                            }
+
+
+                                                        }.join()
+                                        }
+                            }
+                        } else {
+                            val mLocationRequest = LocationRequest()
+                            mLocationRequest.priority =
+                                    LocationRequest.PRIORITY_HIGH_ACCURACY
+                            mLocationRequest.interval = 5
+                            mLocationRequest.fastestInterval = 0
+                            mLocationRequest.numUpdates = 1
+
+                            // setting LocationRequest
+                            // on FusedLocationClient
+
+                            // setting LocationRequest
+                            // on FusedLocationClient
+                            mFusedLocationClient =
+                                    LocationServices.getFusedLocationProviderClient(
+                                            requireContext()
+                                    )
+                            mFusedLocationClient.requestLocationUpdates(
+                                    mLocationRequest,
+                                    mLocationCallback,
+                                    Looper.myLooper()
+                            )
+                        }
+                    }
+
+
+        }
 
         refreshlayout.setOnRefreshListener(OnRefreshListener {
             when (tabLayout.selectedTabPosition) {

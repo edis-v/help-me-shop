@@ -24,13 +24,13 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buylist_create"
             style="@style/Widget.ShopForMe.Button"
-            android:layout_width="100dp"
+            android:layout_width="200dp"
             android:layout_height="50dp"
             android:layout_alignBottom="@+id/buylist_info_price"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="27dp"
             android:layout_marginBottom="13dp"
-            android:text="Create"
+            android:text="Einkauf Erstellen"
             android:textAppearance="@style/TextAppearance.ShopForMe.Button" />
 
         <com.google.android.material.textview.MaterialTextView

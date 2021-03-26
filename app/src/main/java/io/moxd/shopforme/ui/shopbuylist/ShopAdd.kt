@@ -57,6 +57,7 @@ import java.util.*
 class ShopAdd : Fragment() {
     lateinit var title :TextView
     lateinit var price :TextView
+    lateinit var realprice : TextView
     lateinit var count :TextView
     lateinit var bezahlt :TextView
     lateinit var phonenumber :TextView
@@ -111,9 +112,35 @@ class ShopAdd : Fragment() {
                                 buylist.adapter = BuyListMinAdapter(requireContext(), model!!.buylist.articles.toMutableList())
                                 createBelege()
                                 title.text = FormatDate(model!!.creation_date)
+
+                                if(model?.price != 0.0){
+                                    realprice.visibility = View.VISIBLE
+                                    realprice.text = "Der Preis des Einkaufs \nbeträgt ${model?.price} €"
+                                }else
+                                {
+                                    realprice.visibility = View.GONE
+                                }
+
+                                if (AuthManager.User?.usertype_txt == "Helfer") {
+                                    pay.text = "Bezahlung erhalten"
+                                    done.text = "Einkauf erledigt"
+                                    pay.isEnabled = (model?.done!! && model?.payed_prove != null)
+                                    done.isEnabled = model?.helper != null
+                                }
+                                else{
+                                    pay.text = "Bezahlung belegen"
+                                    done.text = "Einkauf erhalten"
+                                    pay.isEnabled = (model?.done!!)
+                                    done.isEnabled = (model?.helper != null && model?.bill_hf != null)
+                                }
+
+
+
+
+
                                 phonenumber.text = if (AuthManager.User?.usertype_txt == "Helfer") model!!.helpsearcher.phone_number else if (model!!.helper != null) model!!.helper?.phone_number else "Kein Helfer"
                                 bezahlt.text = if (model!!.payed) "Bezahlt" else "Zu Bezahlen"
-                                price.text = "Preis: ${
+                                price.text = "Geschätzter Preis: ${
                                     String.format(
                                             "%.2f",
                                             model!!.buylist.articles.sumOf { (it.count * it.item.cost) })
@@ -195,6 +222,8 @@ class ShopAdd : Fragment() {
         buylist = root.findViewById(R.id.max_shop_cardview_menu_buylist)
         exit =  root.findViewById<ImageView>(R.id.max_shop_cardview_exit)
         phonenumber = root.findViewById(R.id.max_shop_cardview_phonenumber)
+        realprice = root.findViewById(R.id.max_shop_cardview_realPreis)
+
 
         delete = root.findViewById(R.id.max_shop_cardview_menu_delete)
         done = root.findViewById(R.id.max_shop_cardview_menu_shop)
