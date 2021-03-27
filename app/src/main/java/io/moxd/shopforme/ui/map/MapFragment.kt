@@ -1,12 +1,10 @@
 package io.moxd.shopforme.ui.map
 
 
-import android.Manifest
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
@@ -24,9 +22,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
@@ -70,15 +66,10 @@ import com.mapbox.pluginscalebar.ScaleBarPlugin
 import com.squareup.picasso.Picasso
 import io.moxd.shopforme.*
 import io.moxd.shopforme.R
-import io.moxd.shopforme.data.AuthManager
 import io.moxd.shopforme.data.RestPath
 import io.moxd.shopforme.data.model.LocationData
-import io.moxd.shopforme.data.model.OtherUser
 import io.moxd.shopforme.data.model.ShopMap
-import io.moxd.shopforme.ui.profile.ProfileFragment
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.take
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import java.lang.ref.WeakReference

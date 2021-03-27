@@ -1,16 +1,13 @@
 package io.moxd.shopforme.ui.profile
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,21 +17,14 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.SavedStateViewModelFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso.Picasso
 import io.moxd.shopforme.*
 
-import io.moxd.shopforme.data.model.UserGSON
-import io.moxd.shopforme.data.model.UserME
 import io.moxd.shopforme.databinding.AuthProfileFragmentBinding
 import io.moxd.shopforme.ui.dialog.CameraGalleryDialog
-import io.moxd.shopforme.ui.login.LoginViewModelFactory
 import io.moxd.shopforme.ui.profile_list.ProfileListFragment
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import retrofit2.awaitResponse
 import timber.log.Timber
 import java.io.File
 import java.io.IOException
@@ -46,150 +36,18 @@ class ProfileFragment2 : Fragment()    {
     private val viewModel : ProfileViewModel by viewModels {
         ProfileViewModelFactory(this, arguments)
     }
+    lateinit var observer : ProfileLifecycleObserver
     lateinit var binding: AuthProfileFragmentBinding
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        observer = ProfileLifecycleObserver(requireActivity().activityResultRegistry,viewModel,requireContext())
+        lifecycle.addObserver(observer)
         return inflater.inflate(R.layout.auth_profile_fragment,container,false)
     }
 
-    fun GalleryAction(){
-
-        when {
-            ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            ) == PackageManager.PERMISSION_GRANTED -> {
-                GalleryGet()
-            }
-            shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE) -> {
-            // In an educational UI, explain to the user why your app requires this
-            // permission for a specific feature to behave as expected. In this UI,
-            // include a "cancel" or "no thanks" button that allows the user to
-            // continue using your app without granting the permission.
-                //
-                MaterialAlertDialogBuilder(requireContext())
-                    .setTitle("Berechtigung")
-                    .setMessage("Um ein Bild aus der Gallery zu wählen benötigen wir die Berechtigung ")
-                    .setNeutralButton("Nein Danke") { _, _ ->
-                        // Respond to neutral button press
-                    }
-                    .setPositiveButton("Ja") { _, _ ->
-
-                        requestPermissionGallery.launch(
-                            Manifest.permission.READ_EXTERNAL_STORAGE)
-                    }.show()
-        }
-            else -> {
-                // You can directly ask for the permission.
-                // The registered ActivityResultCallback gets the result of this request.
-                requestPermissionGallery.launch(
-                    Manifest.permission.READ_EXTERNAL_STORAGE)
-            }
-        }
-
-
-    }
-
-
-    fun CameraAction(){
-
-        when {
-            ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.CAMERA
-            ) == PackageManager.PERMISSION_GRANTED -> {
-                CameraGet()
-            }
-            shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) -> {
-                // In an educational UI, explain to the user why your app requires this
-                // permission for a specific feature to behave as expected. In this UI,
-                // include a "cancel" or "no thanks" button that allows the user to
-                // continue using your app without granting the permission.
-                //
-                MaterialAlertDialogBuilder(requireContext())
-                    .setTitle("Berechtigung")
-                    .setMessage("Um ein Bild von der Kamera zu erstellen benötigen wir die Berechtigung ")
-                    .setNeutralButton("Nein Danke") { _, _ ->
-                        // Respond to neutral button press
-                    }
-                    .setPositiveButton("Ja") { _, _ ->
-
-                        requestPermissionCamera.launch(
-                            Manifest.permission.CAMERA)
-                    }.show()
-            }
-            else -> {
-                // You can directly ask for the permission.
-                // The registered ActivityResultCallback gets the result of this request.
-                requestPermissionCamera.launch(
-                    Manifest.permission.CAMERA)
-            }
-        }
-
-
-    }
-
-    fun GalleryGet(){
-        val intent = Intent()
-        intent.type = "image/*"
-        intent.action = Intent.ACTION_GET_CONTENT
-        intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
-        intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Test Subject")
-        val chooseIntent = Intent.createChooser(intent, "Select Picture")
-        getContent.launch(chooseIntent)
-    }
-
-
-    fun CameraGet(){
-
-        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-            // Ensure that there's a camera activity to handle the intent
-            takePictureIntent.resolveActivity(requireActivity().packageManager)?.also {
-                // Create the File where the photo should go
-                val photoFile: File? = try {
-                    createImageFile()
-                } catch (ex: IOException) {
-
-                    null
-                }
-                // Continue only if the File was successfully created
-                photoFile?.also {
-                    val photoURI: Uri = FileProvider.getUriForFile(
-                        requireContext(),
-                        "io.moxd.shopforme.fileprovider",
-                        it
-                    )
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                    takePictureIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Test Subject")
-                    takePictureIntent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
-                }
-            }
-        }
-
-
-        val chooseIntent = Intent.createChooser(intent, "Select Picture")
-
-        getImageContent.launch(chooseIntent)
-    }
-
-    val requestPermissionGallery =
-        registerForActivityResult(ActivityResultContracts.RequestPermission() ,
-        ) {
-            if(it){
-            GalleryGet()
-            }
-        }
-
-    val requestPermissionCamera =
-        registerForActivityResult(ActivityResultContracts.RequestPermission() ,
-        ) {
-            if(it){
-                CameraGet()
-            }
-        }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -206,11 +64,11 @@ class ProfileFragment2 : Fragment()    {
 
 
                 popup.show()
-                popup.gallery.setOnClickListener { GalleryAction()
+                popup.gallery.setOnClickListener { observer.GalleryAction()
                 popup.dismiss()
                 }
 
-                popup.camera.setOnClickListener { CameraAction()
+                popup.camera.setOnClickListener { observer.CameraAction()
                     popup.dismiss()
                 }
 
@@ -310,41 +168,8 @@ class ProfileFragment2 : Fragment()    {
     }
 
 
-    val getImageContent = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
-        if(  it.resultCode == Activity.RESULT_OK  ) {
-
-                viewModel.uploadimg(currentPhotoPath)
-        }
-    }
-
-    lateinit var currentPhotoPath: String
-
-    @Throws(IOException::class)
-    private fun createImageFile(): File {
-        // Create an image file name
-        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-        val storageDir: File? = requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        return File.createTempFile(
-            "JPEG_${timeStamp}_", /* prefix */
-            ".jpg", /* suffix */
-            storageDir /* directory */
-        ).apply {
-            // Save a file: path for use with ACTION_VIEW intents
-            currentPhotoPath = absolutePath
-        }
-    }
 
 
-    val getContent = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        // Handle the returned Uri
-        if(  it.resultCode == Activity.RESULT_OK  ) {
-            val uri = it.data?.data!!
-            Timber.d( uri.path.toString())
-                viewModel.uploadimg(getRealPathFromURI_API19(requireContext(),uri)!!)
-
-        }
-
-    }
 
 
 

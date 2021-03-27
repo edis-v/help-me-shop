@@ -2,7 +2,6 @@ package io.moxd.shopforme.ui.profile_list
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.TextureView
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -11,8 +10,6 @@ import androidx.lifecycle.lifecycleScope
 import io.moxd.shopforme.MainActivity
 import io.moxd.shopforme.R
 import io.moxd.shopforme.requireAuthManager
-import io.moxd.shopforme.requireUserManager
-import io.moxd.shopforme.ui.profile.ProfileFragment
 import io.moxd.shopforme.ui.profile.ProfileFragment2
 import kotlinx.coroutines.launch
 
