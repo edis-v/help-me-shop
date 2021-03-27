@@ -1,7 +1,6 @@
-package io.moxd.shopforme.ui.shopbuylist
+package io.moxd.shopforme.ui.shopbuylist.shopadd
 
 import android.app.Activity
-import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -11,7 +10,6 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.net.Uri
 import android.os.Bundle
-import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.provider.MediaStore.Images
 import android.util.Log
@@ -26,7 +24,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
-import androidx.loader.content.CursorLoader
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.kittinunf.fuel.Fuel
@@ -41,232 +39,173 @@ import io.moxd.shopforme.adapter.BuyListMinAdapter
 import io.moxd.shopforme.data.AuthManager
 import io.moxd.shopforme.data.RestPath
 import io.moxd.shopforme.data.model.Beleg
-import io.moxd.shopforme.data.model.Shop
+import io.moxd.shopforme.data.model.ShopGSON
+import io.moxd.shopforme.databinding.AddShopLayoutBinding
+import io.moxd.shopforme.databinding.MaxShopCardviewBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
-import kotlinx.serialization.decodeFromString
+import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
 
 class ShopAdd : Fragment() {
-    lateinit var title :TextView
-    lateinit var price :TextView
-    lateinit var realprice : TextView
-    lateinit var count :TextView
-    lateinit var bezahlt :TextView
-    lateinit var phonenumber :TextView
-    lateinit var status :ImageView
-    lateinit var buylist : RecyclerView
-    lateinit var exit : ImageView
-    lateinit var belegRecView : RecyclerView
-    //options
-    lateinit var delete : Button
-    lateinit var report : Button
-    lateinit var pay : Button
-    lateinit var done : Button
-    var model : Shop? = null
 
 
-    companion object
-    {
-      val  PERMISSION_CODE = 1111
-        var lastid = -1
-    }
-    fun getmodel(){
-        val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
+    lateinit var binding: MaxShopCardviewBinding
 
-                //do actions
-                Log.d("Url: ", RestPath.getOneShop(requireAuthManager().SessionID(), lastid))
-                Fuel.get(
-                        RestPath.getOneShop(requireAuthManager().SessionID(), lastid)
-                ).responseString { _, response, result ->
-
-                    when (result) {
-
-
-                        is Result.Failure -> {
-                            this@ShopAdd.activity?.runOnUiThread() {
-
-                                Log.d("Error", getError(response))
-                                Toast.makeText(requireContext(), getError(response), Toast.LENGTH_LONG).show()
-                            }
-                        }
-                        is Result.Success -> {
-                            val data = result.get()
-
-                            Log.d("USerProfile", data)
-
-                            this@ShopAdd.activity?.runOnUiThread() {
-
-                                model = JsonDeserializer.decodeFromString<Shop>(data);
-
-                                //does actions on Ui-Thread u neeed it because Ui-elements can only be edited in Main/Ui-Thread
-
-                                buylist.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-                                buylist.adapter = BuyListMinAdapter(requireContext(), model!!.buylist.articles.toMutableList())
-                                createBelege()
-                                title.text = FormatDate(model!!.creation_date)
-
-                                if(model?.price != 0.0){
-                                    realprice.visibility = View.VISIBLE
-                                    realprice.text = "Der Preis des Einkaufs \nbeträgt ${model?.price} €"
-                                }else
-                                {
-                                    realprice.visibility = View.GONE
-                                }
-
-                                if (AuthManager.User?.usertype_txt == "Helfer") {
-                                    pay.text = "Bezahlung erhalten"
-                                    done.text = "Einkauf erledigt"
-                                    pay.isEnabled = (model?.done!! && model?.payed_prove != null)
-                                    done.isEnabled = model?.helper != null
-                                }
-                                else{
-                                    pay.text = "Bezahlung belegen"
-                                    done.text = "Einkauf erhalten"
-                                    pay.isEnabled = (model?.done!!)
-                                    done.isEnabled = (model?.helper != null && model?.bill_hf != null)
-                                }
-
-
-
-
-
-                                phonenumber.text = if (AuthManager.User?.usertype_txt == "Helfer") model!!.helpsearcher.phone_number else if (model!!.helper != null) model!!.helper?.phone_number else "Kein Helfer"
-                                bezahlt.text = if (model!!.payed) "Bezahlt" else "Zu Bezahlen"
-                                price.text = "Geschätzter Preis: ${
-                                    String.format(
-                                            "%.2f",
-                                            model!!.buylist.articles.sumOf { (it.count * it.item.cost) })
-                                } €"
-                                count.text = "Anzahl: ${model!!.buylist.articles.sumBy { it.count }}"
-                                if (model!!.helper == null) {
-                                    //searcvhing
-                                    status.setImageResource(R.drawable.ic_baseline_person_search_24)
-                                    status.setColorFilter(ContextCompat.getColor(requireContext(), R.color.divivder), android.graphics.PorterDuff.Mode.SRC_IN);
-                                } else if (model!!.done)
-                                    when (model!!.payed) {
-                                        true -> { // green arrow
-                                            status.setImageResource(R.drawable.ic_done)
-                                            status.setColorFilter(ContextCompat.getColor(requireContext(), R.color.IconAccept), android.graphics.PorterDuff.Mode.SRC_IN);
-                                        }
-                                        false -> {//red X
-                                            status.setImageResource(R.drawable.ic_wrong)
-                                            status.setColorFilter(ContextCompat.getColor(requireContext(), R.color.red), android.graphics.PorterDuff.Mode.SRC_IN);
-                                        }
-                                    }
-                                else {
-                                    //timer
-                                    status.setImageResource(R.drawable.ic_baseline_hourglass_bottom_24)
-                                    status.setColorFilter(ContextCompat.getColor(requireContext(), R.color.divivder), android.graphics.PorterDuff.Mode.SRC_IN);
-                                }
-
-
-                                delete.isEnabled = (model!!.helper == null) //optical not visible if enable or disable !!
-
-                            }
-                        }
-                    }
-                }.join()
-
-
-
-
-        }
-        job.start()
+    val viewModel: ShopAddViewModel by viewModels {
+        ShopAddViewModelFactory(this, arguments)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
         super.onViewCreated(view, savedInstanceState)
-           sharedElementEnterTransition =   MaterialContainerTransform().apply {
+        binding = MaxShopCardviewBinding.bind(view)
+
+        binding.apply {
+
+            maxShopCardviewTitle.paintFlags =
+                maxShopCardviewTitle.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+            ViewCompat.setTransitionName(root, "max_shop${viewModel.modelid}")
+            maxShopCardviewMenuDelete.setOnClickListener {
+                // delete()
+            }
+            maxShopCardviewMenuShop.setOnClickListener {
+                //done()
+            }
+            maxShopCardviewMenuPayed.setOnClickListener {
+                //payed()
+
+            }
+            maxShopCardviewMenuReport.setOnClickListener {
+                //report()
+            }
+
+            maxShopCardviewExit.setOnClickListener {
+                (context as MainActivity).supportFragmentManager.popBackStack()
+
+            }
+
+        }
+
+        binding.apply {
+            viewModel.Shop.observe(viewLifecycleOwner){
+                if (it.isSuccessful){
+
+                    val model = it.body()!!
+
+                    val belege : MutableList<Beleg> = mutableListOf()
+
+                    if(!model.bill_hf.isNullOrEmpty())
+                        belege.add(Beleg("K", model.helper!!, model.bill_hf!!))
+                    if(!model.bill_hfs.isNullOrEmpty())
+                        belege.add(Beleg("K", model.helpsearcher!!, model.bill_hfs!!))
+                    if(!model.payed_prove.isNullOrEmpty())
+                        belege.add(Beleg("P", model?.helpsearcher!!, model.payed_prove!!))
+                    maxShopImagerecycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+                    maxShopImagerecycler.adapter = BelegeAdapter(requireContext(), belege)
+
+
+
+                    maxShopCardviewTitle.text = FormatDate( model.creation_date)
+                    maxShopCardviewBezahlt.text = if(model.payed) "Bezahlt" else   "Zu Bezahlen"
+                    if (AuthManager.User?.usertype_txt == "Helfer") {
+                        maxShopCardviewMenuPayed.text = "Bezahlung erhalten"
+                        maxShopCardviewMenuShop.text = "Einkauf erledigt"
+                        maxShopCardviewMenuPayed.isEnabled = (model?.done!! && model?.payed_prove != null)
+                        maxShopCardviewMenuShop.isEnabled = model?.helper != null
+                    }
+                    else{
+                        maxShopCardviewMenuPayed.text = "Bezahlung belegen"
+                        maxShopCardviewMenuShop.text = "Einkauf erhalten"
+                        maxShopCardviewMenuPayed.isEnabled = (model?.done!!)
+                        maxShopCardviewMenuShop.isEnabled = (model?.helper != null && model?.bill_hf != null)
+                    }
+
+                    if(model.price != 0.0){
+                        maxShopCardviewRealPreis.visibility = View.VISIBLE
+                        maxShopCardviewRealPreis.text = "Der Preis des Einkaufs \nbeträgt ${model.price} €"
+                    }else
+                    {
+                        maxShopCardviewRealPreis.visibility = View.GONE
+                    }
+
+                    maxShopCardviewPhonenumber.text = if (AuthManager.User?.usertype_txt == "Helfer") model!!.helpsearcher.phone_number else if (model!!.helper != null) model!!.helper?.phone_number else "Kein Helfer"
+                    maxShopCardviewBezahlt.text = if (model!!.payed) "Bezahlt" else "Zu Bezahlen"
+                    maxShopCardviewPreis.text = "Geschätzter Preis: ${
+                        String.format(
+                            "%.2f",
+                            model!!.buylist.articles.sumOf { (it.count * it.item.cost) })
+                    } €"
+                    maxShopCardviewAnzahl.text = "Anzahl: ${ model.buylist.articles.sumBy {  it.count  } }"
+                    if(model.helper == null)
+                    {
+                        //searcvhing
+                        maxShopCardviewStatus.setImageResource(R.drawable.ic_baseline_person_search_24)
+                        maxShopCardviewStatus.setColorFilter(ContextCompat.getColor(requireContext(), R.color.divivder), android.graphics.PorterDuff.Mode.SRC_IN);
+                    }
+                    else if (model.done)
+                        when(model.payed){
+                            true -> { // green arrow
+                                maxShopCardviewStatus.setImageResource(R.drawable.ic_done)
+                                maxShopCardviewStatus.setColorFilter(ContextCompat.getColor(requireContext(), R.color.IconAccept), android.graphics.PorterDuff.Mode.SRC_IN);
+                            }
+                            false -> {//red X
+                                maxShopCardviewStatus.setImageResource(R.drawable.ic_wrong)
+                                maxShopCardviewStatus.setColorFilter(ContextCompat.getColor(requireContext(), R.color.red), android.graphics.PorterDuff.Mode.SRC_IN);
+                            }
+                        }
+                    else {
+                        //timer
+                        maxShopCardviewStatus.setImageResource(R.drawable.ic_baseline_hourglass_bottom_24)
+                        maxShopCardviewStatus.setColorFilter(ContextCompat.getColor(requireContext(), R.color.divivder), android.graphics.PorterDuff.Mode.SRC_IN);
+                    }
+
+                    maxShopCardviewMenuBuylist.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+
+                    maxShopCardviewMenuBuylist.adapter = BuyListMinAdapter(requireContext(),model.buylist.articles.toMutableList())
+
+
+
+                }else
+                {
+                    // Server Failed
+                }
+            }
+        }
+
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        sharedElementEnterTransition = MaterialContainerTransform().apply {
             drawingViewId = R.id.mainframe
             duration = resources.getInteger(R.integer.reply_motion_duration_large).toLong()
             scrimColor = Color.TRANSPARENT
 
         }
+        return inflater.inflate(R.layout.max_shop_cardview, container, false)
+
     }
 
-    override fun onResume() {
-        super.onResume()
-        getmodel()
-    }
-
-    override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
-    ): View? {
-        val root = inflater.inflate(R.layout.max_shop_cardview, container, false)
-
-        title = root.findViewById(R.id.max_shop_cardview_title)
-        title.paintFlags = title.paintFlags or Paint.UNDERLINE_TEXT_FLAG
-        try {
-            model = arguments?.getSerializable("model") as Shop
-            lastid = model!!.id
-        }catch (ex: Exception){
-
-        }
-
-        ViewCompat.setTransitionName(root, "max_shop${model!!.id}")
-        belegRecView = root.findViewById(R.id.max_shop_imagerecycler)
-        price = root.findViewById(R.id.max_shop_cardview_Preis)
-        count = root.findViewById(R.id.max_shop_cardview_anzahl)
-        bezahlt = root.findViewById(R.id.max_shop_cardview_bezahlt)
-        status = root.findViewById(R.id.max_shop_cardview_status)
-        buylist = root.findViewById(R.id.max_shop_cardview_menu_buylist)
-        exit =  root.findViewById<ImageView>(R.id.max_shop_cardview_exit)
-        phonenumber = root.findViewById(R.id.max_shop_cardview_phonenumber)
-        realprice = root.findViewById(R.id.max_shop_cardview_realPreis)
-
-
-        delete = root.findViewById(R.id.max_shop_cardview_menu_delete)
-        done = root.findViewById(R.id.max_shop_cardview_menu_shop)
-        pay = root.findViewById(R.id.max_shop_cardview_menu_payed)
-        report = root.findViewById(R.id.max_shop_cardview_menu_report)
-        getmodel()
-
-        delete.setOnClickListener { delete() }
-        done.setOnClickListener { done() }
-        pay.setOnClickListener { payed() }
-        report.setOnClickListener { report() }
+}
 
 
 
-
-
-
-       exit.setOnClickListener {
-                exit()
-
-        }
-        return root
-    }
-
-
-    fun createBelege(){
-
-        val belege : MutableList<Beleg> = mutableListOf()
-
-        if(!model?.bill_hf.isNullOrEmpty())
-            belege.add(Beleg("K", model?.helper!!, model?.bill_hf!!))
-        if(!model?.bill_hfs.isNullOrEmpty())
-            belege.add(Beleg("K", model?.helpsearcher!!, model?.bill_hfs!!))
-        if(!model?.payed_prove.isNullOrEmpty())
-            belege.add(Beleg("P", model?.helpsearcher!!, model?.payed_prove!!))
-        belegRecView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        belegRecView.adapter = BelegeAdapter(requireContext(), belege)
-    }
-
-    fun exit(){
-
-        (context as MainActivity).supportFragmentManager.popBackStack()
-    }
+  /*
 
     fun delete(){
 
@@ -352,7 +291,7 @@ class ShopAdd : Fragment() {
             grantResults: IntArray
     ) {
         when(requestCode){
-            ShopAdd.PERMISSION_CODE -> {
+            PERMISSION_CODE -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
                 } else {
@@ -644,11 +583,4 @@ class ShopAdd : Fragment() {
                     val chooseIntent = Intent.createChooser(intent, "Select Picture")
                     mGetContentPayedGallery.launch(chooseIntent)
 
-                }.show()
-    }
-
-
-
-
-
-}
+                }.show() */*/*/

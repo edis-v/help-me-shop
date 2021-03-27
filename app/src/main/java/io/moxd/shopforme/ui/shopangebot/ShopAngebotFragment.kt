@@ -17,20 +17,13 @@ import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.result.Result
 import com.google.android.material.tabs.TabLayout
 import io.moxd.shopforme.*
-import io.moxd.shopforme.adapter.AngebotAdapter
 import io.moxd.shopforme.adapter.AngebotHelperAdapter
-import io.moxd.shopforme.adapter.BuyListAdapter
-import io.moxd.shopforme.adapter.ShopAdapter
 import io.moxd.shopforme.data.RestPath
 
 import io.moxd.shopforme.data.model.AngebotHelper
-import io.moxd.shopforme.data.model.BuyList
 import io.moxd.shopforme.data.model.Shop
-import io.moxd.shopforme.ui.shopbuylist.BuylistAdd
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 
@@ -82,7 +75,7 @@ class ShopAngebotFragment : Fragment() {
                 1 -> {
                     Log.d("Tab", "Shop clicked")
 
-                    GetShop()
+                  //  GetShop()
                 }
             }
             refreshlayout.setRefreshing(false)
@@ -93,7 +86,7 @@ class ShopAngebotFragment : Fragment() {
                 when (tab!!.text) {
                     "Shoppen" -> {
                         Log.d("Tab", "Shop clicked")
-                        GetShop()
+                   //     GetShop()
 
                     }
                     "Angebote" -> {
@@ -125,7 +118,7 @@ class ShopAngebotFragment : Fragment() {
 
     }
 
-    fun GetShop(){
+  /*  fun GetShop(){
         GlobalScope.launch(context = Dispatchers.IO) {
 
                 //do actions
@@ -172,7 +165,7 @@ class ShopAngebotFragment : Fragment() {
 
 
         }
-    }
+    }*/
 
     fun GetAgebotList(){
         GlobalScope.launch(context = Dispatchers.IO) {

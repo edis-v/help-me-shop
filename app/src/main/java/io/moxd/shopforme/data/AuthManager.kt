@@ -33,6 +33,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import timber.log.Timber
 import java.io.IOException
 
 // Einmalig erzeugte Klasse um alle Loginanfragen und die Persisitierung der Session zu managen
@@ -97,7 +98,7 @@ class AuthManager constructor(context: Context) {
                     }
                 }
                 is com.github.kittinunf.result.Result.Failure -> {
-                    Log.d("Error", getError(response))
+                   Timber.d(getError(response))
                     GlobalScope.launch {
                         eventChannel.send(Result.AuthError(result.getException()))
                     }

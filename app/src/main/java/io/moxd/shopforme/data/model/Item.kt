@@ -12,3 +12,9 @@ class Item( val id : Int,val name:String , val cost:Double , @Contextual var anz
 @Serializable
 class Item2( val id : Int,val name:String , val cost:Double  ) : java.io.Serializable {
 }
+
+data class ItemGSON( val id : Int,val name:String , val cost:Double , @Transient var anzahl: MutableLiveData<Int> = MutableLiveData<Int>(0)) : java.io.Serializable {
+}
+
+class Item2Gson( val id : Int,val name:String , val cost:Double  ) : java.io.Serializable {
+}

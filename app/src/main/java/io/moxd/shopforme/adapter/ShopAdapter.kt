@@ -10,18 +10,15 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
-import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.recyclerview.widget.RecyclerView
-import androidx.transition.Fade
-import com.google.android.material.transition.MaterialElevationScale
 import io.moxd.shopforme.FormatDate
 import io.moxd.shopforme.MainActivity
 import io.moxd.shopforme.R
-import io.moxd.shopforme.data.model.Shop
-import io.moxd.shopforme.ui.shopbuylist.ShopAdd
+import io.moxd.shopforme.data.model.ShopGSON
+import io.moxd.shopforme.ui.shopbuylist.shopadd.ShopAdd
 
 
-class ShopAdapter(private val context: Context, val itemModelArrayList: List<Shop>) :
+class ShopAdapter(private val context: Context, val itemModelArrayList: List<ShopGSON>) :
         RecyclerView.Adapter<ShopAdapter.Viewholder>() {
 
 
@@ -34,7 +31,7 @@ class ShopAdapter(private val context: Context, val itemModelArrayList: List<Sho
 
     override fun onBindViewHolder(holder: Viewholder, position: Int) {
         // to set data to textview and imageview of each card layout
-        val model: Shop = itemModelArrayList[position]
+        val model: ShopGSON = itemModelArrayList[position]
 
 
 
@@ -72,10 +69,10 @@ class ShopAdapter(private val context: Context, val itemModelArrayList: List<Sho
 
 
          holder.itemView.setOnClickListener {
-             val f = ShopAdd() 
+             val f = ShopAdd()
 
              val args = Bundle()
-             args.putSerializable("model",model)
+             args.putInt("id",model.id)
              f.arguments  = args
           //   val extras = FragmentNavigatorExtras(it to emailCardDetailTransitionName)
                     (context as MainActivity).supportFragmentManager.beginTransaction()

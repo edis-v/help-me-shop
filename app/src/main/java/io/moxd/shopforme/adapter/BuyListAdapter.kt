@@ -19,16 +19,14 @@ import com.github.kittinunf.result.Result
 import com.google.android.material.snackbar.Snackbar
 import io.moxd.shopforme.*
 import io.moxd.shopforme.data.RestPath
-import io.moxd.shopforme.data.model.BuyList
-import io.moxd.shopforme.ui.shopbuylist.Shopcart
+import io.moxd.shopforme.data.model.BuyListGSON
+import io.moxd.shopforme.ui.shopbuylist.shopcart.Shopcart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 
 
-class BuyListAdapter(private val context: Context, var itemModelArrayList: MutableList<BuyList>) :
+class BuyListAdapter(private val context: Context, var itemModelArrayList: MutableList<BuyListGSON>) :
     RecyclerView.Adapter<BuyListAdapter.Viewholder>() {
 
     lateinit  var _parent:ViewGroup
@@ -43,7 +41,7 @@ class BuyListAdapter(private val context: Context, var itemModelArrayList: Mutab
 
     override fun onBindViewHolder(holder: Viewholder, position: Int) {
         // to set data to textview and imageview of each card layout
-        val model: BuyList = itemModelArrayList[position]
+        val model: BuyListGSON = itemModelArrayList[position]
         holder.Title.text = FormatDate( model.creation_date)
         holder.cost.text =   "Preis: ${ String.format(
                 "%.2f",
@@ -180,7 +178,7 @@ class BuyListAdapter(private val context: Context, var itemModelArrayList: Mutab
     }
 
 
-    fun deleteBuylist(model: BuyList, v: View){
+    fun deleteBuylist(model: BuyListGSON, v: View){
         GlobalScope.launch(Dispatchers.IO) {
 
                 Fuel.delete(

@@ -9,9 +9,7 @@ import com.github.kittinunf.fuel.core.awaitUnit
 import com.github.kittinunf.result.Result
 import io.moxd.shopforme.JsonDeserializer
 import io.moxd.shopforme.data.RestPath
-import io.moxd.shopforme.data.model.LocationDataGSON
-import io.moxd.shopforme.data.model.UserGSON
-import io.moxd.shopforme.data.model.UserME
+import io.moxd.shopforme.data.model.*
 import io.moxd.shopforme.getError
 import kotlinx.coroutines.*
 import kotlinx.serialization.decodeFromString
@@ -35,7 +33,6 @@ class ApiProfile {
 
         suspend fun getProfile(sessionId: String) : Response<UserGSON> = service.getProfile(sessionId)
 
-        suspend fun updateLocation(sessionId: String , locationDataGSON: LocationDataGSON) = service.updateLocation(sessionId , locationDataGSON)
 
         suspend fun updateProfilePic(sessionId: String,  image : MultipartBody.Part) = service.updateProfilePic(sessionId,image)
 
@@ -59,4 +56,50 @@ class ApiProfile {
             usertype
         )
 }
+
+
+class ApiShopcart {
+
+
+        private val retrofit: Retrofit = Retrofit.Builder()
+            .baseUrl("https://moco.fluffistar.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        private val service: HelpMeShopService = retrofit.create(HelpMeShopService::class.java)
+    suspend fun updateLocation(sessionId: String , locationDataGSON: LocationDataGSON) = service.updateLocation(sessionId , locationDataGSON)
+
+    suspend fun getBuyList( sessionId: String) = service.getBuyList(sessionId)
+    suspend fun getShops(sessionId: String) = service.getShops(sessionId)
+}
+
+class ApiShopAdd {
+    private val retrofit: Retrofit = Retrofit.Builder()
+        .baseUrl("https://moco.fluffistar.com/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    private val service: HelpMeShopService = retrofit.create(HelpMeShopService::class.java)
+    suspend fun getProfile(sessionId: String) : Response<UserGSON> = service.getProfile(sessionId)
+
+
+    suspend fun  getShop(sessionId: String , id :String) = service.getShop(sessionId,id)
+}
+
+class ApiBuyListAdd{
+    private val retrofit: Retrofit = Retrofit.Builder()
+        .baseUrl("https://moco.fluffistar.com/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    private val service: HelpMeShopService = retrofit.create(HelpMeShopService::class.java)
+
+    suspend fun  getItems() = service.getItems()
+
+    suspend fun createArticle( articleAddGson: ArticleGson) = service.createArticle(articleAddGson)
+
+    suspend fun  createBuyList( sessionId: String , articles : IntArray) = service.createBuyList(sessionId,articles)
+
+}
+
 

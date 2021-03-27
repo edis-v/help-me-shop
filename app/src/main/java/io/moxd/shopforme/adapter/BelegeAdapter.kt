@@ -1,24 +1,16 @@
 package io.moxd.shopforme.adapter
 
 import android.content.Context
-import android.graphics.Paint
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
-import io.moxd.shopforme.FormatDate
-import io.moxd.shopforme.MainActivity
 import io.moxd.shopforme.R
 import io.moxd.shopforme.data.AuthManager
 import io.moxd.shopforme.data.model.Beleg
-import io.moxd.shopforme.data.model.Shop
-import io.moxd.shopforme.ui.shopbuylist.ShopAdd
 
 class BelegeAdapter (private val context: Context, val itemModelArrayList: List<Beleg>) :
         RecyclerView.Adapter<BelegeAdapter.Viewholder>() {

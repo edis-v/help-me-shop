@@ -13,9 +13,10 @@ import com.google.android.material.textfield.TextInputEditText
 import io.moxd.shopforme.MinMaxFilter
 import io.moxd.shopforme.R
 import io.moxd.shopforme.data.model.Item
+import io.moxd.shopforme.data.model.ItemGSON
 
 
-class ItemAdapter(private val context: Context,   val itemModelArrayList: List<Item>) :
+class ItemAdapter(private val context: Context,   val itemModelArrayList: List<ItemGSON>) :
     RecyclerView.Adapter<ItemAdapter.Viewholder>() {
 
 
@@ -28,7 +29,7 @@ class ItemAdapter(private val context: Context,   val itemModelArrayList: List<I
 
     override fun onBindViewHolder(holder: Viewholder, position: Int) {
         // to set data to textview and imageview of each card layout
-        val model: Item = itemModelArrayList[position]
+        val model: ItemGSON = itemModelArrayList[position]
         holder.Title.text = model.name
         holder.cost.text =  "${model.cost} €"
         holder.anzahl.setText(model.anzahl.value!!.toString())

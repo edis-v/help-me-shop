@@ -2,10 +2,7 @@ package io.moxd.shopforme.api
 
 import androidx.lifecycle.LiveData
 import androidx.room.Update
-import io.moxd.shopforme.data.model.LocationData
-import io.moxd.shopforme.data.model.LocationDataGSON
-import io.moxd.shopforme.data.model.UserME
-import io.moxd.shopforme.data.model.UserGSON
+import io.moxd.shopforme.data.model.*
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
@@ -41,4 +38,24 @@ interface HelpMeShopService {
 
                                  ) : Response<UserGSON>
 
+    @GET("api/buylist/{sessionId}")
+    suspend fun getBuyList(@Path("sessionId")  sessionid: String) : Response<List<BuyListGSON>>
+
+    @GET("api/shop/{sessionId}")
+    suspend fun getShops(@Path("sessionId")  sessionid: String) : Response<List<ShopGSON>>
+
+    @GET("api/shop/{sessionId}/{id}")
+    suspend fun getShop(@Path("sessionId")  sessionid: String , @Path("id")  id: String ) : Response<ShopGSON>
+
+    @GET("api/items")
+    suspend fun getItems() : Response<List<ItemGSON>>
+
+
+    @POST("api/article/add")
+    suspend fun createArticle(@Body ArticleGson : ArticleGson) : Response<ArticleAddGson>
+
+    @FormUrlEncoded
+    @POST("api/buylist/add")
+    suspend fun createBuyList (@Field("sessionId")  sessionid: String,
+                               @Field("articles")  articles :IntArray) : Response<BuyListGSON>
 }
