@@ -127,11 +127,11 @@ class ShopAngebotFragment : Fragment() {
 
     fun GetShop(){
         GlobalScope.launch(context = Dispatchers.IO) {
-            requireAuthManager().SessionID().take(1).collect {
+
                 //do actions
 
                 Fuel.get(
-                        RestPath.shop(it)
+                        RestPath.shop(requireAuthManager().SessionID())
                 ).responseString { _, response, result ->
 
                     when (result) {
@@ -170,17 +170,17 @@ class ShopAngebotFragment : Fragment() {
                 }.join()
 
 
-            }
+
         }
     }
 
     fun GetAgebotList(){
         GlobalScope.launch(context = Dispatchers.IO) {
-            requireAuthManager().SessionID().take(1).collect {
+
                 //do actions
 
                 Fuel.get(
-                        RestPath.angebote(it)
+                        RestPath.angebote(requireAuthManager().SessionID())
                 ).responseString { _, response, result ->
 
                     when (result) {
@@ -219,7 +219,7 @@ class ShopAngebotFragment : Fragment() {
                 }.join()
 
 
-            }
+            
         }
     }
 }

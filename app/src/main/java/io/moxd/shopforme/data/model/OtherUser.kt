@@ -1,5 +1,6 @@
 package io.moxd.shopforme.data.model
 
+import com.google.gson.annotations.SerializedName
 import com.mapbox.mapboxsdk.geometry.LatLng
 import kotlinx.serialization.Serializable
 
@@ -13,3 +14,8 @@ class LocationData( private  val type: String, private val  coordinates: List<Do
    }
 }
 
+class LocationDataGSON(@SerializedName("type") private  val type: String, @SerializedName("coordinates")  private val  coordinates: List<Double>) : java.io.Serializable{
+    fun getLatLong() : LatLng{
+        return  LatLng( coordinates[0], coordinates[1])
+    }
+}

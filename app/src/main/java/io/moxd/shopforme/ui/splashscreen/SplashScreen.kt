@@ -35,18 +35,7 @@ class SplashScreen : AppCompatActivity() {
     init {
         FuelManager.instance.basePath = "https://moco.fluffistar.com/"
     }
-    val requestPermissionLauncher =
-            registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()
-            ) {
-                it.forEach{ map ->  Log.d("PErmissions: ${map.key}", map.value.toString())}
-                if(it.filter { it.key != "com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE" }.all { it.component2() == true }){
-                 //   Toast.makeText(this, "All Permission Success", Toast.LENGTH_LONG).show()
-                    loginSplash()
-                }else{
-                  //  Toast.makeText(this, "All Permission not Success", Toast.LENGTH_LONG).show()
-                }
 
-            }
     override fun onCreate(savedInstanceState: Bundle?) {
 
 
@@ -63,14 +52,11 @@ class SplashScreen : AppCompatActivity() {
                 // Login here
 
 
-                this.runOnUiThread {
-                    val info: PackageInfo = packageManager.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS)
-                    requestPermissionLauncher.launch(info.requestedPermissions)
-                }
+                loginSplash()
 
 
 
-            },  100)//it will wait 100 millisec before login
+            },  250)//it will wait 100 millisec before login
         }).start()
 
 

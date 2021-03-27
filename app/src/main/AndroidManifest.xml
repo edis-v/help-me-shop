@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="io.moxd.shopforme">
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-feature android:name="android.hardware.camera" android:required="true"/>
+    <uses-feature android:name="android.hardware.location.gps" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>

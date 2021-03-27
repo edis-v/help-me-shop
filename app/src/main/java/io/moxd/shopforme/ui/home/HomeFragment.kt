@@ -77,11 +77,11 @@ class HomeFragment: Fragment(R.layout.main_home_fragment) {
 
         //get user
         val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
-            requireAuthManager().SessionID().take(1).collect {
+
                 //do actions
 
                 Fuel.get(
-                    RestPath.user(it)
+                    RestPath.user(requireAuthManager().SessionID())
                 ).responseString { _, response, result ->
 
                     when (result) {
@@ -147,7 +147,7 @@ class HomeFragment: Fragment(R.layout.main_home_fragment) {
                             }
 
                         }
-                    }
+
                 }
 
 

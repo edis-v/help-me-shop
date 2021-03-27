@@ -131,10 +131,10 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
         maxlocation = root.findViewById(R.id.map_maxlocations)
         val slider = root.findViewById<Slider>(R.id.slider_km)
         val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
-            requireAuthManager().SessionID().take(1).collect {
+
 
                 val url = FuelManager.instance.basePath + RestPath.otherUsers(
-                    it,
+                    requireAuthManager().SessionID(),
                     slider.value.toInt().toString()
                 )
 
@@ -164,7 +164,7 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
                 }.join()
                 Log.d("COunt", otheruserLocations.size.toString())
 
-            }
+
 
         }
     //    job.start()
@@ -180,10 +180,10 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
                     GlobalScope.launch {
                         // Responds to when slider's touch event is being stopped
                         val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
-                            requireAuthManager().SessionID().take(1).collect {
+
 
                                 val url = FuelManager.instance.basePath + RestPath.otherUsers(
-                                    it,
+                                    requireAuthManager().SessionID(),
                                     slider.value.toInt().toString()
                                 )
 
@@ -218,7 +218,6 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
                                 }.join()
                                 Log.d("COunt", otheruserLocations.size.toString())
 
-                            }
 
                         }
                         job.join()
@@ -733,9 +732,9 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
 
             //update user Location
             val job0: Job = GlobalScope.launch(context = Dispatchers.IO) {
-                requireAuthManager().SessionID().take(1).collect {
 
-                    val url = FuelManager.instance.basePath + RestPath.locationUpdate(it)
+
+                    val url = FuelManager.instance.basePath + RestPath.locationUpdate(requireAuthManager().SessionID())
 
                     Log.d("URL", url)
                     val data = LocationData(
@@ -768,17 +767,17 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
                     }.join()
                     Log.d("COunt", otheruserLocations.size.toString())
 
-                }
+
 
             }
             job0.join()
 
             // get other users
             val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
-                requireAuthManager().SessionID().take(1).collect {
+
 
                     val url = FuelManager.instance.basePath + RestPath.otherUsers(
-                            it,
+                        requireAuthManager().SessionID(),
                             1.toString()
                     )
 
@@ -811,7 +810,7 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
                     }.join()
                     Log.d("COunt", otheruserLocations.size.toString())
 
-                }
+
 
             }
             job.join()
@@ -883,10 +882,10 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
 
     fun getMaxLocation(){
         val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
-            requireAuthManager().SessionID().take(1).collect {
+
 
                 val url = FuelManager.instance.basePath + RestPath.otherUsers(
-                    it,
+                    requireAuthManager().SessionID(),
                     100.toString()
                 )
 
@@ -925,7 +924,7 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
                 }.join()
 
 
-            }
+
 
         }
         job.start()
@@ -1102,9 +1101,9 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
                             // Respond to positive button press
                             //create an antrag with firebase or with a new api table
                             GlobalScope.launch(Dispatchers.IO) {
-                                requireAuthManager().SessionID().take(1).collect {
+
                                     Fuel.post(
-                                           RestPath.angebotadd, listOf("session_id" to it , "shop" to singleRecyclerViewLocation.id)
+                                           RestPath.angebotadd, listOf("session_id" to requireAuthManager().SessionID() , "shop" to singleRecyclerViewLocation.id)
                                     ).responseString { request, response, result ->
 
                                         when (result) {
@@ -1140,7 +1139,7 @@ class MapFragment : Fragment() , OnMapReadyCallback, PermissionsListener,MapboxM
                                         }
                                     }.join()
 
-                                }}
+                                }
                           }
                         .show()
             }

@@ -13,6 +13,7 @@ import io.moxd.shopforme.R
 import io.moxd.shopforme.requireAuthManager
 import io.moxd.shopforme.requireUserManager
 import io.moxd.shopforme.ui.profile.ProfileFragment
+import io.moxd.shopforme.ui.profile.ProfileFragment2
 import kotlinx.coroutines.launch
 
 class ProfileListFragment : Fragment() {
@@ -31,7 +32,7 @@ class ProfileListFragment : Fragment() {
         }
         root.findViewById<TextView>(R.id.profilelist_profile).setOnClickListener{
             val ft = (requireActivity() as MainActivity).getSupportFragmentManager().beginTransaction()
-            ft.replace(R.id.mainframe, ProfileFragment())
+            ft.replace(R.id.mainframe, ProfileFragment2())
             ft.commit()
         }
         return root

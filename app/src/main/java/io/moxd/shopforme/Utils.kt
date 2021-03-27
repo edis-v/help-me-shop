@@ -22,6 +22,9 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.take
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import okhttp3.ResponseBody
+import java.io.BufferedReader
+import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -47,7 +50,22 @@ val JsonDeserializer = Json {
     ;coerceInputValues = true
 }
 
+fun getErrorRetro(response: ResponseBody?) : String = runBlocking{
+    withContext(Dispatchers.IO) {
+        if(response != null) {
+            val data = response.byteStream().bufferedReader().use(BufferedReader::readText)
+            Log.d("getErrorData", data)
 
+
+            return@withContext if (data.contains("non_field_errors"))
+                JsonDeserializer.decodeFromString<ErrorField>(data).Error()
+            else
+                data.replace("[\"", "").replace("\"]", "")
+        }
+        else
+            return@withContext "Empty"
+    }
+}
 
 fun getError(response: Response) : String = runBlocking{
     withContext(Dispatchers.IO) {

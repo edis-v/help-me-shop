@@ -30,6 +30,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import java.io.IOException
@@ -229,8 +230,12 @@ class AuthManager constructor(context: Context) {
     }
 
 
-    fun SessionID(): Flow<String> {
-        return dataStore.getValueFlow(SESSION_ID, "")
+      fun SessionID():  String= runBlocking {
+        var ssid : String = "Peter"
+         dataStore.getValueFlow(SESSION_ID, "").take(1).collect {
+              ssid = it
+        }
+        return@runBlocking  ssid
     }
 
 

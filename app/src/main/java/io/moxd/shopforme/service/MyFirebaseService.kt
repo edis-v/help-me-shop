@@ -110,9 +110,9 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         // TODO: Implement this method to send token to your app server.
         //api send token to db
         GlobalScope.launch(context = Dispatchers.IO) {
-            requireAuthManager().SessionID().take(1).collect {
 
-                val url = RestPath.firebasetoken(it)
+
+                val url = RestPath.firebasetoken(requireAuthManager().SessionID())
 
                 Log.d("URL", url)
 
@@ -138,7 +138,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 }.join()
 
 
-            }
+
 
         }
         Log.d(TAG, "sendRegistrationTokenToServer($token)")

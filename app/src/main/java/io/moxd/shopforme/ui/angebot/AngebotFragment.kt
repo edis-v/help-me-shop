@@ -55,11 +55,11 @@ class AngebotFragment : Fragment() {
 
     fun getAngebot(){
         GlobalScope.launch(context = Dispatchers.IO) {
-            requireAuthManager().SessionID().take(1).collect {
+
                 //do actions
 
                 Fuel.get(
-                        RestPath.angebot(it)
+                        RestPath.angebot(requireAuthManager().SessionID())
                 ).responseString { _, response, result ->
 
                     when (result) {
@@ -95,7 +95,7 @@ class AngebotFragment : Fragment() {
                 }.join()
 
 
-            }
+
         }
     }
 }

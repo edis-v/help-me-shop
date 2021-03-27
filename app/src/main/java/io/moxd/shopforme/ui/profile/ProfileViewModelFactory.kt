@@ -5,6 +5,8 @@ import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.savedstate.SavedStateRegistryOwner
+import io.moxd.shopforme.api.ApiProfile
+
 import io.moxd.shopforme.ui.registration.RegistrationViewModel
 
 class ProfileViewModelFactory (owner: SavedStateRegistryOwner, defaultArgs: Bundle?
@@ -16,6 +18,6 @@ class ProfileViewModelFactory (owner: SavedStateRegistryOwner, defaultArgs: Bund
             modelClass: Class<T>,
             handle: SavedStateHandle
     ): T {
-        return ProfileViewModel(handle) as T
+        return ProfileViewModel(handle, ApiProfile()) as T
     }
 }

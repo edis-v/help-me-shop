@@ -111,7 +111,7 @@ class BuylistAdd: Fragment() {
                     //create an antrag with firebase or with a new api table
                     GlobalScope.launch(Dispatchers.IO) {
                         val listids : MutableList<Int> =  ArrayList<Int>(items.filter { it.anzahl.value!! > 0  }.size)
-                        requireAuthManager().SessionID().take(1).collect {
+
                             //do actions
 
                             Log.d("articles" ,  items.filter { it2 -> it2.anzahl.value!! > 0 }.size.toString())
@@ -145,7 +145,7 @@ class BuylistAdd: Fragment() {
                                     }
                                 }.join()
 
-                            }
+
 
                             Log.d("articles2" ,  listids.size.toString())
                             while (items.filter { it2 -> it2.anzahl.value!! > 0 }.size != listids.size){}

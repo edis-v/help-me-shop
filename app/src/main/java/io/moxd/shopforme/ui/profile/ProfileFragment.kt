@@ -122,14 +122,14 @@ class ProfileFragment : Fragment()  {
         savebtn.setOnClickListener {
 
             val job2: Job = GlobalScope.launch(context = Dispatchers.IO) {
-                requireAuthManager().SessionID().take(1).collect {
+
                     //do actions
 
 
 
 
 
-                    val asyncupload = Fuel.upload(RestPath.userUpdate(it), Method.PUT, //"public" to "${name.text}" ,
+                    val asyncupload = Fuel.upload(RestPath.userUpdate(requireAuthManager().SessionID()), Method.PUT, //"public" to "${name.text}" ,
                             listOf("name" to "${name.text}", "firstname" to "${firstname.text}", "phone_number" to "${phonenumber.text}", "Street" to "${street.text}", "plz" to "${plz.text}", "City" to "${city.text}", "usertype" to usertypes[usertype.selectedItemPosition])
 
                     ).responseString { request, response, result ->
@@ -162,7 +162,7 @@ class ProfileFragment : Fragment()  {
 
                     asyncupload.join()
 
-                }
+
             }
             job2.start()
 
@@ -231,11 +231,11 @@ class ProfileFragment : Fragment()  {
 
     fun getUser(){
         val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
-            requireAuthManager().SessionID().take(1).collect {
+
                 //do actions
 
                 Fuel.get(
-                        RestPath.user(it)
+                        RestPath.user(requireAuthManager().SessionID())
                 ).responseString { _, response, result ->
 
                     when (result) {
@@ -277,7 +277,7 @@ class ProfileFragment : Fragment()  {
                 }.join()
 
 
-            }
+
 
         }
         job.start()
@@ -320,10 +320,10 @@ class ProfileFragment : Fragment()  {
             val data = FileDataPart.from(getPath(uri)!!, name = "profile_pic")
             // from(data?.data?.encodedPath.toString() , name = "profile_pic")
             val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
-                requireAuthManager().SessionID().take(1).collect {
+
                     //do actions
 
-                    val asyncupload = Fuel.upload(RestPath.userUpdate(it), Method.PUT)
+                    val asyncupload = Fuel.upload(RestPath.userUpdate(requireAuthManager().SessionID()), Method.PUT)
                             .add(data)
                             .responseString { _, response, result ->
                                 when (result) {
@@ -337,7 +337,7 @@ class ProfileFragment : Fragment()  {
                                 }
                             }
                     asyncupload.join();
-                }}
+                }
             job.start()
 
 

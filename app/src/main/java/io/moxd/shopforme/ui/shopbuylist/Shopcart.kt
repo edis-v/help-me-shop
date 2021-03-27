@@ -102,12 +102,11 @@ class Shopcart : Fragment() {
             val long: Double = mLastLocation.longitude
 
             GlobalScope.launch(context = Dispatchers.IO) {
-                    requireAuthManager().SessionID().take(1)
-                            .collect {
+
 
                                 val url =
                                         FuelManager.instance.basePath + RestPath.locationUpdate(
-                                                it
+                                            requireAuthManager().SessionID()
                                         )
 
                                 Log.d("URL", url)
@@ -119,7 +118,7 @@ class Shopcart : Fragment() {
                                                 long
                                         ) as List<Double>
                                 )
-                                if (it.isEmpty())
+                                if (requireAuthManager().SessionID().isEmpty())
                                     Fuel.put(
                                             url, listOf(
                                             "location" to JsonDeserializer.encodeToString(
@@ -153,7 +152,7 @@ class Shopcart : Fragment() {
 
                                             }.join()
                             }
-                }}}
+                }}
 
     fun OnGPS() {
         val builder: AlertDialog.Builder = AlertDialog.Builder(requireContext())
@@ -242,12 +241,11 @@ class Shopcart : Fragment() {
                             val lat: Double = location.latitude
                             val long: Double = location.longitude
                             GlobalScope.launch(context = Dispatchers.IO) {
-                                requireAuthManager().SessionID().take(1)
-                                        .collect {
+
 
                                             val url =
                                                     FuelManager.instance.basePath + RestPath.locationUpdate(
-                                                            it
+                                                        requireAuthManager().SessionID()
                                                     )
 
                                             Log.d("URL", url)
@@ -259,7 +257,7 @@ class Shopcart : Fragment() {
                                                             long
                                                     ) as List<Double>
                                             )
-                                            if (!it.isEmpty())
+                                            if (requireAuthManager().SessionID().isNotEmpty())
                                                 Fuel.put(
                                                         url, listOf(
                                                         "location" to JsonDeserializer.encodeToString(
@@ -292,7 +290,7 @@ class Shopcart : Fragment() {
 
 
                                                         }.join()
-                                        }
+
                             }
                         } else {
                             val mLocationRequest = LocationRequest()
@@ -377,11 +375,11 @@ class Shopcart : Fragment() {
 
     fun GetShop(){
         GlobalScope.launch(context = Dispatchers.IO) {
-            requireAuthManager().SessionID().take(1).collect {
+
                 //do actions
 
                 Fuel.get(
-                    RestPath.shop(it)
+                    RestPath.shop(requireAuthManager().SessionID())
                 ).responseString { _, response, result ->
 
                     when (result) {
@@ -420,7 +418,7 @@ class Shopcart : Fragment() {
                 }.join()
 
 
-            }
+
         }
     }
 
@@ -436,11 +434,11 @@ class Shopcart : Fragment() {
 
     fun GetBuyList(){
         GlobalScope.launch(context = Dispatchers.IO) {
-            requireAuthManager().SessionID().take(1).collect {
+
                 //do actions
 
                 Fuel.get(
-                    RestPath.buylist(it)
+                    RestPath.buylist(requireAuthManager().SessionID())
                 ).responseString { _, response, result ->
 
                     when (result) {
@@ -479,7 +477,7 @@ class Shopcart : Fragment() {
                 }.join()
 
 
-            }
+
         }
     }
 }

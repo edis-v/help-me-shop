@@ -182,9 +182,9 @@ class BuyListAdapter(private val context: Context, var itemModelArrayList: Mutab
 
     fun deleteBuylist(model: BuyList, v: View){
         GlobalScope.launch(Dispatchers.IO) {
-            requireAuthManager().SessionID().take(1).collect {
+
                 Fuel.delete(
-                        RestPath.buylistdelete(it, model.id)
+                        RestPath.buylistdelete(requireAuthManager().SessionID(), model.id)
                 ).responseString { request, response, result ->
 
                     when (result) {
@@ -227,14 +227,14 @@ class BuyListAdapter(private val context: Context, var itemModelArrayList: Mutab
                     }
                 }.join()
 
-            }}
+            }
     }
 
     fun createShop(id: Int, v: View){
         GlobalScope.launch(Dispatchers.IO) {
-            requireAuthManager().SessionID().take(1).collect {
+
                 Fuel.post(
-                        RestPath.shopadd, listOf("session_id" to it, "buylist" to id)
+                        RestPath.shopadd, listOf("session_id" to requireAuthManager().SessionID(), "buylist" to id)
                 ).responseString { request, response, result ->
 
                     when (result) {
@@ -289,7 +289,7 @@ class BuyListAdapter(private val context: Context, var itemModelArrayList: Mutab
                     }
                 }.join()
 
-            }}
+            }
     }
 
     override fun getItemCount(): Int {

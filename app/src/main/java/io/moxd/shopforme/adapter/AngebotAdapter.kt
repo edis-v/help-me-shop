@@ -67,9 +67,9 @@ class AngebotAdapter  (private val context: Context, var itemModelArrayList: Mut
 
     fun updateAngebot(model:Angebot,approve: Boolean, v : View){
         GlobalScope.launch(context = Dispatchers.IO) {
-            requireAuthManager().SessionID().take(1).collect {
+
                 Fuel.put(
-                        RestPath.angebotapprove(it, model.id), listOf("viewed" to true, "approve" to approve)
+                        RestPath.angebotapprove(requireAuthManager().SessionID(), model.id), listOf("viewed" to true, "approve" to approve)
                 ).responseString { request, response, result ->
 
                     when (result) {
@@ -93,7 +93,7 @@ class AngebotAdapter  (private val context: Context, var itemModelArrayList: Mut
 
 
                 }.join()
-            }}
+            }
     }
 
     inner class Viewholder(itemView: View) : RecyclerView.ViewHolder(itemView) {

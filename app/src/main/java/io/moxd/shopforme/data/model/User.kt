@@ -49,3 +49,17 @@ class UserME  (val id: Int,
                val usertype_txt : String) : java.io.Serializable{
 
 }
+
+data class UserGSON  (val id: Int,
+               val name: String,
+               val firstname :String,
+               val phone_number : String,
+               val email : String,
+               val Street : String,
+               val plz : Int,
+               val City  : String,
+               val profile_pic : String,
+               val location : LocationData,
+               val usertype_txt : String) : java.io.Serializable{
+
+}

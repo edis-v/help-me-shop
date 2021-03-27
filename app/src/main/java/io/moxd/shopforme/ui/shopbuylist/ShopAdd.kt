@@ -80,11 +80,11 @@ class ShopAdd : Fragment() {
     }
     fun getmodel(){
         val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
-            requireAuthManager().SessionID().take(1).collect {
+
                 //do actions
-                Log.d("Url: ", RestPath.getOneShop(it, lastid))
+                Log.d("Url: ", RestPath.getOneShop(requireAuthManager().SessionID(), lastid))
                 Fuel.get(
-                        RestPath.getOneShop(it, lastid)
+                        RestPath.getOneShop(requireAuthManager().SessionID(), lastid)
                 ).responseString { _, response, result ->
 
                     when (result) {
@@ -176,7 +176,7 @@ class ShopAdd : Fragment() {
                 }.join()
 
 
-            }
+
 
         }
         job.start()
@@ -271,9 +271,9 @@ class ShopAdd : Fragment() {
     fun delete(){
 
         GlobalScope.launch(Dispatchers.IO) {
-            requireAuthManager().SessionID().take(1).collect {
+
                 Fuel.delete(
-                        RestPath.shopdelete(it, model!!.id)
+                        RestPath.shopdelete(requireAuthManager().SessionID(), model!!.id)
                 ).responseString { request, response, result ->
 
                     when (result) {
@@ -309,7 +309,7 @@ class ShopAdd : Fragment() {
                     }
                 }.join()
 
-            }}
+            }
 
     }
 
@@ -401,9 +401,9 @@ class ShopAdd : Fragment() {
             // from(data?.data?.encodedPath.toString() , name = "profile_pic")
 
             val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
-                requireAuthManager().SessionID().take(1).collect {
+
                     //do actions
-                    val url =  if(AuthManager.User?.usertype_txt == "Helfer" )RestPath.shopaddpayHF(it, model!!.id) else RestPath.shopaddpayHFS(it, model!!.id)
+                    val url =  if(AuthManager.User?.usertype_txt == "Helfer" )RestPath.shopaddpayHF(requireAuthManager().SessionID(), model!!.id) else RestPath.shopaddpayHFS(requireAuthManager().SessionID(), model!!.id)
                     Log.d("URL: ", url)
                     val asyncupload = Fuel.upload(url, Method.PUT)
                             .add(data)
@@ -420,7 +420,7 @@ class ShopAdd : Fragment() {
                                 }
                             }
                     asyncupload.join();
-                }}
+                }
             job.start()
         }
     }
@@ -444,9 +444,9 @@ class ShopAdd : Fragment() {
             // from(data?.data?.encodedPath.toString() , name = "profile_pic")
 
             val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
-                requireAuthManager().SessionID().take(1).collect {
+
                     //do actions
-                    val url =    RestPath.shopaddpayHFS(it, model!!.id)
+                    val url =    RestPath.shopaddpayHFS(requireAuthManager().SessionID(), model!!.id)
                     Log.d("URL: ", url)
                     val asyncupload = Fuel.upload(url, Method.PUT)
                             .add(data)
@@ -463,7 +463,7 @@ class ShopAdd : Fragment() {
                                 }
                             }
                     asyncupload.join();
-                }}
+                }
             job.start()
 
 
@@ -487,9 +487,9 @@ class ShopAdd : Fragment() {
             // from(data?.data?.encodedPath.toString() , name = "profile_pic")
 
             val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
-                requireAuthManager().SessionID().take(1).collect {
+
                     //do actions
-                    val url =  RestPath.shopadddone(it, model!!.id, if (AuthManager.User?.usertype_txt == "Helfer") "hf" else "hfs")
+                    val url =  RestPath.shopadddone(requireAuthManager().SessionID(), model!!.id, if (AuthManager.User?.usertype_txt == "Helfer") "hf" else "hfs")
                     Log.d("URL: ", url)
                     val asyncupload = Fuel.upload(url, Method.PUT, if (AuthManager.User?.usertype_txt == "Helfer") listOf() else listOf("done" to true))
                             .add(data)
@@ -506,7 +506,7 @@ class ShopAdd : Fragment() {
                                 }
                             }
                     asyncupload.join();
-                }}
+                }
             job.start()
         }
     }
@@ -528,9 +528,9 @@ class ShopAdd : Fragment() {
             // from(data?.data?.encodedPath.toString() , name = "profile_pic")
 
             val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
-                requireAuthManager().SessionID().take(1).collect {
+
                     //do actions
-                    val url =  RestPath.shopadddone(it, model!!.id, if (AuthManager.User?.usertype_txt == "Helfer") "hf" else "hfs")
+                    val url =  RestPath.shopadddone(requireAuthManager().SessionID(), model!!.id, if (AuthManager.User?.usertype_txt == "Helfer") "hf" else "hfs")
                     Log.d("URL: ", url)
                     val asyncupload = Fuel.upload(url, Method.PUT, if (AuthManager.User?.usertype_txt == "Helfer") listOf() else listOf("done" to true))
                             .add(data)
@@ -547,7 +547,7 @@ class ShopAdd : Fragment() {
                                 }
                             }
                     asyncupload.join();
-                }}
+                }
             job.start()
 
 
@@ -597,9 +597,9 @@ class ShopAdd : Fragment() {
                     }
                     .setPositiveButton("Ja") { _, _ ->
                         val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
-                            requireAuthManager().SessionID().take(1).collect {
+
                                 //do actions
-                                val url =  RestPath.shopaddpayHF(it, model!!.id)
+                                val url =  RestPath.shopaddpayHF(requireAuthManager().SessionID(), model!!.id)
                                 Log.d("URL: ", url)
 
 
@@ -617,7 +617,7 @@ class ShopAdd : Fragment() {
                                             }
                                         }
                                 asyncupload.join();
-                            }}
+                            }
                         job.start()
 
                     }.show()
