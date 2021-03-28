@@ -96,11 +96,19 @@ interface HelpMeShopService {
     @GET("api/user/search/{sessionId}")
     suspend fun getOtherUsers(@Path("sessionId") sessionid: String , @Query("radius") radius:Int) : Response<List<ShopMap>>
 
- @GET("api/user/search/{sessionId}")
- suspend fun getOtherUsersMax(@Path("sessionId") sessionid: String , @Query("radius") radius:Int = 100) : Response<List<ShopMap>>
+     @GET("api/user/search/{sessionId}")
+     suspend fun getOtherUsersMax(@Path("sessionId") sessionid: String , @Query("radius") radius:Int = 100) : Response<List<ShopMap>>
 
 
- @FormUrlEncoded
+    @FormUrlEncoded
     @POST("api/angebot/add")
     suspend fun createAngebot(@Field("session_id") sessionid: String,@Field("shop") shop:Int) : Response<AngebotHelper>
+
+
+    @FormUrlEncoded
+    @PUT("api/user/firebase/{sessionId}")
+    suspend fun updateFirebase(@Path("sessionId") sessionid: String , @Field("firebase_token") token:String)
+
+
+
 }

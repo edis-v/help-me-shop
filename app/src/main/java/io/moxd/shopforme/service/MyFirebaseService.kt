@@ -19,6 +19,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import io.moxd.shopforme.MainActivity
 import io.moxd.shopforme.R
+import io.moxd.shopforme.api.ApiFirebase
 import io.moxd.shopforme.data.RestPath
 import io.moxd.shopforme.requireAuthManager
 import io.moxd.shopforme.ui.splashscreen.SplashScreen
@@ -27,6 +28,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.io.IOException
 import java.net.URL
 
@@ -106,41 +108,14 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
      *
      * @param token The new token.
      */
-    private fun sendRegistrationToServer(token: String?) {
-        // TODO: Implement this method to send token to your app server.
-        //api send token to db
-        GlobalScope.launch(context = Dispatchers.IO) {
+    private fun sendRegistrationToServer(token: String?) = runBlocking {
+
+        //api send token
 
 
-                val url = RestPath.firebasetoken(requireAuthManager().SessionID())
-
-                Log.d("URL", url)
-
-                Fuel.put(
-                    url, listOf("firebase_token" to token)
-                ).responseString { request, response, result ->
-
-                    when (result) {
-                        is Result.Success -> {
-                            Log.d("result", result.get())
-
-                        }
-                        is Result.Failure -> {
-                            Log.d(
-                                "Failed",
-                                result.getException().message.toString()
-                            )
-                        }
-
-                    }
+               ApiFirebase().updateToken(requireAuthManager().SessionID(),token.toString())
 
 
-                }.join()
-
-
-
-
-        }
         Log.d(TAG, "sendRegistrationTokenToServer($token)")
     }
 

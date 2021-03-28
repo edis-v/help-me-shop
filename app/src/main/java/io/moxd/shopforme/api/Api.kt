@@ -180,5 +180,16 @@ class ApiMap{
 
 }
 
+class ApiFirebase{
+    private val retrofit: Retrofit = Retrofit.Builder()
+            .baseUrl("https://moco.fluffistar.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+    private val service: HelpMeShopService = retrofit.create(HelpMeShopService::class.java)
+
+    suspend fun updateToken(sessionId: String,token:String) = service.updateFirebase(sessionId,token)
+}
+
 
 

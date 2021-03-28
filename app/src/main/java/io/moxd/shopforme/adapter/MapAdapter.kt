@@ -13,8 +13,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
-import com.github.kittinunf.fuel.Fuel
-import com.github.kittinunf.result.Result
+
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.mapbox.geojson.Feature
 import com.mapbox.mapboxsdk.camera.CameraPosition
@@ -23,16 +22,11 @@ import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.squareup.picasso.Picasso
 import io.moxd.shopforme.FormatDate
 import io.moxd.shopforme.R
-import io.moxd.shopforme.data.RestPath
-import io.moxd.shopforme.data.model.ItemGSON
+
 import io.moxd.shopforme.data.model.ShopMap
-import io.moxd.shopforme.getError
-import io.moxd.shopforme.requireAuthManager
-import io.moxd.shopforme.ui.map.MapFragment
+
 import io.moxd.shopforme.ui.map.MapViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+
 
 class MapAdapter(private val context: Context, val itemModelArrayList: List<ShopMap>, private val map: MapboxMap , private val viewmodel : MapViewModel) :
         RecyclerView.Adapter<MapAdapter.Viewholder>() {
@@ -65,46 +59,7 @@ class MapAdapter(private val context: Context, val itemModelArrayList: List<Shop
                     .setPositiveButton("Ja") { dialog, which ->
                         // Respond to positive button press
                         //create an antrag with firebase or with a new api table
-                        GlobalScope.launch(Dispatchers.IO) {
-
-                            Fuel.post(
-                                    RestPath.angebotadd, listOf("session_id" to requireAuthManager().SessionID() , "shop" to model.id)
-                            ).responseString { request, response, result ->
-
-                                when (result) {
-
-
-                                    is Result.Failure -> {
-                                        (context as Activity).runOnUiThread() {
-                                            Log.d(
-                                                    "Error",
-                                                    getError(response)
-                                            )
-                                            Toast.makeText(
-                                                    context,
-                                                    getError(response),
-                                                    Toast.LENGTH_LONG
-                                            )
-                                                    .show()
-
-
-                                            Log.d("Angebot", request.headers.toString())
-                                        }
-                                    }
-                                    is Result.Success -> {
-                                        val data = result.get()
-
-                                        Log.d("Angebot", data)
-
-                                        (context as Activity).runOnUiThread {
-                                            ///show snack
-                                        }
-
-                                    }
-                                }
-                            }.join()
-
-                        }
+                        viewmodel.createAngebot(model.id)
                         //view model create
                     }
                     .show()

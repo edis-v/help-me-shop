@@ -37,6 +37,7 @@ import com.github.kittinunf.result.Result
 import com.google.android.gms.location.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.slider.Slider
+import com.google.android.material.snackbar.Snackbar
 import com.mapbox.android.core.location.*
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
@@ -285,6 +286,18 @@ class MapFragment : Fragment() , OnMapReadyCallback {
 
 
         }
+
+        binding.apply {
+
+            viewModel.Angebot.observe(viewLifecycleOwner){
+                if(it.isSuccessful){
+                    Snackbar.make(view,"Erfolgreich erstellt",Snackbar.LENGTH_LONG).show()
+                }else{
+                    Snackbar.make(view, getErrorRetro(it.errorBody()),Snackbar.LENGTH_LONG).show()
+                }
+            }
+
+        }
     }
 
     lateinit var  scaleBarPlugin : ScaleBarPlugin
@@ -335,6 +348,9 @@ class MapFragment : Fragment() , OnMapReadyCallback {
 
                         observer.GetLocationAction()
                     }
+
+
+
 
 
     }
