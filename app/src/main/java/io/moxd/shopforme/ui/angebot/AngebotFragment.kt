@@ -34,15 +34,11 @@ import kotlinx.serialization.decodeFromString
 class AngebotFragment : Fragment() {
 
 
-
-
-
-    val viewModel : AngebotViewModel by viewModels { AngebotViewModelFactory(this,arguments) }
+    val viewModel: AngebotViewModel by viewModels { AngebotViewModelFactory(this, arguments) }
 
     lateinit var binding: AngebotLayoutBinding
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return   inflater.inflate(R.layout.angebot_layout,container,false)
-
+        return inflater.inflate(R.layout.angebot_layout, container, false)
 
 
     }
@@ -52,9 +48,9 @@ class AngebotFragment : Fragment() {
         binding = AngebotLayoutBinding.bind(view)
         binding.apply {
             angebotList.layoutManager = LinearLayoutManager(
-                root.context,
-                LinearLayoutManager.VERTICAL,
-                false
+                    root.context,
+                    LinearLayoutManager.VERTICAL,
+                    false
             )
             angebotRefresh.setOnRefreshListener(SwipeRefreshLayout.OnRefreshListener {
                 viewModel.getAngebote()
@@ -64,31 +60,29 @@ class AngebotFragment : Fragment() {
         }
 
         binding.apply {
-            viewModel.Angebote.observe(viewLifecycleOwner){
-                if (it.isSuccessful){
+            viewModel.Angebote.observe(viewLifecycleOwner) {
+                if (it.isSuccessful) {
 
-                  val angebote =  it.body()!!
+                    val angebote = it.body()!!
 
-                    angebotList.adapter = AngebotAdapter(requireContext(),angebote.toMutableList(), viewModel)
+                    angebotList.adapter = AngebotAdapter(requireContext(), angebote.toMutableList(), viewModel)
 
-                }else
-                {
+                } else {
                     //error
                 }
             }
         }
 
         binding.apply {
-            viewModel.Angebot.observe(viewLifecycleOwner){
-                if (it.isSuccessful){
+            viewModel.Angebot.observe(viewLifecycleOwner) {
+                if (it.isSuccessful) {
 
 
                     (angebotList.adapter as AngebotAdapter).deleteSuccesses()
-                    Snackbar.make(view,  "Erfolgreich", Snackbar.LENGTH_LONG).show()
-                }else
-                {
+                    Snackbar.make(view, "Erfolgreich", Snackbar.LENGTH_LONG).show()
+                } else {
                     //error
-                    Snackbar.make(view,  "Failed", Snackbar.LENGTH_LONG).show()
+                    Snackbar.make(view, "Failed", Snackbar.LENGTH_LONG).show()
                 }
             }
         }

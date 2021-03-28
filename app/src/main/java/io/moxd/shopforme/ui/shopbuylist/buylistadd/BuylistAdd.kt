@@ -31,21 +31,21 @@ import kotlinx.serialization.json.Json
 import java.util.*
 
 
-class BuylistAdd: Fragment() {
+class BuylistAdd : Fragment() {
     private lateinit var itemlist: RecyclerView
-    private  lateinit var priceinfo : TextView
-    private  lateinit var countinfo : TextView
-    private lateinit var createbtn : Button
-    private   var items :List<Item> = mutableListOf()
+    private lateinit var priceinfo: TextView
+    private lateinit var countinfo: TextView
+    private lateinit var createbtn: Button
+    private var items: List<Item> = mutableListOf()
     lateinit var binding: AddBuylistLayoutBinding
 
-    val viewModel : BuyListAddViewModel by viewModels { BuyListViewModelFactory(this,arguments) }
+    val viewModel: BuyListAddViewModel by viewModels { BuyListViewModelFactory(this, arguments) }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
-       return inflater.inflate(R.layout.add_buylist_layout, container, false)
+        return inflater.inflate(R.layout.add_buylist_layout, container, false)
 
     }
 
@@ -55,27 +55,28 @@ class BuylistAdd: Fragment() {
         binding = AddBuylistLayoutBinding.bind(view)
         binding.apply {
             buyItemList.layoutManager = LinearLayoutManager(
-                root.context,
-                LinearLayoutManager.VERTICAL,
-                false
+                    root.context,
+                    LinearLayoutManager.VERTICAL,
+                    false
             )
 
-            viewModel.Items.observe(viewLifecycleOwner){
-                if(it.isSuccessful){
+            viewModel.Items.observe(viewLifecycleOwner) {
+                if (it.isSuccessful) {
                     val items = it.body()!!
-                    for (item in items){
+                    for (item in items) {
                         item.anzahl = MutableLiveData(0)
                     }
-                    for (item in items){
-                    item.anzahl.observe(viewLifecycleOwner){
-                        //update ShopCart
-                        buylistInfoPrice.text =  "Preis: ${ String.format("%.2f" ,viewModel.Items.value?.body()!!.sumOf { (it.anzahl.value!! * it.cost) })} €"
-                        buylistInfoCount.text = "Anzahl: ${ viewModel.Items.value?.body()!!.sumBy {  it.anzahl.value!!  } }"
-                        buylistCreate.isEnabled = items.filter { it.anzahl.value!! > 0  }.isNotEmpty()
-                    }}
+                    for (item in items) {
+                        item.anzahl.observe(viewLifecycleOwner) {
+                            //update ShopCart
+                            buylistInfoPrice.text = "Preis: ${String.format("%.2f", viewModel.Items.value?.body()!!.sumOf { (it.anzahl.value!! * it.cost) })} €"
+                            buylistInfoCount.text = "Anzahl: ${viewModel.Items.value?.body()!!.sumBy { it.anzahl.value!! }}"
+                            buylistCreate.isEnabled = items.filter { it.anzahl.value!! > 0 }.isNotEmpty()
+                        }
+                    }
                     val ad = ItemAdapter(requireContext(), items)
-                    buyItemList.adapter =  ad
-                }else{
+                    buyItemList.adapter = ad
+                } else {
                     //error
                 }
             }
@@ -89,21 +90,21 @@ class BuylistAdd: Fragment() {
             buylistCreate.setOnClickListener {
                 //create buylist
                 MaterialAlertDialogBuilder(requireContext())
-                    .setTitle("Fertig?")
-                    .setMessage("Willst du die Einkaufsliste erstellen?")
-                    .setNeutralButton("Nein") { _, _ ->
-                        // Respond to neutral button press
-                    }.setNegativeButton("Abbrechen") { _, _ ->
-                        val ft = (context as MainActivity).supportFragmentManager.beginTransaction()
-                        ft.replace(R.id.mainframe, Shopcart())
-                        ft.commit()
-                    }
-                    .setPositiveButton("Ja") { _, _ ->
-                        // Respond to positive button press
-                        viewModel.createBuylist()
+                        .setTitle("Fertig?")
+                        .setMessage("Willst du die Einkaufsliste erstellen?")
+                        .setNeutralButton("Nein") { _, _ ->
+                            // Respond to neutral button press
+                        }.setNegativeButton("Abbrechen") { _, _ ->
+                            val ft = (context as MainActivity).supportFragmentManager.beginTransaction()
+                            ft.replace(R.id.mainframe, Shopcart())
+                            ft.commit()
+                        }
+                        .setPositiveButton("Ja") { _, _ ->
+                            // Respond to positive button press
+                            viewModel.createBuylist()
 
-                    }
-                    .show()
+                        }
+                        .show()
             }
         }
 
@@ -111,27 +112,26 @@ class BuylistAdd: Fragment() {
 
 
 
-            viewModel.BuyList.observe(viewLifecycleOwner){
-                if(it.isSuccessful){
+        viewModel.BuyList.observe(viewLifecycleOwner) {
+            if (it.isSuccessful) {
 
-                    val args = Bundle()
-                    args.putCharSequence("page", "B")
-                    val f = Shopcart()
-                    f.arguments = args
-                    val ft = (context as MainActivity).supportFragmentManager.beginTransaction()
-                    ft.replace(R.id.mainframe, f)
-                    ft.commit()
+                val args = Bundle()
+                args.putCharSequence("page", "B")
+                val f = Shopcart()
+                f.arguments = args
+                val ft = (context as MainActivity).supportFragmentManager.beginTransaction()
+                ft.replace(R.id.mainframe, f)
+                ft.commit()
 
-                }else
-                {
-                    Log.d("ErrorBuylist" , getErrorRetro( it.errorBody()))
-                    //error
-                }
+            } else {
+                Log.d("ErrorBuylist", getErrorRetro(it.errorBody()))
+                //error
             }
-
         }
 
     }
+
+}
 
 
 

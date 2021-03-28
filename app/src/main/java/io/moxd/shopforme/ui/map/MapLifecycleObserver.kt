@@ -30,42 +30,39 @@ import io.moxd.shopforme.data.model.LocationDataGSON
 import io.moxd.shopforme.data.model.LocationGSON
 
 
-class MapLifecycleObserver (private val registry : ActivityResultRegistry, private  val fusedLocationProviderClient: FusedLocationProviderClient,  private  val viewModel: MapViewModel,  val context: Context):
-        DefaultLifecycleObserver
-{
+class MapLifecycleObserver(private val registry: ActivityResultRegistry, private val fusedLocationProviderClient: FusedLocationProviderClient, private val viewModel: MapViewModel, val context: Context) :
+        DefaultLifecycleObserver {
 
-    private lateinit var requestLocationPermission : ActivityResultLauncher<String>
+    private lateinit var requestLocationPermission: ActivityResultLauncher<String>
 
 
     override fun onCreate(owner: LifecycleOwner) {
 
-        requestLocationPermission = registry.register("locatrionperm2",owner, ActivityResultContracts.RequestPermission()){
-            if(it)
+        requestLocationPermission = registry.register("locatrionperm2", owner, ActivityResultContracts.RequestPermission()) {
+            if (it)
                 getLocation()
         }
-
-
 
 
     }
 
     private val mLocationCallback: LocationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult?) {
-            if(locationResult == null) {
-            Log.d("locationresulkt" , "null")
+            if (locationResult == null) {
+                Log.d("locationresulkt", "null")
                 startLocationUpdate()
                 return
             }
-                val location = locationResult.lastLocation
-                //update new location
-                viewModel.lastKnownLocation = location
-                Log.d("locationresulkt" , "not null")
-                viewModel.updateLocation(LocationGSON("Point", listOf(location.latitude,location.longitude)))
-            }
+            val location = locationResult.lastLocation
+            //update new location
+            viewModel.lastKnownLocation = location
+            Log.d("locationresulkt", "not null")
+            viewModel.updateLocation(LocationGSON("Point", listOf(location.latitude, location.longitude)))
         }
+    }
 
 
-    private fun getLocation(){
+    private fun getLocation() {
         val nManager: LocationManager =
                 (context as Activity).getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
@@ -74,6 +71,7 @@ class MapLifecycleObserver (private val registry : ActivityResultRegistry, priva
         else
             startLocationUpdate()
     }
+
     private fun OnGPS() {
         val builder: AlertDialog.Builder = AlertDialog.Builder(context)
         builder.setMessage("Enable GPS").setCancelable(false).setPositiveButton("Yes",
@@ -83,6 +81,7 @@ class MapLifecycleObserver (private val registry : ActivityResultRegistry, priva
         val alertDialog: AlertDialog = builder.create()
         alertDialog.show()
     }
+
     @SuppressLint("MissingPermission")
     private fun startLocationUpdate() {
         val locationRequest = LocationRequest.create().apply {
@@ -95,17 +94,17 @@ class MapLifecycleObserver (private val registry : ActivityResultRegistry, priva
                 mLocationCallback,
                 Looper.getMainLooper())
     }
-    fun GetLocationAction()
-    {
+
+    fun GetLocationAction() {
 
         when {
             ContextCompat.checkSelfPermission(
                     context,
                     Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED  &&  ContextCompat.checkSelfPermission(
+            ) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
                     context,
                     Manifest.permission.ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED  -> {
+            ) == PackageManager.PERMISSION_GRANTED -> {
                 getLocation()
             }
             ActivityCompat.shouldShowRequestPermissionRationale(

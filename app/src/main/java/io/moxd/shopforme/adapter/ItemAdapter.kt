@@ -16,14 +16,14 @@ import io.moxd.shopforme.data.model.Item
 import io.moxd.shopforme.data.model.ItemGSON
 
 
-class ItemAdapter(private val context: Context,   val itemModelArrayList: List<ItemGSON>) :
-    RecyclerView.Adapter<ItemAdapter.Viewholder>() {
+class ItemAdapter(private val context: Context, val itemModelArrayList: List<ItemGSON>) :
+        RecyclerView.Adapter<ItemAdapter.Viewholder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Viewholder {
         // to inflate the layout for each item of recycler view.
         val view: View =
-            LayoutInflater.from(parent.context).inflate(R.layout.buy_item, parent, false)
+                LayoutInflater.from(parent.context).inflate(R.layout.buy_item, parent, false)
         return Viewholder(view)
     }
 
@@ -31,17 +31,19 @@ class ItemAdapter(private val context: Context,   val itemModelArrayList: List<I
         // to set data to textview and imageview of each card layout
         val model: ItemGSON = itemModelArrayList[position]
         holder.Title.text = model.name
-        holder.cost.text =  "${model.cost} €"
+        holder.cost.text = "${model.cost} €"
         holder.anzahl.setText(model.anzahl.value!!.toString())
         holder.subbtn.setOnClickListener {
 
-            if(model.anzahl.value!! > 0)
-            model.anzahl.value = model.anzahl.value!! - 1
-            holder.anzahl.setText(model.anzahl.value!!.toString()) }
+            if (model.anzahl.value!! > 0)
+                model.anzahl.value = model.anzahl.value!! - 1
+            holder.anzahl.setText(model.anzahl.value!!.toString())
+        }
         holder.addbtn.setOnClickListener {
-            if(model.anzahl.value!! < 5)
+            if (model.anzahl.value!! < 5)
                 model.anzahl.value = model.anzahl.value!! + 1
-            holder.anzahl.setText(model.anzahl.value!!.toString())}
+            holder.anzahl.setText(model.anzahl.value!!.toString())
+        }
         holder.anzahl.filters = arrayOf<InputFilter>(MinMaxFilter("0", "5"))
     }
 
@@ -51,14 +53,13 @@ class ItemAdapter(private val context: Context,   val itemModelArrayList: List<I
     }
 
 
-
-
     inner class Viewholder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val Title: TextView
         val cost: TextView
-        val anzahl : TextInputEditText
-        val addbtn : ImageButton
-        val subbtn : ImageButton
+        val anzahl: TextInputEditText
+        val addbtn: ImageButton
+        val subbtn: ImageButton
+
         init {
             Title = itemView.findViewById(R.id.buy_item_title)
             cost = itemView.findViewById(R.id.buy_item_price)

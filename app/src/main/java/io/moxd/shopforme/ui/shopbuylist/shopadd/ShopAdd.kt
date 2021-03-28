@@ -70,20 +70,20 @@ class ShopAdd : Fragment() {
         binding.apply {
 
             maxShopCardviewTitle.paintFlags =
-                maxShopCardviewTitle.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+                    maxShopCardviewTitle.paintFlags or Paint.UNDERLINE_TEXT_FLAG
             ViewCompat.setTransitionName(root, "max_shop${viewModel.modelid}")
             maxShopCardviewMenuDelete.setOnClickListener {
                 // delete()
                 MaterialAlertDialogBuilder(requireContext())
-                    .setTitle("Shop Löschen")
-                    .setMessage("Sind sie sich sicher ?")
-                    .setNeutralButton("Cancel") { _, _ ->
-                        // Respond to neutral button press
-                    }
-                    .setPositiveButton("Ja") { _, _ ->
-                        viewModel.deleteShop()
+                        .setTitle("Shop Löschen")
+                        .setMessage("Sind sie sich sicher ?")
+                        .setNeutralButton("Cancel") { _, _ ->
+                            // Respond to neutral button press
+                        }
+                        .setPositiveButton("Ja") { _, _ ->
+                            viewModel.deleteShop()
 
-                    }.show()
+                        }.show()
             }
             maxShopCardviewMenuShop.setOnClickListener {
                 val popup = CameraGalleryDialog(requireActivity())
@@ -91,30 +91,32 @@ class ShopAdd : Fragment() {
 
 
                 popup.show()
-                popup.gallery.setOnClickListener { observer.GalleryAction(if (viewModel.UserType() == "Helfer")ActionType.DoneHF else ActionType.DoneHFS)
+                popup.gallery.setOnClickListener {
+                    observer.GalleryAction(if (viewModel.UserType() == "Helfer") ActionType.DoneHF else ActionType.DoneHFS)
                     popup.dismiss()
                 }
 
-                popup.camera.setOnClickListener { observer.CameraAction(if (viewModel.UserType() == "Helfer")ActionType.DoneHF else ActionType.DoneHFS)
+                popup.camera.setOnClickListener {
+                    observer.CameraAction(if (viewModel.UserType() == "Helfer") ActionType.DoneHF else ActionType.DoneHFS)
                     popup.dismiss()
                 }
             }
             maxShopCardviewMenuPayed.setOnClickListener {
                 //payed()
-                if(viewModel.UserType() == "Helfer"){
+                if (viewModel.UserType() == "Helfer") {
 
                     MaterialAlertDialogBuilder(requireContext())
-                        .setTitle("Bezahlt worden")
-                        .setMessage("Ja oder Noch nicht")
-                        .setNeutralButton("Cancel") { _, _ ->
-                            // Respond to neutral button press
-                        }.setNegativeButton("Noch nicht"){ _, _ ->
-                            //maybe send alert to user
-                        }
-                        .setPositiveButton("Ja") { _, _ ->
+                            .setTitle("Bezahlt worden")
+                            .setMessage("Ja oder Noch nicht")
+                            .setNeutralButton("Cancel") { _, _ ->
+                                // Respond to neutral button press
+                            }.setNegativeButton("Noch nicht") { _, _ ->
+                                //maybe send alert to user
+                            }
+                            .setPositiveButton("Ja") { _, _ ->
 
-                            viewModel.shopPayHF()
-                        }.show()
+                                viewModel.shopPayHF()
+                            }.show()
 
 
                 } else {
@@ -124,11 +126,13 @@ class ShopAdd : Fragment() {
 
 
                     popup.show()
-                    popup.gallery.setOnClickListener { observer.GalleryAction(ActionType.PayHFS)
+                    popup.gallery.setOnClickListener {
+                        observer.GalleryAction(ActionType.PayHFS)
                         popup.dismiss()
                     }
 
-                    popup.camera.setOnClickListener { observer.CameraAction(ActionType.PayHFS)
+                    popup.camera.setOnClickListener {
+                        observer.CameraAction(ActionType.PayHFS)
                         popup.dismiss()
                     }
 
@@ -149,57 +153,55 @@ class ShopAdd : Fragment() {
         binding.apply {
 
             viewModel.ShopDelte.observe(viewLifecycleOwner) {
-                    if(it.isSuccessful)
-                        (context as MainActivity).supportFragmentManager.popBackStack()
-                    else
-                        Log.d("Error", getErrorRetro(it.errorBody()))
+                if (it.isSuccessful)
+                    (context as MainActivity).supportFragmentManager.popBackStack()
+                else
+                    Log.d("Error", getErrorRetro(it.errorBody()))
             }
 
-            viewModel.Shop.observe(viewLifecycleOwner){
-                if (it.isSuccessful){
+            viewModel.Shop.observe(viewLifecycleOwner) {
+                if (it.isSuccessful) {
 
                     val model = it.body()!!
 
 
 
-                    maxShopCardviewMenuDelete.visibility = if (model.helper == null ) View.VISIBLE else View.GONE
-                    maxShopCardviewMenuReport.visibility = if (model.helper == null ) View.GONE else View.VISIBLE
-                    maxShopCardviewMenuShop.visibility = if(viewModel.UserType() == "Helfer" || model.bill_hf != null) View.VISIBLE else View.GONE
-                    maxShopCardviewMenuPayed.visibility = if(viewModel.UserType() == "Helfer" || model.payed_prove == null) View.GONE else View.VISIBLE
+                    maxShopCardviewMenuDelete.visibility = if (model.helper == null) View.VISIBLE else View.GONE
+                    maxShopCardviewMenuReport.visibility = if (model.helper == null) View.GONE else View.VISIBLE
+                    maxShopCardviewMenuShop.visibility = if (viewModel.UserType() == "Helfer" || model.bill_hf != null) View.VISIBLE else View.GONE
+                    maxShopCardviewMenuPayed.visibility = if (viewModel.UserType() == "Helfer" || model.payed_prove == null) View.GONE else View.VISIBLE
 
-                    val belege : MutableList<Beleg> = mutableListOf()
+                    val belege: MutableList<Beleg> = mutableListOf()
 
-                    if(!model.bill_hf.isNullOrEmpty())
-                        belege.add(Beleg("K", if(viewModel.UserType() == "Helfer") "Ich" else "${model.helper?.firstname} ${model.helper?.name}", model.bill_hf))
-                    if(!model.bill_hfs.isNullOrEmpty())
-                        belege.add(Beleg("K", if(viewModel.UserType() == "Helfer")  "${model.helpsearcher.firstname} ${model.helpsearcher.name}" else "Ich"  , model.bill_hfs))
-                    if(!model.payed_prove.isNullOrEmpty())
-                        belege.add(Beleg("P", if(viewModel.UserType() == "Helfer")  "${model.helpsearcher.firstname} ${model.helpsearcher.name}" else "Ich" , model.payed_prove))
+                    if (!model.bill_hf.isNullOrEmpty())
+                        belege.add(Beleg("K", if (viewModel.UserType() == "Helfer") "Ich" else "${model.helper?.firstname} ${model.helper?.name}", model.bill_hf))
+                    if (!model.bill_hfs.isNullOrEmpty())
+                        belege.add(Beleg("K", if (viewModel.UserType() == "Helfer") "${model.helpsearcher.firstname} ${model.helpsearcher.name}" else "Ich", model.bill_hfs))
+                    if (!model.payed_prove.isNullOrEmpty())
+                        belege.add(Beleg("P", if (viewModel.UserType() == "Helfer") "${model.helpsearcher.firstname} ${model.helpsearcher.name}" else "Ich", model.payed_prove))
                     maxShopImagerecycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
                     maxShopImagerecycler.adapter = BelegeAdapter(requireContext(), belege)
 
 
 
-                    maxShopCardviewTitle.text = FormatDate( model.creation_date)
-                    maxShopCardviewBezahlt.text = if(model.payed) "Bezahlt" else   "Zu Bezahlen"
+                    maxShopCardviewTitle.text = FormatDate(model.creation_date)
+                    maxShopCardviewBezahlt.text = if (model.payed) "Bezahlt" else "Zu Bezahlen"
                     if (viewModel.UserType() == "Helfer") {
                         maxShopCardviewMenuPayed.text = "Bezahlung erhalten"
                         maxShopCardviewMenuShop.text = "Einkauf erledigt"
                         maxShopCardviewMenuPayed.isEnabled = (model?.done!! && model?.payed_prove != null)
                         maxShopCardviewMenuShop.isEnabled = model?.helper != null
-                    }
-                    else{
+                    } else {
                         maxShopCardviewMenuPayed.text = "Bezahlung belegen"
                         maxShopCardviewMenuShop.text = "Einkauf erhalten"
                         maxShopCardviewMenuPayed.isEnabled = (model?.done!!)
                         maxShopCardviewMenuShop.isEnabled = (model?.helper != null && model?.bill_hf != null)
                     }
 
-                    if(model.price != 0.0){
+                    if (model.price != 0.0) {
                         maxShopCardviewRealPreis.visibility = View.VISIBLE
                         maxShopCardviewRealPreis.text = "Der Preis des Einkaufs \nbeträgt ${model.price} €"
-                    }else
-                    {
+                    } else {
                         maxShopCardviewRealPreis.visibility = View.GONE
                     }
 
@@ -207,18 +209,16 @@ class ShopAdd : Fragment() {
                     maxShopCardviewBezahlt.text = if (model!!.payed) "Bezahlt" else "Zu Bezahlen"
                     maxShopCardviewPreis.text = "Geschätzter Preis: ${
                         String.format(
-                            "%.2f",
-                            model!!.buylist.articles.sumOf { (it.count * it.item.cost) })
+                                "%.2f",
+                                model!!.buylist.articles.sumOf { (it.count * it.item.cost) })
                     } €"
-                    maxShopCardviewAnzahl.text = "Anzahl: ${ model.buylist.articles.sumBy {  it.count  } }"
-                    if(model.helper == null)
-                    {
+                    maxShopCardviewAnzahl.text = "Anzahl: ${model.buylist.articles.sumBy { it.count }}"
+                    if (model.helper == null) {
                         //searcvhing
                         maxShopCardviewStatus.setImageResource(R.drawable.ic_baseline_person_search_24)
                         maxShopCardviewStatus.setColorFilter(ContextCompat.getColor(requireContext(), R.color.divivder), android.graphics.PorterDuff.Mode.SRC_IN);
-                    }
-                    else if (model.done)
-                        when(model.payed){
+                    } else if (model.done)
+                        when (model.payed) {
                             true -> { // green arrow
                                 maxShopCardviewStatus.setImageResource(R.drawable.ic_done)
                                 maxShopCardviewStatus.setColorFilter(ContextCompat.getColor(requireContext(), R.color.IconAccept), android.graphics.PorterDuff.Mode.SRC_IN);
@@ -236,12 +236,10 @@ class ShopAdd : Fragment() {
 
                     maxShopCardviewMenuBuylist.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
-                    maxShopCardviewMenuBuylist.adapter = BuyListMinAdapter(requireContext(),model.buylist.articles.toMutableList())
+                    maxShopCardviewMenuBuylist.adapter = BuyListMinAdapter(requireContext(), model.buylist.articles.toMutableList())
 
 
-
-                }else
-                {
+                } else {
                     // Server Failed
                 }
             }
@@ -256,9 +254,9 @@ class ShopAdd : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         sharedElementEnterTransition = MaterialContainerTransform().apply {
             drawingViewId = R.id.mainframe
@@ -266,7 +264,7 @@ class ShopAdd : Fragment() {
             scrimColor = Color.TRANSPARENT
 
         }
-        observer = ShopAddLifecycleObserver(requireActivity().activityResultRegistry,viewModel,requireContext())
+        observer = ShopAddLifecycleObserver(requireActivity().activityResultRegistry, viewModel, requireContext())
         lifecycle.addObserver(observer)
         return inflater.inflate(R.layout.max_shop_cardview, container, false)
 

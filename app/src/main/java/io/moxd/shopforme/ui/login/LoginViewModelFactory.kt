@@ -9,15 +9,15 @@ import androidx.savedstate.SavedStateRegistryOwner
 import io.moxd.shopforme.MainActivity
 import io.moxd.shopforme.requireAuthManager
 
-class LoginViewModelFactory (
-    owner: SavedStateRegistryOwner, defaultArgs: Bundle?
+class LoginViewModelFactory(
+        owner: SavedStateRegistryOwner, defaultArgs: Bundle?
 ) : AbstractSavedStateViewModelFactory(owner, defaultArgs) {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel?> create(
-        key: String,
-        modelClass: Class<T>,
-        handle: SavedStateHandle
+            key: String,
+            modelClass: Class<T>,
+            handle: SavedStateHandle
     ): T {
         return LoginViewModel(requireAuthManager(), handle) as T
     }

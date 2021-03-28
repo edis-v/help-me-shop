@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.savedstate.SavedStateRegistryOwner
 import io.moxd.shopforme.api.ApiMap
 
-class MapViewModelFactory (owner: SavedStateRegistryOwner, defaultArgs: Bundle?
+class MapViewModelFactory(owner: SavedStateRegistryOwner, defaultArgs: Bundle?
 ) : AbstractSavedStateViewModelFactory(owner, defaultArgs) {
 
     @Suppress("UNCHECKED_CAST")

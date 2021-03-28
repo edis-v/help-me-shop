@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.collect
 
 private const val TAG = "LoginFragment"
 
-class LoginFragment: Fragment(R.layout.auth_login_fragment) {
+class LoginFragment : Fragment(R.layout.auth_login_fragment) {
 
     // Für Fragment Layout automatisch erzeugte View Bindings (Ggf.: Build -> Rebuild Project)
     lateinit var binding: AuthLoginFragmentBinding
@@ -80,7 +80,7 @@ class LoginFragment: Fragment(R.layout.auth_login_fragment) {
 
             // Events des ViewModels mithilfe der Flow API asynchron abarbeiten
             viewModel.events.collect { event ->
-                when(event) {
+                when (event) {
 
                     // Navigation (innerhalb von nav_graph_auth)
 
@@ -135,7 +135,7 @@ class LoginFragment: Fragment(R.layout.auth_login_fragment) {
                     is LoginViewModel.LoginEvent.LoginFailed -> {
                         Log.i(TAG, "handleEvents: LoginFailed")
                         Log.i(TAG, "handleEvents: ${event.exception.message}")
-                        Toast.makeText(this@LoginFragment.context,"${event.exception.message}",Toast.LENGTH_LONG).show()
+                        Toast.makeText(this@LoginFragment.context, "${event.exception.message}", Toast.LENGTH_LONG).show()
                         // TODO: Meldung an User
                     }
                     is LoginViewModel.LoginEvent.LoggingIn -> {

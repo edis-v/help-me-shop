@@ -13,9 +13,9 @@ class ShopAddViewModelFactory(owner: SavedStateRegistryOwner, defaultArgs: Bundl
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel?> create(
-        key: String,
-        modelClass: Class<T>,
-        handle: SavedStateHandle
+            key: String,
+            modelClass: Class<T>,
+            handle: SavedStateHandle
     ): T {
         return ShopAddViewModel(handle, ApiShopAdd()) as T
     }

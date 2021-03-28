@@ -28,7 +28,7 @@ import io.moxd.shopforme.data.model.ShopMap
 import io.moxd.shopforme.ui.map.MapViewModel
 
 
-class MapAdapter(private val context: Context, val itemModelArrayList: List<ShopMap>, private val map: MapboxMap , private val viewmodel : MapViewModel) :
+class MapAdapter(private val context: Context, val itemModelArrayList: List<ShopMap>, private val map: MapboxMap, private val viewmodel: MapViewModel) :
         RecyclerView.Adapter<MapAdapter.Viewholder>() {
 
 
@@ -41,12 +41,14 @@ class MapAdapter(private val context: Context, val itemModelArrayList: List<Shop
 
     override fun onBindViewHolder(holder: MapAdapter.Viewholder, position: Int) {
         val model = itemModelArrayList[position]
-        holder.name.text =  model.helpsearcher.firstname + " "+  model.helpsearcher.name
-        holder.price.text =  "Preis: ${ String.format(
-                "%.2f",
-                model.buylist.articles.sumOf { (it.count * it.item.cost) })} €"
-        holder.count.text = "Anzahl: ${ model.buylist.articles.sumBy {  it.count  } }"
-        holder.createdate.text = FormatDate( model.creation_date)
+        holder.name.text = model.helpsearcher.firstname + " " + model.helpsearcher.name
+        holder.price.text = "Preis: ${
+            String.format(
+                    "%.2f",
+                    model.buylist.articles.sumOf { (it.count * it.item.cost) })
+        } €"
+        holder.count.text = "Anzahl: ${model.buylist.articles.sumBy { it.count }}"
+        holder.createdate.text = FormatDate(model.creation_date)
         Picasso.get().load(model.helpsearcher.profile_pic).into(holder.profilepic);
 
         holder.btn.setOnClickListener {
@@ -92,8 +94,8 @@ class MapAdapter(private val context: Context, val itemModelArrayList: List<Shop
         var createdate: TextView
         var price: TextView
         var singleCard: CardView
-        var profilepic : ImageView
-        var btn : Button
+        var profilepic: ImageView
+        var btn: Button
 
         init {
             name = itemView.findViewById(R.id.username_cardview)

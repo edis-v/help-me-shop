@@ -30,26 +30,23 @@ import kotlinx.coroutines.*
 import kotlinx.serialization.decodeFromString
 
 
-class HomeFragment: Fragment(R.layout.main_home_fragment) {
+class HomeFragment : Fragment(R.layout.main_home_fragment) {
 
 
     lateinit var binding: MainHomeFragmentBinding
-    val viewModel : HomeViewModel by viewModels { HomeViewModelFactory(this,arguments) }
-
-
+    val viewModel: HomeViewModel by viewModels { HomeViewModelFactory(this, arguments) }
 
 
     var last = 0
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
 
         return super.onCreateView(inflater, container, savedInstanceState)
 
     }
-
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -90,8 +87,8 @@ class HomeFragment: Fragment(R.layout.main_home_fragment) {
 
 
         binding.apply {
-            viewModel.User.observe(viewLifecycleOwner){
-                if(it.isSuccessful){
+            viewModel.User.observe(viewLifecycleOwner) {
+                if (it.isSuccessful) {
                     val user = it.body()!!
                     bottomNavigation.menu.clear()
                     if (user.usertype_txt == "Helfer")
@@ -99,8 +96,7 @@ class HomeFragment: Fragment(R.layout.main_home_fragment) {
                     else
                         bottomNavigation.inflateMenu(R.menu.bottom_navigation_menu)
                     Screen1()
-                }else
-                {
+                } else {
                     //error
                 }
             }
@@ -108,16 +104,16 @@ class HomeFragment: Fragment(R.layout.main_home_fragment) {
     }
 
 
-    fun Screen1(){
+    fun Screen1() {
         binding.apply {
             if (viewModel.UserType() == "Helfer") {
                 val ft =
-                    (requireActivity() as MainActivity).supportFragmentManager.beginTransaction()
+                        (requireActivity() as MainActivity).supportFragmentManager.beginTransaction()
                 ft.replace(R.id.mainframe, ShopAngebotFragment())
                 ft.commit()
             } else {
                 val ft =
-                    (requireActivity() as MainActivity).supportFragmentManager.beginTransaction()
+                        (requireActivity() as MainActivity).supportFragmentManager.beginTransaction()
                 ft.replace(R.id.mainframe, Shopcart())
                 ft.commit()
             }
@@ -125,23 +121,23 @@ class HomeFragment: Fragment(R.layout.main_home_fragment) {
     }
 
 
-    fun Screen2(){
+    fun Screen2() {
         if (viewModel.UserType() == "Helfer") {
             val ft =
-                (requireActivity() as MainActivity).supportFragmentManager.beginTransaction()
+                    (requireActivity() as MainActivity).supportFragmentManager.beginTransaction()
             ft.replace(R.id.mainframe, MapFragment())
             ft.commit()
         } else {
             val ft =
-                (requireActivity() as MainActivity).supportFragmentManager.beginTransaction()
+                    (requireActivity() as MainActivity).supportFragmentManager.beginTransaction()
             ft.replace(R.id.mainframe, AngebotFragment())
             ft.commit()
         }
     }
 
-    fun Screen3(){
+    fun Screen3() {
         val ft =
-            (requireActivity() as MainActivity).supportFragmentManager.beginTransaction()
+                (requireActivity() as MainActivity).supportFragmentManager.beginTransaction()
         ft.replace(R.id.mainframe, ProfileListFragment())
         ft.commit()
     }

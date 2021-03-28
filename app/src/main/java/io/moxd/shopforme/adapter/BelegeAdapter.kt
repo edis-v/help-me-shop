@@ -12,7 +12,7 @@ import io.moxd.shopforme.R
 import io.moxd.shopforme.data.AuthManager
 import io.moxd.shopforme.data.model.Beleg
 
-class BelegeAdapter (private val context: Context, val itemModelArrayList: List<Beleg>) :
+class BelegeAdapter(private val context: Context, val itemModelArrayList: List<Beleg>) :
         RecyclerView.Adapter<BelegeAdapter.Viewholder>() {
 
 
@@ -28,7 +28,7 @@ class BelegeAdapter (private val context: Context, val itemModelArrayList: List<
         val model: Beleg = itemModelArrayList[position]
 
         holder.User.text = model.user
-        holder.type.text = if(model.type == "K") "KassenZettle" else "Bezahlung"
+        holder.type.text = if (model.type == "K") "KassenZettle" else "Bezahlung"
         Picasso.get().load(model.beleg).into(holder.beleg)
 
     }
@@ -39,12 +39,10 @@ class BelegeAdapter (private val context: Context, val itemModelArrayList: List<
     }
 
 
-
-
     inner class Viewholder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val type : TextView
+        val type: TextView
         val User: TextView
-        val beleg : ImageView
+        val beleg: ImageView
 
         init {
             type = itemView.findViewById(R.id.maxshop_type)

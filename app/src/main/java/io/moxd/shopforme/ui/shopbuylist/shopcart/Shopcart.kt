@@ -24,20 +24,18 @@ import io.moxd.shopforme.ui.shopbuylist.buylistadd.BuylistAdd
 class Shopcart : Fragment() {
 
 
-    lateinit var observer : ShopcartLifecycleObserver
-    val viewModel : ShopcartViewModel by viewModels {
+    lateinit var observer: ShopcartLifecycleObserver
+    val viewModel: ShopcartViewModel by viewModels {
         ShopcartViewModelFactory(this, arguments)
     }
 
 
-
-
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
-        observer = ShopcartLifecycleObserver(requireActivity().activityResultRegistry,viewModel,requireContext())
+        observer = ShopcartLifecycleObserver(requireActivity().activityResultRegistry, viewModel, requireContext())
         lifecycle.addObserver(observer)
         return inflater.inflate(R.layout.auth_shopcart_layout, container, false)
 
@@ -54,15 +52,15 @@ class Shopcart : Fragment() {
         binding.apply {
 
             shopcartList.layoutManager = LinearLayoutManager(
-                root.context,
-                LinearLayoutManager.VERTICAL,
-                false
+                    root.context,
+                    LinearLayoutManager.VERTICAL,
+                    false
             )
-            ViewGroupCompat.setTransitionGroup(shopcartList,true)
+            ViewGroupCompat.setTransitionGroup(shopcartList, true)
 
             shopcartListRefresh.setOnRefreshListener(OnRefreshListener {
                 when (shopcartTab.selectedTabPosition) {
-                    0-> {
+                    0 -> {
                         Log.d("Tab", "Shop clicked")
                         viewModel.getShopUpdate()
 
@@ -114,8 +112,8 @@ class Shopcart : Fragment() {
             }
 
             shopcartLocation.setOnClickListener {
-                 observer.LocationAction()
-                }
+                observer.LocationAction()
+            }
 
             shopcartFilterExit.setOnClickListener {
                 shopcartFilterWindow.visibility = View.GONE
@@ -124,126 +122,116 @@ class Shopcart : Fragment() {
 
 
             try {
-                val b =  arguments?.getCharSequence("page") as String
+                val b = arguments?.getCharSequence("page") as String
                 shopcartTab.selectTab(shopcartTab.getTabAt(1))
                 viewModel.getBuyListUpdate()
-            }catch (ex: Exception){
+            } catch (ex: Exception) {
                 viewModel.getShopUpdate()
 
             }
 
 
-
         }
 
         binding.apply {
-        viewModel.BuyList.observe(viewLifecycleOwner) {
-            if (it.isSuccessful) {
-                val BuyList = it.body()!!
+            viewModel.BuyList.observe(viewLifecycleOwner) {
+                if (it.isSuccessful) {
+                    val BuyList = it.body()!!
 
-                shopcartList.adapter =
-                    BuyListAdapter(
-                        this@Shopcart.requireContext(),
-                        BuyList.toMutableList(),
-                        viewModel
-                    )
+                    shopcartList.adapter =
+                            BuyListAdapter(
+                                    this@Shopcart.requireContext(),
+                                    BuyList.toMutableList(),
+                                    viewModel
+                            )
 
 
-            } else {
-                //error
+                } else {
+                    //error
+                }
             }
         }
-    }
 
         binding.apply {
-        viewModel.Location.observe(viewLifecycleOwner){
-            if(it.isSuccessful){
-                Snackbar.make(view,"Location updated Successfully",Snackbar.LENGTH_LONG).show()
-            }else
-                Snackbar.make(view,"Location update Failed",Snackbar.LENGTH_LONG).show()
+            viewModel.Location.observe(viewLifecycleOwner) {
+                if (it.isSuccessful) {
+                    Snackbar.make(view, "Location updated Successfully", Snackbar.LENGTH_LONG).show()
+                } else
+                    Snackbar.make(view, "Location update Failed", Snackbar.LENGTH_LONG).show()
 
+            }
         }
-    }
 
         binding.apply {
 
-            viewModel.BuyListDelte.observe(viewLifecycleOwner){
-                if(it.isSuccessful){
+            viewModel.BuyListDelte.observe(viewLifecycleOwner) {
+                if (it.isSuccessful) {
 
 
                     (shopcartList.adapter as BuyListAdapter).deleteSuccesses()
                     Snackbar
-                        .make(
-                            view,
-                            "EinkaufsListe gelöscht",
-                            Snackbar.LENGTH_LONG
-                        )
-                        .show()
-                }else{
+                            .make(
+                                    view,
+                                    "EinkaufsListe gelöscht",
+                                    Snackbar.LENGTH_LONG
+                            )
+                            .show()
+                } else {
                     Snackbar
-                        .make(
-                            view,
-                            getErrorRetro(it.errorBody()),
-                            Snackbar.LENGTH_LONG
-                        )  .show()
+                            .make(
+                                    view,
+                                    getErrorRetro(it.errorBody()),
+                                    Snackbar.LENGTH_LONG
+                            ).show()
                 }
             }
 
-            viewModel.ShopCreated.observe(viewLifecycleOwner){
-                if(it.isSuccessful){
+            viewModel.ShopCreated.observe(viewLifecycleOwner) {
+                if (it.isSuccessful) {
                     Snackbar
-                        .make(
-                            view,
-                            "Einkauf erstellt",
-                            Snackbar.LENGTH_LONG
-                        ).setAction(
-                            "Go to Shop")
-                        {
+                            .make(
+                                    view,
+                                    "Einkauf erstellt",
+                                    Snackbar.LENGTH_LONG
+                            ).setAction(
+                                    "Go to Shop")
+                            {
 
-                            val ft = (context as MainActivity).supportFragmentManager.beginTransaction()
-                            ft.replace(R.id.mainframe, Shopcart())
-                            ft.commit()
-                        }
-                        .show()
-                }else{
+                                val ft = (context as MainActivity).supportFragmentManager.beginTransaction()
+                                ft.replace(R.id.mainframe, Shopcart())
+                                ft.commit()
+                            }
+                            .show()
+                } else {
                     Snackbar
-                        .make(
-                            view,
-                            getErrorRetro(it.errorBody()),
-                            Snackbar.LENGTH_LONG
-                        )  .show()
+                            .make(
+                                    view,
+                                    getErrorRetro(it.errorBody()),
+                                    Snackbar.LENGTH_LONG
+                            ).show()
                 }
             }
 
         }
 
         binding.apply {
-        viewModel.Shop.observe(viewLifecycleOwner) {
-            if (it.isSuccessful) {
-                val Shop = it.body()!!
+            viewModel.Shop.observe(viewLifecycleOwner) {
+                if (it.isSuccessful) {
+                    val Shop = it.body()!!
 
-                shopcartList.adapter =
-                    ShopAdapter(this@Shopcart.requireContext(), Shop)
+                    shopcartList.adapter =
+                            ShopAdapter(this@Shopcart.requireContext(), Shop)
 
 
-            } else {
-                //error
+                } else {
+                    //error
+                }
             }
         }
     }
-    }
 
 
-
-
-
-
-
-
-
-
-
-    }
+}
 
 
 

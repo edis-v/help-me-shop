@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.collect
 
 private const val TAG = "RegistrationFragment"
 
-class RegistrationFragment: Fragment(R.layout.auth_registration_fragment) {
+class RegistrationFragment : Fragment(R.layout.auth_registration_fragment) {
 
     // Für Fragment Layout automatisch erzeugte View Bindings (Ggf.: Build -> Rebuild Project)
     lateinit var binding: AuthRegistrationFragmentBinding
@@ -49,29 +49,39 @@ class RegistrationFragment: Fragment(R.layout.auth_registration_fragment) {
             registerTxtInputPhoneNum.editText?.addTextChangedListener { viewModel.phoneNum = it.toString() }
 
             registerTxtInputFirstname.editText?.setOnFocusChangeListener { _, hasFocus ->
-                if(hasFocus) { registerTxtInputFirstname.error = null }
+                if (hasFocus) {
+                    registerTxtInputFirstname.error = null
+                }
             }
             registerTxtInputLastname.editText?.setOnFocusChangeListener { _, hasFocus ->
-                if(hasFocus) { registerTxtInputLastname.error = null }
+                if (hasFocus) {
+                    registerTxtInputLastname.error = null
+                }
             }
             registerTxtInputAddress.editText?.setOnFocusChangeListener { _, hasFocus ->
-                if(hasFocus) { registerTxtInputAddress.error = null }
+                if (hasFocus) {
+                    registerTxtInputAddress.error = null
+                }
             }
             registerTxtInputPostalcode.editText?.setOnFocusChangeListener { _, hasFocus ->
-                if(hasFocus) { registerTxtInputPostalcode.error = null }
+                if (hasFocus) {
+                    registerTxtInputPostalcode.error = null
+                }
             }
             registerTxtInputCity.editText?.setOnFocusChangeListener { _, hasFocus ->
-                if(hasFocus) { registerTxtInputCity.error = null }
+                if (hasFocus) {
+                    registerTxtInputCity.error = null
+                }
             }
 
             registerTxtInputEmail.editText?.setOnFocusChangeListener { _, hasFocus ->
-                if(!hasFocus)
+                if (!hasFocus)
                     viewModel.checkEmail()
                 else
                     registerTxtInputEmail.error = null
             }
             registerTxtInputPw.editText?.setOnFocusChangeListener { _, hasFocus ->
-                if(!hasFocus) {
+                if (!hasFocus) {
                     viewModel.checkPw()
                 } else {
                     registerTxtInputPw.error = null
@@ -79,7 +89,7 @@ class RegistrationFragment: Fragment(R.layout.auth_registration_fragment) {
                 }
             }
             registerTxtInputPwConfirm.editText?.setOnFocusChangeListener { _, hasFocus ->
-                if(!hasFocus) {
+                if (!hasFocus) {
                     viewModel.checkPw()
                 } else {
                     registerTxtInputPw.error = null
@@ -87,7 +97,7 @@ class RegistrationFragment: Fragment(R.layout.auth_registration_fragment) {
                 }
             }
             registerTxtInputPhoneNum.editText?.setOnFocusChangeListener { _, hasFocus ->
-                if(!hasFocus) {
+                if (!hasFocus) {
                     viewModel.checkPhoneNum()
                 } else {
                     registerTxtInputPhoneNum.error = null
@@ -108,7 +118,7 @@ class RegistrationFragment: Fragment(R.layout.auth_registration_fragment) {
 
                 // Navigation (innerhalb von nav_graph_auth)
 
-                when(event) {
+                when (event) {
                     is RegistrationViewModel.RegistrationEvent.CheckErrors -> {
                         binding.apply {
                             var noError = true
@@ -123,7 +133,7 @@ class RegistrationFragment: Fragment(R.layout.auth_registration_fragment) {
                             if (registerTxtInputCity.error != null) noError = false
                             if (registerTxtInputPhoneNum.error != null) noError = false
 
-                            if(noError) {
+                            if (noError) {
                                 viewModel.performRegistration()
                             } else {
                                 Snackbar.make(requireView(), "Überprüfen Sie Ihr Formular", Snackbar.LENGTH_SHORT).show()
@@ -133,7 +143,7 @@ class RegistrationFragment: Fragment(R.layout.auth_registration_fragment) {
                     is RegistrationViewModel.RegistrationEvent.FeedbackFieldsRequired -> {
                         binding.apply {
                             event.field.forEach {
-                                when(it) {
+                                when (it) {
                                     "email" -> registerTxtInputEmail.error = "Pflichtfeld"
                                     "pw" -> registerTxtInputPw.error = "Pflichtfeld"
                                     "pwConfirm" -> registerTxtInputPwConfirm.error = "Pflichtfeld"

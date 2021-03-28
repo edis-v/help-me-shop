@@ -15,42 +15,43 @@ class ShopcartViewModel @AssistedInject constructor(
         @Assisted savedStateHandle: SavedStateHandle,
         val apiShopcart: ApiShopcart
 
-): ViewModel()  {
-    val sessionId :  String  = savedStateHandle["ssid"] ?: requireAuthManager().SessionID()
-    val selectedTab =  savedStateHandle["page"] ?: "default"
+) : ViewModel() {
+    val sessionId: String = savedStateHandle["ssid"] ?: requireAuthManager().SessionID()
+    val selectedTab = savedStateHandle["page"] ?: "default"
 
-    private val _buylist =  MutableLiveData<Response<List<BuyListGSON>>>()
-    val BuyList :   LiveData<Response<List<BuyListGSON>>> = _buylist
+    private val _buylist = MutableLiveData<Response<List<BuyListGSON>>>()
+    val BuyList: LiveData<Response<List<BuyListGSON>>> = _buylist
 
-    private val _buylistdelte =  MutableLiveData<Response<BuyListGSON>>()
-    val BuyListDelte :   LiveData<Response<BuyListGSON>> = _buylistdelte
+    private val _buylistdelte = MutableLiveData<Response<BuyListGSON>>()
+    val BuyListDelte: LiveData<Response<BuyListGSON>> = _buylistdelte
 
-    private val _shop =  MutableLiveData<Response<List<ShopGSON>>>()
-    val Shop :   LiveData<Response<List<ShopGSON>>> = _shop
+    private val _shop = MutableLiveData<Response<List<ShopGSON>>>()
+    val Shop: LiveData<Response<List<ShopGSON>>> = _shop
 
-    private val _shopcreated =  MutableLiveData<Response<ShopGSONCreate>>()
-    val ShopCreated :   LiveData<Response<ShopGSONCreate>> = _shopcreated
+    private val _shopcreated = MutableLiveData<Response<ShopGSONCreate>>()
+    val ShopCreated: LiveData<Response<ShopGSONCreate>> = _shopcreated
 
-    private  val _location =  MutableLiveData<Response<UserGSON>>()
-    val Location :   LiveData<Response<UserGSON>> = _location
+    private val _location = MutableLiveData<Response<UserGSON>>()
+    val Location: LiveData<Response<UserGSON>> = _location
 
     init {
-        if(selectedTab == "default")
+        if (selectedTab == "default")
             getShopUpdate()
         else
             getBuyListUpdate()
     }
 
-   fun getBuyListUpdate() {
-       viewModelScope.launch {
-          _buylist.value = apiShopcart.getBuyList(sessionId)
+    fun getBuyListUpdate() {
+        viewModelScope.launch {
+            _buylist.value = apiShopcart.getBuyList(sessionId)
 
-       }
-   }
-    fun updateLocation(locationDataGSON: LocationGSON){
+        }
+    }
+
+    fun updateLocation(locationDataGSON: LocationGSON) {
         viewModelScope.launch {
 
-         _location.value =  apiShopcart.updateLocation(sessionId, locationDataGSON.coordinates[0],locationDataGSON.coordinates[1])
+            _location.value = apiShopcart.updateLocation(sessionId, locationDataGSON.coordinates[0], locationDataGSON.coordinates[1])
         }
     }
 
@@ -62,8 +63,7 @@ class ShopcartViewModel @AssistedInject constructor(
     }
 
 
-
-    fun delteBuylist(id: String){
+    fun delteBuylist(id: String) {
         viewModelScope.launch {
             _buylistdelte.value = apiShopcart.deleteBuyList(sessionId, id)
         }
@@ -71,9 +71,9 @@ class ShopcartViewModel @AssistedInject constructor(
 
     }
 
-    fun createShop(id: String){
+    fun createShop(id: String) {
         viewModelScope.launch {
-            _shopcreated.value =  apiShopcart.createShop(sessionId,id)
+            _shopcreated.value = apiShopcart.createShop(sessionId, id)
         }
     }
 

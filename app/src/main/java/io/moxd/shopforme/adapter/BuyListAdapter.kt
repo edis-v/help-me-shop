@@ -28,32 +28,32 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 
-class BuyListAdapter(private val context: Context, var itemModelArrayList: MutableList<BuyListGSON> , val viewModel: ShopcartViewModel) :
-    RecyclerView.Adapter<BuyListAdapter.Viewholder>() {
+class BuyListAdapter(private val context: Context, var itemModelArrayList: MutableList<BuyListGSON>, val viewModel: ShopcartViewModel) :
+        RecyclerView.Adapter<BuyListAdapter.Viewholder>() {
 
-    lateinit  var _parent:ViewGroup
-    override fun onCreateViewHolder(  parent: ViewGroup, viewType: Int): Viewholder {
+    lateinit var _parent: ViewGroup
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Viewholder {
         // to inflate the layout for each item of recycler view.
         _parent = parent
         val view: View =
-            LayoutInflater.from(parent.context).inflate(R.layout.buy_cardview, parent, false)
+                LayoutInflater.from(parent.context).inflate(R.layout.buy_cardview, parent, false)
         return Viewholder(view)
     }
 
-    var lastmodel : BuyListGSON? = null
+    var lastmodel: BuyListGSON? = null
 
     override fun onBindViewHolder(holder: Viewholder, position: Int) {
         // to set data to textview and imageview of each card layout
         val model: BuyListGSON = itemModelArrayList[position]
         holder.Title.paintFlags =
-            holder.Title.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+                holder.Title.paintFlags or Paint.UNDERLINE_TEXT_FLAG
         holder.Title.text = FormatDate(model.creation_date)
 
 
         holder.cost.text = "Preis: ${
             String.format(
-                "%.2f",
-                model.articles.sumOf { (it.count * it.item.cost) })
+                    "%.2f",
+                    model.articles.sumOf { (it.count * it.item.cost) })
         } €"
         holder.anzahl.text = "Anzahl: ${model.articles.sumBy { it.count }}"
 
@@ -70,7 +70,7 @@ class BuyListAdapter(private val context: Context, var itemModelArrayList: Mutab
         }
 
         holder.buylist.layoutManager =
-            LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+                LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         holder.buylist.adapter = BuyListMinAdapter(context, model.articles.toMutableList())
 
         holder.expand.setOnClickListener {
@@ -95,7 +95,7 @@ class BuyListAdapter(private val context: Context, var itemModelArrayList: Mutab
 
         holder.createbtn.setOnClickListener {
             viewModel.createShop(
-                model.id.toString()
+                    model.id.toString()
             )
         }
 
@@ -128,12 +128,13 @@ class BuyListAdapter(private val context: Context, var itemModelArrayList: Mutab
 
     }
 
-    fun deleteSuccesses(){
-    if(lastmodel != null){
-        val pos =  itemModelArrayList.indexOf(lastmodel)
-        itemModelArrayList.remove(lastmodel)
-        this@BuyListAdapter.notifyItemRemoved(pos)
-    }}
+    fun deleteSuccesses() {
+        if (lastmodel != null) {
+            val pos = itemModelArrayList.indexOf(lastmodel)
+            itemModelArrayList.remove(lastmodel)
+            this@BuyListAdapter.notifyItemRemoved(pos)
+        }
+    }
 
     override fun getItemCount(): Int {
 
@@ -141,30 +142,29 @@ class BuyListAdapter(private val context: Context, var itemModelArrayList: Mutab
     }
 
 
-
-
     inner class Viewholder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val Title: TextView
         val cost: TextView
-        val anzahl : TextView
-        val expand : ImageView
-        val menu :RelativeLayout
-        val deltebtn : Button
-        val createbtn : Button
-        val buylist : RecyclerView
-        val viewtop : RelativeLayout
-      //  val more : ImageView
+        val anzahl: TextView
+        val expand: ImageView
+        val menu: RelativeLayout
+        val deltebtn: Button
+        val createbtn: Button
+        val buylist: RecyclerView
+        val viewtop: RelativeLayout
+
+        //  val more : ImageView
         init {
             Title = itemView.findViewById(R.id.buy_cardview_title)
             cost = itemView.findViewById(R.id.buy_cardview_Preis)
             anzahl = itemView.findViewById(R.id.buy_cardview_anzahl)
-          expand = itemView.findViewById(R.id.buy_cardview_expand)
-          menu = itemView.findViewById(R.id.buy_cardview_menu)
-          buylist = itemView.findViewById(R.id.buy_cardview_menu_buylist)
-          deltebtn = itemView.findViewById(R.id.buy_cardview_menu_delete)
-          createbtn = itemView.findViewById(R.id.buy_cardview_menu_shop)
-          viewtop = itemView.findViewById(R.id.buy_cardview_top)
-       //     more = itemView.findViewById(R.id.buy_cardview_more)
+            expand = itemView.findViewById(R.id.buy_cardview_expand)
+            menu = itemView.findViewById(R.id.buy_cardview_menu)
+            buylist = itemView.findViewById(R.id.buy_cardview_menu_buylist)
+            deltebtn = itemView.findViewById(R.id.buy_cardview_menu_delete)
+            createbtn = itemView.findViewById(R.id.buy_cardview_menu_shop)
+            viewtop = itemView.findViewById(R.id.buy_cardview_top)
+            //     more = itemView.findViewById(R.id.buy_cardview_more)
         }
     }
 

@@ -9,7 +9,7 @@ import io.moxd.shopforme.api.ApiProfile
 
 import io.moxd.shopforme.ui.registration.RegistrationViewModel
 
-class ProfileViewModelFactory (owner: SavedStateRegistryOwner, defaultArgs: Bundle?
+class ProfileViewModelFactory(owner: SavedStateRegistryOwner, defaultArgs: Bundle?
 ) : AbstractSavedStateViewModelFactory(owner, defaultArgs) {
 
     @Suppress("UNCHECKED_CAST")

@@ -15,17 +15,18 @@ import okhttp3.RequestBody
 import retrofit2.Response
 import java.io.File
 
-class ShopAddViewModel @AssistedInject constructor( @Assisted savedStateHandle: SavedStateHandle, val apiShopAdd: ApiShopAdd) :ViewModel() {
+class ShopAddViewModel @AssistedInject constructor(@Assisted savedStateHandle: SavedStateHandle, val apiShopAdd: ApiShopAdd) : ViewModel() {
 
-    private val _shop =  MutableLiveData<Response<ShopGSON>>()
-    val Shop : LiveData<Response<ShopGSON>> = _shop
-    private val _shopdelte =  MutableLiveData<Response<ShopGSON>>()
-    val ShopDelte : LiveData<Response<ShopGSON>> = _shopdelte
-    val sessionId :  String  = savedStateHandle["ssid"] ?: requireAuthManager().SessionID()
-    val modelid : Int =  savedStateHandle["id"] ?: throw Exception("No Model ID")
-    private val _user =  MutableLiveData<Response<UserGSON>>()
+    private val _shop = MutableLiveData<Response<ShopGSON>>()
+    val Shop: LiveData<Response<ShopGSON>> = _shop
+    private val _shopdelte = MutableLiveData<Response<ShopGSON>>()
+    val ShopDelte: LiveData<Response<ShopGSON>> = _shopdelte
+    val sessionId: String = savedStateHandle["ssid"] ?: requireAuthManager().SessionID()
+    val modelid: Int = savedStateHandle["id"] ?: throw Exception("No Model ID")
+    private val _user = MutableLiveData<Response<UserGSON>>()
 
-    val User :LiveData<Response<UserGSON>> = _user
+    val User: LiveData<Response<UserGSON>> = _user
+
     init {
         viewModelScope.launch {
             _user.value = apiShopAdd.getProfile(sessionId)
@@ -33,27 +34,28 @@ class ShopAddViewModel @AssistedInject constructor( @Assisted savedStateHandle: 
         getShopUpdate()
     }
 
-    fun UserType():String {
-       return _user.value?.body()?.usertype_txt!!
+    fun UserType(): String {
+        return _user.value?.body()?.usertype_txt!!
     }
 
-    fun deleteShop(){
+    fun deleteShop() {
         viewModelScope.launch {
-            _shopdelte.value =   apiShopAdd.deleteShop(sessionId,modelid.toString())
+            _shopdelte.value = apiShopAdd.deleteShop(sessionId, modelid.toString())
         }
     }
-    fun shopDoneHF(path : String){
+
+    fun shopDoneHF(path: String) {
         viewModelScope.launch {
             val file: File = File(path)
             val requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file)
             val body = MultipartBody.Part.createFormData("bill_hf", file.name, requestFile)
 
-            _shop.value = apiShopAdd.shopDoneHF(sessionId,modelid.toString(),body)
+            _shop.value = apiShopAdd.shopDoneHF(sessionId, modelid.toString(), body)
 
         }
     }
 
-    fun shopDoneHFS(path : String){
+    fun shopDoneHFS(path: String) {
         viewModelScope.launch {
             val file: File = File(path)
             val requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file)
@@ -63,27 +65,27 @@ class ShopAddViewModel @AssistedInject constructor( @Assisted savedStateHandle: 
         }
     }
 
-    fun shopPayHF(){
-        viewModelScope.launch{
-            _shop.value = apiShopAdd.shopPayHF(sessionId,modelid.toString())
+    fun shopPayHF() {
+        viewModelScope.launch {
+            _shop.value = apiShopAdd.shopPayHF(sessionId, modelid.toString())
         }
     }
 
 
-    fun shopPayHFS(path:String){
+    fun shopPayHFS(path: String) {
         viewModelScope.launch {
             val file: File = File(path)
             val requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file)
             val body = MultipartBody.Part.createFormData("bill_hf", file.name, requestFile)
 
-            _shop.value = apiShopAdd.shopPayHFS(sessionId,modelid.toString(),body)
+            _shop.value = apiShopAdd.shopPayHFS(sessionId, modelid.toString(), body)
         }
     }
 
 
-    fun getShopUpdate(){
+    fun getShopUpdate() {
         viewModelScope.launch {
-            _shop.value = apiShopAdd.getShop(sessionId,modelid.toString())
+            _shop.value = apiShopAdd.getShop(sessionId, modelid.toString())
         }
 
     }

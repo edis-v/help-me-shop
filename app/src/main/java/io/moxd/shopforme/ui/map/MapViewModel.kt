@@ -10,54 +10,54 @@ import io.moxd.shopforme.requireAuthManager
 import kotlinx.coroutines.launch
 import retrofit2.Response
 
-class MapViewModel@AssistedInject constructor(
+class MapViewModel @AssistedInject constructor(
         @Assisted savedStateHandle: SavedStateHandle,
         val apiMap: ApiMap
 
-): ViewModel() {
-    lateinit var lastKnownLocation : Location
-    val sessionId :  String  = savedStateHandle["ssid"] ?: requireAuthManager().SessionID()
+) : ViewModel() {
+    lateinit var lastKnownLocation: Location
+    val sessionId: String = savedStateHandle["ssid"] ?: requireAuthManager().SessionID()
     private val _user = MutableLiveData<Response<UserGSON>>()
-    val User : LiveData<Response<UserGSON>> = _user
+    val User: LiveData<Response<UserGSON>> = _user
 
     private val _otherusers = MutableLiveData<Response<List<ShopMap>>>()
-    val OtherUsers : LiveData<Response<List<ShopMap>>> = _otherusers
+    val OtherUsers: LiveData<Response<List<ShopMap>>> = _otherusers
 
     private val _otherusersmax = MutableLiveData<Response<List<ShopMap>>>()
-    val OtherUsersMax : LiveData<Response<List<ShopMap>>> = _otherusersmax
+    val OtherUsersMax: LiveData<Response<List<ShopMap>>> = _otherusersmax
 
     private val _angebot = MutableLiveData<Response<AngebotHelper>>()
-    val Angebot : LiveData<Response<AngebotHelper>> = _angebot
+    val Angebot: LiveData<Response<AngebotHelper>> = _angebot
 
     init {
         viewModelScope.launch {
-    //        _user.value = apiMap.getProfile(sessionId)
+            //        _user.value = apiMap.getProfile(sessionId)
         }
 
     }
 
-    fun updateLocation(locationDataGSON: LocationGSON){
+    fun updateLocation(locationDataGSON: LocationGSON) {
         viewModelScope.launch {
-            _user.value = apiMap.updateLocation(sessionId,locationDataGSON.coordinates[0],locationDataGSON.coordinates[1])
+            _user.value = apiMap.updateLocation(sessionId, locationDataGSON.coordinates[0], locationDataGSON.coordinates[1])
         }
     }
 
-    fun getOtherUsers(radius:Int){
+    fun getOtherUsers(radius: Int) {
         viewModelScope.launch {
-            _otherusers.value = apiMap.getOtherUsers(sessionId,radius)
+            _otherusers.value = apiMap.getOtherUsers(sessionId, radius)
         }
 
     }
 
-    fun getMaxUser(){
+    fun getMaxUser() {
         viewModelScope.launch {
             _otherusersmax.value = apiMap.getOtherUsersMax(sessionId)
         }
     }
 
-    fun createAngebot(shop:Int){
+    fun createAngebot(shop: Int) {
         viewModelScope.launch {
-            _angebot.value = apiMap.createAngebot(sessionId,shop)
+            _angebot.value = apiMap.createAngebot(sessionId, shop)
         }
     }
 

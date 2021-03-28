@@ -13,37 +13,37 @@ import retrofit2.Response
 
 
 class ShopAngebotViewModel @AssistedInject constructor(@Assisted savedStateHandle: SavedStateHandle, val apiShopAdd: ShopAngebot) :
-    ViewModel()  {
+        ViewModel() {
 
-        val sessionId :  String  = savedStateHandle["ssid"] ?: requireAuthManager().SessionID()
+    val sessionId: String = savedStateHandle["ssid"] ?: requireAuthManager().SessionID()
 
-        private val _angebote = MutableLiveData<Response<List<AngebotHelper>>>()
+    private val _angebote = MutableLiveData<Response<List<AngebotHelper>>>()
 
-        val Angebote : LiveData<Response<List<AngebotHelper>>> = _angebote
+    val Angebote: LiveData<Response<List<AngebotHelper>>> = _angebote
 
-        private val _shops = MutableLiveData<Response<List<ShopGSON>>>()
+    private val _shops = MutableLiveData<Response<List<ShopGSON>>>()
 
-        val Shops : LiveData<Response<List<ShopGSON>>> = _shops
+    val Shops: LiveData<Response<List<ShopGSON>>> = _shops
 
 
-        init {
+    init {
 
         getAngebotUpdate()
 
+    }
+
+    fun getShopsUpdate() {
+        viewModelScope.launch {
+
+            _shops.value = apiShopAdd.getShops(sessionId)
+
         }
+    }
 
-        fun getShopsUpdate(){
-            viewModelScope.launch {
 
-                _shops.value = apiShopAdd.getShops(sessionId)
-
-            }
+    fun getAngebotUpdate() {
+        viewModelScope.launch {
+            _angebote.value = apiShopAdd.getAngebote(sessionId)
         }
-
-
-        fun getAngebotUpdate(){
-                viewModelScope.launch {
-                    _angebote.value = apiShopAdd.getAngebote(sessionId)
-                }
-        }
+    }
 }

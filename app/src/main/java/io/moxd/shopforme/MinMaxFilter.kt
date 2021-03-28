@@ -19,12 +19,12 @@ class MinMaxFilter : InputFilter {
     }
 
     override fun filter(
-        source: CharSequence,
-        start: Int,
-        end: Int,
-        dest: Spanned,
-        dstart: Int,
-        dend: Int
+            source: CharSequence,
+            start: Int,
+            end: Int,
+            dest: Spanned,
+            dstart: Int,
+            dend: Int
     ): CharSequence? {
         try {
             val input = (dest.toString() + source.toString()).toInt()

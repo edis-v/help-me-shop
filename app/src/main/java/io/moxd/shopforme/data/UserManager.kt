@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
-class UserManager (context: Context) {
+class UserManager(context: Context) {
 
 /*    private val dataStore: DataStore<ProtoUser> = context.createDataStore (
         fileName = "user.pb",

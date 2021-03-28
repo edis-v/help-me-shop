@@ -8,14 +8,14 @@ import androidx.savedstate.SavedStateRegistryOwner
 import io.moxd.shopforme.api.ShopAngebot
 
 
-class ShopAngebotViewModelFactory (owner: SavedStateRegistryOwner, defaultArgs: Bundle?
+class ShopAngebotViewModelFactory(owner: SavedStateRegistryOwner, defaultArgs: Bundle?
 ) : AbstractSavedStateViewModelFactory(owner, defaultArgs) {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel?> create(
-        key: String,
-        modelClass: Class<T>,
-        handle: SavedStateHandle
+            key: String,
+            modelClass: Class<T>,
+            handle: SavedStateHandle
     ): T {
         return ShopAngebotViewModel(handle, ShopAngebot()) as T
     }

@@ -8,14 +8,14 @@ import androidx.savedstate.SavedStateRegistryOwner
 import io.moxd.shopforme.api.ApiHome
 
 
-class HomeViewModelFactory  (owner: SavedStateRegistryOwner, defaultArgs: Bundle?
+class HomeViewModelFactory(owner: SavedStateRegistryOwner, defaultArgs: Bundle?
 ) : AbstractSavedStateViewModelFactory(owner, defaultArgs) {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel?> create(
-        key: String,
-        modelClass: Class<T>,
-        handle: SavedStateHandle
+            key: String,
+            modelClass: Class<T>,
+            handle: SavedStateHandle
     ): T {
         return HomeViewModel(handle, ApiHome()) as T
     }

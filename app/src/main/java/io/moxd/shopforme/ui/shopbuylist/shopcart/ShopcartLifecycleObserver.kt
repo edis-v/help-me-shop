@@ -24,57 +24,55 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.moxd.shopforme.data.model.LocationDataGSON
 import io.moxd.shopforme.data.model.LocationGSON
 
-class ShopcartLifecycleObserver (private val registry : ActivityResultRegistry, private  val viewModel: ShopcartViewModel, val context: Context):
-    DefaultLifecycleObserver
-{
+class ShopcartLifecycleObserver(private val registry: ActivityResultRegistry, private val viewModel: ShopcartViewModel, val context: Context) :
+        DefaultLifecycleObserver {
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
-    private lateinit var requestLocationPermission : ActivityResultLauncher<String>
+    private lateinit var requestLocationPermission: ActivityResultLauncher<String>
     override fun onCreate(owner: LifecycleOwner) {
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
 
-        requestLocationPermission = registry.register("locatrionperm",owner,ActivityResultContracts.RequestPermission()){
-            if(it)
+        requestLocationPermission = registry.register("locatrionperm", owner, ActivityResultContracts.RequestPermission()) {
+            if (it)
                 getLocation()
         }
 
 
-
-
     }
 
-    private fun getLocation(){
+    private fun getLocation() {
         val nManager: LocationManager =
-            (context as Activity).getSystemService(Context.LOCATION_SERVICE) as LocationManager
+                (context as Activity).getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
         if (!nManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
             OnGPS();
         else
             requestNewLocationData()
     }
-    fun LocationAction(){
+
+    fun LocationAction() {
 
 
-            when {
-                ContextCompat.checkSelfPermission(
+        when {
+            ContextCompat.checkSelfPermission(
                     context,
                     Manifest.permission.ACCESS_FINE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED  &&  ContextCompat.checkSelfPermission(
+            ) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
                     context,
                     Manifest.permission.ACCESS_COARSE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED  -> {
-                    getLocation()
-                }
-                ActivityCompat.shouldShowRequestPermissionRationale(
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                getLocation()
+            }
+            ActivityCompat.shouldShowRequestPermissionRationale(
                     context as Activity,
                     Manifest.permission.ACCESS_FINE_LOCATION
-                ) -> {
-                    // In an educational UI, explain to the user why your app requires this
-                    // permission for a specific feature to behave as expected. In this UI,
-                    // include a "cancel" or "no thanks" button that allows the user to
-                    // continue using your app without granting the permission.
-                    //
-                    MaterialAlertDialogBuilder(context)
+            ) -> {
+                // In an educational UI, explain to the user why your app requires this
+                // permission for a specific feature to behave as expected. In this UI,
+                // include a "cancel" or "no thanks" button that allows the user to
+                // continue using your app without granting the permission.
+                //
+                MaterialAlertDialogBuilder(context)
                         .setTitle("Berechtigung")
                         .setMessage("Um dem Helfer ihren Standort zu zeigen benötigen wir die Berechting auf ihren Standort")
                         .setNeutralButton("Nein Danke") { _, _ ->
@@ -83,17 +81,16 @@ class ShopcartLifecycleObserver (private val registry : ActivityResultRegistry, 
                         .setPositiveButton("Ja") { _, _ ->
 
                             requestLocationPermission.launch(
-                                Manifest.permission.ACCESS_FINE_LOCATION)
+                                    Manifest.permission.ACCESS_FINE_LOCATION)
                         }.show()
-                }
-                else -> {
-                    // You can directly ask for the permission.
-                    // The registered ActivityResultCallback gets the result of this request.
-                    requestLocationPermission.launch(
-                        Manifest.permission.ACCESS_FINE_LOCATION)
-                }
             }
-
+            else -> {
+                // You can directly ask for the permission.
+                // The registered ActivityResultCallback gets the result of this request.
+                requestLocationPermission.launch(
+                        Manifest.permission.ACCESS_FINE_LOCATION)
+            }
+        }
 
 
     }
@@ -113,9 +110,9 @@ class ShopcartLifecycleObserver (private val registry : ActivityResultRegistry, 
         // on FusedLocationClient
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
         mFusedLocationClient.requestLocationUpdates(
-            mLocationRequest,
-            mLocationCallback,
-            Looper.myLooper()
+                mLocationRequest,
+                mLocationCallback,
+                Looper.myLooper()
         )
     }
 
@@ -125,17 +122,17 @@ class ShopcartLifecycleObserver (private val registry : ActivityResultRegistry, 
             val lat: Double = mLastLocation.latitude
             val long: Double = mLastLocation.longitude
             Log.d("Location", "lat $lat  ::: long $long")
-             viewModel.updateLocation(LocationGSON("Point", listOf(lat,long)))
-        }}
-
+            viewModel.updateLocation(LocationGSON("Point", listOf(lat, long)))
+        }
+    }
 
 
     private fun OnGPS() {
         val builder: AlertDialog.Builder = AlertDialog.Builder(context)
         builder.setMessage("Enable GPS").setCancelable(false).setPositiveButton("Yes",
-            DialogInterface.OnClickListener { dialog, which -> (context as Activity).startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)) })
-            .setNegativeButton("No",
-                DialogInterface.OnClickListener { dialog, which -> dialog.cancel() })
+                DialogInterface.OnClickListener { dialog, which -> (context as Activity).startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)) })
+                .setNegativeButton("No",
+                        DialogInterface.OnClickListener { dialog, which -> dialog.cancel() })
         val alertDialog: AlertDialog = builder.create()
         alertDialog.show()
     }

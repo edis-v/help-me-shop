@@ -9,14 +9,14 @@ import io.moxd.shopforme.api.ApiAngebot
 import io.moxd.shopforme.api.ApiProfile
 
 
-class AngebotViewModelFactory (owner: SavedStateRegistryOwner, defaultArgs: Bundle?
+class AngebotViewModelFactory(owner: SavedStateRegistryOwner, defaultArgs: Bundle?
 ) : AbstractSavedStateViewModelFactory(owner, defaultArgs) {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel?> create(
-        key: String,
-        modelClass: Class<T>,
-        handle: SavedStateHandle
+            key: String,
+            modelClass: Class<T>,
+            handle: SavedStateHandle
     ): T {
         return AngebotViewModel(handle, ApiAngebot()) as T
     }

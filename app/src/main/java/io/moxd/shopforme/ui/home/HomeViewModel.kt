@@ -11,11 +11,12 @@ import retrofit2.Response
 
 
 class HomeViewModel @AssistedInject constructor(@Assisted savedStateHandle: SavedStateHandle, val apiShopAdd: ApiHome) :
-    ViewModel() {
+        ViewModel() {
 
-    private val _user =  MutableLiveData<Response<UserGSON>>()
-    val sessionId :  String  = savedStateHandle["ssid"] ?: requireAuthManager().SessionID()
-    val User : LiveData<Response<UserGSON>> = _user
+    private val _user = MutableLiveData<Response<UserGSON>>()
+    val sessionId: String = savedStateHandle["ssid"] ?: requireAuthManager().SessionID()
+    val User: LiveData<Response<UserGSON>> = _user
+
     init {
         viewModelScope.launch {
             _user.value = apiShopAdd.getProfile(sessionId)
@@ -23,7 +24,7 @@ class HomeViewModel @AssistedInject constructor(@Assisted savedStateHandle: Save
 
     }
 
-    fun UserType():String {
+    fun UserType(): String {
         return _user.value?.body()?.usertype_txt!!
     }
 

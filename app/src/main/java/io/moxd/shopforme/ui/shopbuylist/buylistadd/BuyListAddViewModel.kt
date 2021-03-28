@@ -11,21 +11,21 @@ import retrofit2.Response
 
 
 class BuyListAddViewModel @AssistedInject constructor(
-    @Assisted savedStateHandle: SavedStateHandle,
-    val apiBuyListAdd: ApiBuyListAdd
+        @Assisted savedStateHandle: SavedStateHandle,
+        val apiBuyListAdd: ApiBuyListAdd
 
-): ViewModel(){
-    val sessionId :  String  = savedStateHandle["ssid"] ?: requireAuthManager().SessionID()
+) : ViewModel() {
+    val sessionId: String = savedStateHandle["ssid"] ?: requireAuthManager().SessionID()
 
-    private val _items =  MutableLiveData<Response<List<ItemGSON>>>()
+    private val _items = MutableLiveData<Response<List<ItemGSON>>>()
 
-    val Items : LiveData<Response<List<ItemGSON>>> = _items
+    val Items: LiveData<Response<List<ItemGSON>>> = _items
 
-    private val _buylist =  MutableLiveData<Response<BuyListGSON>>()
-    val BuyList : LiveData<Response<BuyListGSON>> = _buylist
+    private val _buylist = MutableLiveData<Response<BuyListGSON>>()
+    val BuyList: LiveData<Response<BuyListGSON>> = _buylist
 
-    private val _articles =  MutableLiveData<Response<List<ArticleAddGson>>>()
-    val Articles :   LiveData<Response<List<ArticleAddGson>>> = _articles
+    private val _articles = MutableLiveData<Response<List<ArticleAddGson>>>()
+    val Articles: LiveData<Response<List<ArticleAddGson>>> = _articles
 
 
     init {
@@ -33,20 +33,19 @@ class BuyListAddViewModel @AssistedInject constructor(
     }
 
 
+    fun createBuylist() {
+        viewModelScope.launch {
+            val list = mutableListOf<ArticleGson>()
+            for (item in Items.value?.body()!!.filter { it.anzahl.value!! > 0 })
+                list.add(ArticleGson(item.id, item.anzahl.value!!))
 
-   fun createBuylist(){
-       viewModelScope.launch {
-           val list = mutableListOf<ArticleGson>()
-           for (item in Items.value?.body()!!.filter { it.anzahl.value!! > 0 })
-               list.add(   ArticleGson(item.id, item.anzahl.value!!))
-
-           _buylist.value =   apiBuyListAdd.createBuyList(BuyListCreate(sessionId,list))
-       }
-   }
+            _buylist.value = apiBuyListAdd.createBuyList(BuyListCreate(sessionId, list))
+        }
+    }
 
     fun getItems() {
-            viewModelScope.launch {
-                _items.value = apiBuyListAdd.getItems()
-            }
+        viewModelScope.launch {
+            _items.value = apiBuyListAdd.getItems()
+        }
     }
 }

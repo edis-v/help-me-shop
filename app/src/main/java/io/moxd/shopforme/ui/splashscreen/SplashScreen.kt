@@ -44,7 +44,7 @@ class SplashScreen : AppCompatActivity() {
         setContentView(R.layout.splashscreen)
         authManager = AuthManager(this)
         userManager = UserManager(this)
-        findViewById<TextView>(R.id.appVersion).text = "Version ${ packageManager.getPackageInfo(this.packageName, 0).versionName}";
+        findViewById<TextView>(R.id.appVersion).text = "Version ${packageManager.getPackageInfo(this.packageName, 0).versionName}";
 
         Thread(Runnable {
 
@@ -55,13 +55,12 @@ class SplashScreen : AppCompatActivity() {
                 loginSplash()
 
 
-
-            },  250)//it will wait 100 millisec before login
+            }, 250)//it will wait 100 millisec before login
         }).start()
 
 
-
     }
+
     fun loginSplash() {
         GlobalScope.launch(Dispatchers.IO) {
             //get Session or Login if no Session Avaible
@@ -71,8 +70,7 @@ class SplashScreen : AppCompatActivity() {
             finish()
 
 
-
-    }
+        }
 
     }
 

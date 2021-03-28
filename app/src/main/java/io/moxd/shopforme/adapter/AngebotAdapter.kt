@@ -28,7 +28,7 @@ import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 
-class AngebotAdapter  (private val context: Context, var itemModelArrayList: MutableList<AngebotGSON>, val viewModel: AngebotViewModel) :
+class AngebotAdapter(private val context: Context, var itemModelArrayList: MutableList<AngebotGSON>, val viewModel: AngebotViewModel) :
         RecyclerView.Adapter<AngebotAdapter.Viewholder>() {
 
 
@@ -39,39 +39,40 @@ class AngebotAdapter  (private val context: Context, var itemModelArrayList: Mut
         return Viewholder(view)
     }
 
-    var lastmodel : AngebotGSON? = null
+    var lastmodel: AngebotGSON? = null
 
     override fun onBindViewHolder(holder: Viewholder, position: Int) {
         // to set data to textview and imageview of each card layout
         val model: AngebotGSON = itemModelArrayList[position]
 
-        holder.date.text = FormatDate( model.creation_date)
-        holder.user.text = model.helper.firstname + " "+model.helper.name
-        Log.d("data",model.helper.profile_pic )
+        holder.date.text = FormatDate(model.creation_date)
+        holder.user.text = model.helper.firstname + " " + model.helper.name
+        Log.d("data", model.helper.profile_pic)
         Picasso.get().load(model.helper.profile_pic).into(holder.profilepic);
 
         holder.wrong.setOnClickListener {
             lastmodel = model
-            viewModel.replyAngebot(model.id.toString(),false)
-
+            viewModel.replyAngebot(model.id.toString(), false)
 
 
         }
 
         holder.right.setOnClickListener {
             lastmodel = model
-            viewModel.replyAngebot(model.id.toString(),true)
+            viewModel.replyAngebot(model.id.toString(), true)
 
 
         }
 
     }
-    fun deleteSuccesses(){
-        if(lastmodel != null){
-            val pos =  itemModelArrayList.indexOf(lastmodel)
+
+    fun deleteSuccesses() {
+        if (lastmodel != null) {
+            val pos = itemModelArrayList.indexOf(lastmodel)
             itemModelArrayList.remove(lastmodel)
             this.notifyItemRemoved(pos)
-        }}
+        }
+    }
 
     override fun getItemCount(): Int {
 
@@ -79,15 +80,14 @@ class AngebotAdapter  (private val context: Context, var itemModelArrayList: Mut
     }
 
 
-
-
     inner class Viewholder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val user: TextView
         val date: TextView
 
-        val profilepic : ImageView
-        val wrong : ImageView
-        val right : ImageView
+        val profilepic: ImageView
+        val wrong: ImageView
+        val right: ImageView
+
         init {
             user = itemView.findViewById(R.id.angebot_helpsearcher_user)
             date = itemView.findViewById(R.id.angebot_helpsearcher_shop)

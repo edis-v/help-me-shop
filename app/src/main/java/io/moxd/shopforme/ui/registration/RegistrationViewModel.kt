@@ -17,8 +17,8 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 class RegistrationViewModel(
-    private val state: SavedStateHandle // Objekt um Zustand des ViewModels beizubehalten
-): ViewModel() {
+        private val state: SavedStateHandle // Objekt um Zustand des ViewModels beizubehalten
+) : ViewModel() {
 
     var email = state.get<String>("email") ?: ""
         set(value) {
@@ -78,7 +78,7 @@ class RegistrationViewModel(
     init {
         viewModelScope.launch {
             registerFlow.collectLatest { result ->
-                when(result) {
+                when (result) {
                     is AuthManager.Result.RegisterSuccess -> {
                         eventChannel.send(RegistrationEvent.Success(result.email, result.password))
                     }
@@ -117,29 +117,29 @@ class RegistrationViewModel(
         if (city.isEmpty()) fields.add("city")
         if (phoneNum.isEmpty()) fields.add("phoneNum")
 
-        if(fields.isNotEmpty()) {
+        if (fields.isNotEmpty()) {
             eventChannel.send(RegistrationEvent.FeedbackFieldsRequired(fields))
         }
     }
 
     fun checkEmail() = viewModelScope.launch {
-        if(email.isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        if (email.isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             eventChannel.send(RegistrationEvent.FeedbackMalformedEmail)
         }
     }
 
     fun checkPw() = viewModelScope.launch {
-        if(pwConfirmed.isNotEmpty()) {
-            if(pw != pwConfirmed) {
+        if (pwConfirmed.isNotEmpty()) {
+            if (pw != pwConfirmed) {
                 eventChannel.send(RegistrationEvent.FeedbackPasswordNotIdentical)
-            } else if(!PASSWORD_PATTERN.matcher(pw).matches()) {
+            } else if (!PASSWORD_PATTERN.matcher(pw).matches()) {
                 eventChannel.send(RegistrationEvent.FeedbackPasswordTooWeak)
             }
         }
     }
 
     fun checkPhoneNum() = viewModelScope.launch {
-        if(phoneNum.isNotEmpty() && !Patterns.PHONE.matcher(phoneNum).matches()) {
+        if (phoneNum.isNotEmpty() && !Patterns.PHONE.matcher(phoneNum).matches()) {
             eventChannel.send(RegistrationEvent.FeedbackMalformedPhoneNumber)
         }
     }
@@ -150,14 +150,14 @@ class RegistrationViewModel(
 
     // Eventübersicht (data class wenn Argumente nötig)
     sealed class RegistrationEvent {
-        data class CheckErrors(val registration: Registration): RegistrationEvent()
+        data class CheckErrors(val registration: Registration) : RegistrationEvent()
         data class FeedbackFieldsRequired(val field: List<String>) : RegistrationEvent()
         object FeedbackMalformedEmail : RegistrationEvent()
         object FeedbackMalformedPhoneNumber : RegistrationEvent()
         object FeedbackPasswordTooWeak : RegistrationEvent()
         object FeedbackPasswordNotIdentical : RegistrationEvent()
         object FeedbackAddressNotParsable : RegistrationEvent()
-        data class Success(val email: String, val password: String): RegistrationEvent()
-        data class Error(val lastError: String): RegistrationEvent()
+        data class Success(val email: String, val password: String) : RegistrationEvent()
+        data class Error(val lastError: String) : RegistrationEvent()
     }
 }

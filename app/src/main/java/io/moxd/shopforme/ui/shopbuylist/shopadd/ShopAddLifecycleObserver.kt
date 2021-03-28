@@ -26,70 +26,71 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class ShopAddLifecycleObserver (private val registry : ActivityResultRegistry, private  val viewModel: ShopAddViewModel, private  val context: Context)
+class ShopAddLifecycleObserver(private val registry: ActivityResultRegistry, private val viewModel: ShopAddViewModel, private val context: Context)
     : DefaultLifecycleObserver {
-    lateinit var requestPermissionGallery : ActivityResultLauncher<String>
-    lateinit var requestPermissionCamera : ActivityResultLauncher<String>
-    lateinit var getContentGallery : ActivityResultLauncher<Intent>
-    lateinit var getContentCamera : ActivityResultLauncher<Intent>
+    lateinit var requestPermissionGallery: ActivityResultLauncher<String>
+    lateinit var requestPermissionCamera: ActivityResultLauncher<String>
+    lateinit var getContentGallery: ActivityResultLauncher<Intent>
+    lateinit var getContentCamera: ActivityResultLauncher<Intent>
 
     override fun onCreate(owner: LifecycleOwner) {
-        requestPermissionGallery = registry.register("key",owner, ActivityResultContracts.RequestPermission() )
+        requestPermissionGallery = registry.register("key", owner, ActivityResultContracts.RequestPermission())
         {
-            if(it){
+            if (it) {
                 GalleryGet()
             }
         }
-        getContentGallery = registry.register("key2",owner, ActivityResultContracts.StartActivityForResult()){
-            if(  it.resultCode == Activity.RESULT_OK  ) {
+        getContentGallery = registry.register("key2", owner, ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == Activity.RESULT_OK) {
                 val uri = it.data?.data!!
-                Timber.d( uri.path.toString())
-                when(actionType){
-                    ActionType.DoneHF ->viewModel.shopDoneHF(getRealPathFromURI_API19(context,uri)!!)
-                    ActionType.DoneHFS ->viewModel.shopDoneHFS(getRealPathFromURI_API19(context,uri)!!)
-                    ActionType.PayHFS ->viewModel.shopPayHFS(getRealPathFromURI_API19(context,uri)!!)
+                Timber.d(uri.path.toString())
+                when (actionType) {
+                    ActionType.DoneHF -> viewModel.shopDoneHF(getRealPathFromURI_API19(context, uri)!!)
+                    ActionType.DoneHFS -> viewModel.shopDoneHFS(getRealPathFromURI_API19(context, uri)!!)
+                    ActionType.PayHFS -> viewModel.shopPayHFS(getRealPathFromURI_API19(context, uri)!!)
                 }
 
 
             }
         }
 
-        requestPermissionCamera = registry.register("key2",owner, ActivityResultContracts.RequestPermission() ,
+        requestPermissionCamera = registry.register(
+                "key2", owner, ActivityResultContracts.RequestPermission(),
         ) {
-            if(it){
+            if (it) {
                 CameraGet()
             }
         }
 
-        getContentCamera = registry.register("key2",owner, ActivityResultContracts.StartActivityForResult()){
-            if(  it.resultCode == Activity.RESULT_OK  ) {
+        getContentCamera = registry.register("key2", owner, ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == Activity.RESULT_OK) {
 
-                when(actionType){
-                    ActionType.DoneHF ->viewModel.shopDoneHF(currentPhotoPath)
-                    ActionType.DoneHFS ->viewModel.shopDoneHFS(currentPhotoPath)
-                    ActionType.PayHFS ->viewModel.shopPayHFS(currentPhotoPath)
+                when (actionType) {
+                    ActionType.DoneHF -> viewModel.shopDoneHF(currentPhotoPath)
+                    ActionType.DoneHFS -> viewModel.shopDoneHFS(currentPhotoPath)
+                    ActionType.PayHFS -> viewModel.shopPayHFS(currentPhotoPath)
                 }
             }
         }
 
 
-
     }
+
     var actionType = ActionType.DoneHF
 
 
-    fun CameraAction(action : ActionType){
-            actionType = action
+    fun CameraAction(action: ActionType) {
+        actionType = action
         when {
             ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.CAMERA
+                    context,
+                    Manifest.permission.CAMERA
             ) == PackageManager.PERMISSION_GRANTED -> {
                 CameraGet()
             }
             ActivityCompat.shouldShowRequestPermissionRationale(
-                context as Activity,
-                Manifest.permission.CAMERA
+                    context as Activity,
+                    Manifest.permission.CAMERA
             ) -> {
                 // In an educational UI, explain to the user why your app requires this
                 // permission for a specific feature to behave as expected. In this UI,
@@ -97,38 +98,38 @@ class ShopAddLifecycleObserver (private val registry : ActivityResultRegistry, p
                 // continue using your app without granting the permission.
                 //
                 MaterialAlertDialogBuilder(context)
-                    .setTitle("Berechtigung")
-                    .setMessage("Um ein Bild von der Kamera zu erstellen benötigen wir die Berechtigung ")
-                    .setNeutralButton("Nein Danke") { _, _ ->
-                        // Respond to neutral button press
-                    }
-                    .setPositiveButton("Ja") { _, _ ->
+                        .setTitle("Berechtigung")
+                        .setMessage("Um ein Bild von der Kamera zu erstellen benötigen wir die Berechtigung ")
+                        .setNeutralButton("Nein Danke") { _, _ ->
+                            // Respond to neutral button press
+                        }
+                        .setPositiveButton("Ja") { _, _ ->
 
-                        requestPermissionCamera.launch(
-                            Manifest.permission.CAMERA)
-                    }.show()
+                            requestPermissionCamera.launch(
+                                    Manifest.permission.CAMERA)
+                        }.show()
             }
             else -> {
                 // You can directly ask for the permission.
                 // The registered ActivityResultCallback gets the result of this request.
                 requestPermissionCamera.launch(
-                    Manifest.permission.CAMERA)
+                        Manifest.permission.CAMERA)
             }
         }
     }
 
-    fun GalleryAction(action : ActionType){
+    fun GalleryAction(action: ActionType) {
         actionType = action
         when {
             ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.READ_EXTERNAL_STORAGE
+                    context,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
             ) == PackageManager.PERMISSION_GRANTED -> {
                 GalleryGet()
             }
             ActivityCompat.shouldShowRequestPermissionRationale(
-                context as Activity,
-                Manifest.permission.READ_EXTERNAL_STORAGE
+                    context as Activity,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
             ) -> {
                 // In an educational UI, explain to the user why your app requires this
                 // permission for a specific feature to behave as expected. In this UI,
@@ -136,28 +137,28 @@ class ShopAddLifecycleObserver (private val registry : ActivityResultRegistry, p
                 // continue using your app without granting the permission.
                 //
                 MaterialAlertDialogBuilder(context)
-                    .setTitle("Berechtigung")
-                    .setMessage("Um ein Bild aus der Gallery zu wählen benötigen wir die Berechtigung ")
-                    .setNeutralButton("Nein Danke") { _, _ ->
-                        // Respond to neutral button press
-                    }
-                    .setPositiveButton("Ja") { _, _ ->
+                        .setTitle("Berechtigung")
+                        .setMessage("Um ein Bild aus der Gallery zu wählen benötigen wir die Berechtigung ")
+                        .setNeutralButton("Nein Danke") { _, _ ->
+                            // Respond to neutral button press
+                        }
+                        .setPositiveButton("Ja") { _, _ ->
 
-                        requestPermissionGallery.launch(
-                            Manifest.permission.READ_EXTERNAL_STORAGE)
-                    }.show()
+                            requestPermissionGallery.launch(
+                                    Manifest.permission.READ_EXTERNAL_STORAGE)
+                        }.show()
             }
             else -> {
                 // You can directly ask for the permission.
                 // The registered ActivityResultCallback gets the result of this request.
                 requestPermissionGallery.launch(
-                    Manifest.permission.READ_EXTERNAL_STORAGE)
+                        Manifest.permission.READ_EXTERNAL_STORAGE)
             }
         }
     }
 
 
-    private fun GalleryGet(){
+    private fun GalleryGet() {
         val intent = Intent()
         intent.type = "image/*"
         intent.action = Intent.ACTION_GET_CONTENT
@@ -166,23 +167,25 @@ class ShopAddLifecycleObserver (private val registry : ActivityResultRegistry, p
         val chooseIntent = Intent.createChooser(intent, "Select Picture")
         getContentGallery.launch(chooseIntent)
     }
+
     lateinit var currentPhotoPath: String
+
     @Throws(IOException::class)
     private fun createImageFile(): File {
         // Create an image file name
         val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
         val storageDir: File? = (context as Activity).getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         return File.createTempFile(
-            "JPEG_${timeStamp}_", /* prefix */
-            ".jpg", /* suffix */
-            storageDir /* directory */
+                "JPEG_${timeStamp}_", /* prefix */
+                ".jpg", /* suffix */
+                storageDir /* directory */
         ).apply {
             // Save a file: path for use with ACTION_VIEW intents
             currentPhotoPath = absolutePath
         }
     }
 
-    private fun CameraGet(){
+    private fun CameraGet() {
 
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
             // Ensure that there's a camera activity to handle the intent
@@ -197,9 +200,9 @@ class ShopAddLifecycleObserver (private val registry : ActivityResultRegistry, p
                 // Continue only if the File was successfully created
                 photoFile?.also {
                     val photoURI: Uri = FileProvider.getUriForFile(
-                        context,
-                        "io.moxd.shopforme.fileprovider",
-                        it
+                            context,
+                            "io.moxd.shopforme.fileprovider",
+                            it
                     )
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
                     takePictureIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Test Subject")

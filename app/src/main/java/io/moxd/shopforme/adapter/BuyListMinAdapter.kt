@@ -24,20 +24,23 @@ class BuyListMinAdapter(private val context: Context, var itemModelArrayList: Mu
                 LayoutInflater.from(parent.context).inflate(R.layout.article_buylist_cardview, parent, false)
         return Viewholder(view)
     }
-    override fun onBindViewHolder(holder:  Viewholder, position: Int) {
+
+    override fun onBindViewHolder(holder: Viewholder, position: Int) {
         // to set data to textview and imageview of each card layout
         val model: Article = itemModelArrayList[position]
-        holder.data.text =  ("${model.item.name}")
-        holder.anzahl.text = ( "x${model.count} ")
+        holder.data.text = ("${model.item.name}")
+        holder.anzahl.text = ("x${model.count} ")
     }
 
     override fun getItemCount(): Int {
 
         return itemModelArrayList.size
     }
+
     inner class Viewholder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val data: TextView
-        val anzahl:TextView
+        val anzahl: TextView
+
         //  val more : ImageView
         init {
             data = itemView.findViewById(R.id.article_buylist_data)

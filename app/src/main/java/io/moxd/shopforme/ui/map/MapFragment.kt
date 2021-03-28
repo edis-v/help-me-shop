@@ -83,36 +83,28 @@ import kotlinx.serialization.encodeToString
 import java.lang.ref.WeakReference
 
 
-class MapFragment : Fragment() , OnMapReadyCallback {
+class MapFragment : Fragment(), OnMapReadyCallback {
 
 
-
-
-    private  lateinit var mystyle  : Style
-    private  lateinit var mapbox: MapboxMap
+    private lateinit var mystyle: Style
+    private lateinit var mapbox: MapboxMap
     private val SYMBOL_ICON_ID = "SYMBOL_ICON_ID"
 
-    private  var Maxnumber  = -1
+    private var Maxnumber = -1
 
 
     lateinit var binding: MapFragmentLayoutBinding
-    lateinit var  observer: MapLifecycleObserver
+    lateinit var observer: MapLifecycleObserver
 
-    lateinit var symbolManager : SymbolManager
+    lateinit var symbolManager: SymbolManager
 
-    val viewModel : MapViewModel by viewModels { MapViewModelFactory(this,arguments) }
-
-
-
-
-
-
+    val viewModel: MapViewModel by viewModels { MapViewModelFactory(this, arguments) }
 
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
 
 
@@ -121,9 +113,8 @@ class MapFragment : Fragment() , OnMapReadyCallback {
         val mapView = root.findViewById<MapView>(R.id.map_View)
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync(this@MapFragment)
-        observer = MapLifecycleObserver(requireActivity().activityResultRegistry,LocationServices.getFusedLocationProviderClient(requireContext()),viewModel, requireContext())
-       return root
-
+        observer = MapLifecycleObserver(requireActivity().activityResultRegistry, LocationServices.getFusedLocationProviderClient(requireContext()), viewModel, requireContext())
+        return root
 
 
     }
@@ -150,9 +141,9 @@ class MapFragment : Fragment() , OnMapReadyCallback {
 
                 override fun onStopTrackingTouch(slider: Slider) {
 
-                        val radius = slider.value.toInt()
-                        Log.d("Radius",radius.toString())
-                        viewModel.getOtherUsers(radius)
+                    val radius = slider.value.toInt()
+                    Log.d("Radius", radius.toString())
+                    viewModel.getOtherUsers(radius)
 
                 }
 
@@ -164,9 +155,9 @@ class MapFragment : Fragment() , OnMapReadyCallback {
             viewModel.User.observe(viewLifecycleOwner) {
 
 
-                if(it.isSuccessful) {
+                if (it.isSuccessful) {
 
-                     val customLocationComponentOptions = LocationComponentOptions.builder(requireContext())
+                    val customLocationComponentOptions = LocationComponentOptions.builder(requireContext())
                             .trackingGesturesManagement(true).pulseEnabled(true)
                             .pulseColor(ContextCompat.getColor(requireContext(), R.color.mapbox))
                             .build()
@@ -202,12 +193,11 @@ class MapFragment : Fragment() , OnMapReadyCallback {
                     mapbox.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000)
 
 
-                    viewModel.getOtherUsers(1 )
+                    viewModel.getOtherUsers(1)
 
-                }else
-                {
+                } else {
 
-                    Toast.makeText(requireContext(),"Error: ${getErrorRetro(it.errorBody())}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(requireContext(), "Error: ${getErrorRetro(it.errorBody())}", Toast.LENGTH_LONG).show()
                 }
 
             }
@@ -269,111 +259,87 @@ class MapFragment : Fragment() , OnMapReadyCallback {
                         )
                     }
 
-                }else
-                {
-                    Toast.makeText(requireContext(), getErrorRetro(it.errorBody()),Toast.LENGTH_LONG).show()
+                } else {
+                    Toast.makeText(requireContext(), getErrorRetro(it.errorBody()), Toast.LENGTH_LONG).show()
                 }
                 viewModel.getMaxUser()
 
             }
 
-                viewModel.OtherUsersMax.observe(viewLifecycleOwner) {
-                    if (it.isSuccessful)
-                        mapMaxlocations.text = "User im 100km Radius ${it.body()!!.size}"
-                    else
-                        mapMaxlocations.text = "Failed"
-                }
+            viewModel.OtherUsersMax.observe(viewLifecycleOwner) {
+                if (it.isSuccessful)
+                    mapMaxlocations.text = "User im 100km Radius ${it.body()!!.size}"
+                else
+                    mapMaxlocations.text = "Failed"
+            }
 
 
         }
 
         binding.apply {
 
-            viewModel.Angebot.observe(viewLifecycleOwner){
-                if(it.isSuccessful){
-                    Snackbar.make(view,"Erfolgreich erstellt",Snackbar.LENGTH_LONG).show()
-                }else{
-                    Snackbar.make(view, getErrorRetro(it.errorBody()),Snackbar.LENGTH_LONG).show()
+            viewModel.Angebot.observe(viewLifecycleOwner) {
+                if (it.isSuccessful) {
+                    Snackbar.make(view, "Erfolgreich erstellt", Snackbar.LENGTH_LONG).show()
+                } else {
+                    Snackbar.make(view, getErrorRetro(it.errorBody()), Snackbar.LENGTH_LONG).show()
                 }
             }
 
         }
     }
 
-    lateinit var  scaleBarPlugin : ScaleBarPlugin
+    lateinit var scaleBarPlugin: ScaleBarPlugin
     override fun onMapReady(mapboxMap: MapboxMap) {
         //start location update
 
-        Log.d("REAd","Map")
+        Log.d("REAd", "Map")
         mapbox = mapboxMap
 
 
-                    mapboxMap.setStyle(
-                            Style.MAPBOX_STREETS
-                    ) { style ->
+        mapboxMap.setStyle(
+                Style.MAPBOX_STREETS
+        ) { style ->
 
-                        mystyle = style
-
-
-                        mapboxMap.setMinZoomPreference(5.89);
-                        mapboxMap.setMaxZoomPreference(16.0);
-
-                        mapboxMap.uiSettings.isTiltGesturesEnabled = false
-                        //mapboxMap.uiSettings.isRotateGesturesEnabled = false
-                        mapboxMap.uiSettings.isZoomGesturesEnabled = false
-                        mapboxMap.uiSettings.isScrollGesturesEnabled = false
+            mystyle = style
 
 
+            mapboxMap.setMinZoomPreference(5.89);
+            mapboxMap.setMaxZoomPreference(16.0);
 
-                        binding.apply {
-                            symbolManager =  SymbolManager(mapView, mapbox, mystyle)
-                            scaleBarPlugin = ScaleBarPlugin(mapView, mapboxMap)
-
-                            val scaleBarOptions = ScaleBarOptions(requireContext())
-                            scaleBarOptions
-                                    .setTextColor(R.color.black)
-                                    .setTextSize(40f)
-                                    .setBarHeight(15f)
-                                    .setBorderWidth(5f)
-                                    .setMetricUnit(true)
-                                    .setRefreshInterval(15)
-                                    .setMarginTop(30f)
-                                    .setMarginLeft(16f)
-                                    .setTextBarMargin(15f)
-                            scaleBarPlugin.create(scaleBarOptions)
-                        }
-
-
-                        //try get locationPermission
-
-                        observer.GetLocationAction()
-                    }
+            mapboxMap.uiSettings.isTiltGesturesEnabled = false
+            //mapboxMap.uiSettings.isRotateGesturesEnabled = false
+            mapboxMap.uiSettings.isZoomGesturesEnabled = false
+            mapboxMap.uiSettings.isScrollGesturesEnabled = false
 
 
 
+            binding.apply {
+                symbolManager = SymbolManager(mapView, mapbox, mystyle)
+                scaleBarPlugin = ScaleBarPlugin(mapView, mapboxMap)
+
+                val scaleBarOptions = ScaleBarOptions(requireContext())
+                scaleBarOptions
+                        .setTextColor(R.color.black)
+                        .setTextSize(40f)
+                        .setBarHeight(15f)
+                        .setBorderWidth(5f)
+                        .setMetricUnit(true)
+                        .setRefreshInterval(15)
+                        .setMarginTop(30f)
+                        .setMarginLeft(16f)
+                        .setTextBarMargin(15f)
+                scaleBarPlugin.create(scaleBarOptions)
+            }
+
+
+            //try get locationPermission
+
+            observer.GetLocationAction()
+        }
 
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     override fun onStart() {
@@ -389,7 +355,7 @@ class MapFragment : Fragment() , OnMapReadyCallback {
             mapView.onResume()
         }
 
-       // observer.GetLocationAction()
+        // observer.GetLocationAction()
     }
 
     override fun onPause() {
@@ -415,9 +381,9 @@ class MapFragment : Fragment() , OnMapReadyCallback {
 
     override fun onDestroy() {
         super.onDestroy()
-    binding.apply {
-        mapView.onDestroy()
-    }
+        binding.apply {
+            mapView.onDestroy()
+        }
     }
 
     override fun onLowMemory() {
@@ -426,12 +392,6 @@ class MapFragment : Fragment() , OnMapReadyCallback {
             mapView.onLowMemory()
         }
     }
-
-
-
-
-
-
 
 
 }

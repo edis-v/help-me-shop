@@ -10,29 +10,30 @@ import io.moxd.shopforme.requireAuthManager
 import kotlinx.coroutines.launch
 import retrofit2.Response
 
-class AngebotViewModel  @AssistedInject constructor(
-    @Assisted savedStateHandle: SavedStateHandle,
-    val apiAngebot: ApiAngebot
+class AngebotViewModel @AssistedInject constructor(
+        @Assisted savedStateHandle: SavedStateHandle,
+        val apiAngebot: ApiAngebot
 
-): ViewModel()  {
+) : ViewModel() {
     private val _angebote = MutableLiveData<Response<List<AngebotGSON>>>()
-    val Angebote : LiveData<Response<List<AngebotGSON>>> = _angebote
+    val Angebote: LiveData<Response<List<AngebotGSON>>> = _angebote
     private val _angebot = MutableLiveData<Response<AngebotGSON>>()
     val Angebot: LiveData<Response<AngebotGSON>> = _angebot
-    val sessionId :  String  = savedStateHandle["ssid"] ?: requireAuthManager().SessionID()
+    val sessionId: String = savedStateHandle["ssid"] ?: requireAuthManager().SessionID()
+
     init {
         getAngebote()
     }
 
-    fun getAngebote(){
+    fun getAngebote() {
         viewModelScope.launch {
-          _angebote.value =   apiAngebot.getAngebote(sessionId)
+            _angebote.value = apiAngebot.getAngebote(sessionId)
         }
     }
 
-    fun replyAngebot(id:String,approve: Boolean){
+    fun replyAngebot(id: String, approve: Boolean) {
         viewModelScope.launch {
-            _angebot.value = apiAngebot.replyAngebot(sessionId,id,approve)
+            _angebot.value = apiAngebot.replyAngebot(sessionId, id, approve)
         }
     }
 

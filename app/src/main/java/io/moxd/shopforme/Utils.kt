@@ -33,26 +33,26 @@ import java.util.regex.Pattern
 import kotlin.math.abs
 
 val PASSWORD_PATTERN =
-    Pattern.compile("^" +
-            "(?=.*[0-9])" +         //at least 1 digit
-            "(?=.*[a-z])" +         //at least 1 lower case letter
-            "(?=.*[A-Z])" +         //at least 1 upper case letter
-            "(?=.*[a-zA-Z])" +      //any letter
-            "(?=\\S+$)" +           //no white spaces
-            ".{4,}" +               //at least 4 characters
-            "$");
+        Pattern.compile("^" +
+                "(?=.*[0-9])" +         //at least 1 digit
+                "(?=.*[a-z])" +         //at least 1 lower case letter
+                "(?=.*[A-Z])" +         //at least 1 upper case letter
+                "(?=.*[a-zA-Z])" +      //any letter
+                "(?=\\S+$)" +           //no white spaces
+                ".{4,}" +               //at least 4 characters
+                "$");
 
 fun requireUserManager() = SplashScreen.userManager!!
 fun requireAuthManager() = SplashScreen.authManager!!
-var ActitityMain : Activity? = null
+var ActitityMain: Activity? = null
 val JsonDeserializer = Json {
     ignoreUnknownKeys = true // Nicht alle Keys müssen im Dto/Model vorhanden sein
     ;coerceInputValues = true
 }
 
-fun getErrorRetro(response: ResponseBody?) : String = runBlocking{
+fun getErrorRetro(response: ResponseBody?): String = runBlocking {
     withContext(Dispatchers.IO) {
-        if(response != null) {
+        if (response != null) {
             val data = response.byteStream().bufferedReader().use(BufferedReader::readText)
             Log.d("getErrorData", data)
 
@@ -61,13 +61,12 @@ fun getErrorRetro(response: ResponseBody?) : String = runBlocking{
                 JsonDeserializer.decodeFromString<ErrorField>(data).Error()
             else
                 data.replace("[\"", "").replace("\"]", "")
-        }
-        else
+        } else
             return@withContext "Empty"
     }
 }
 
-fun getError(response: Response) : String = runBlocking{
+fun getError(response: Response): String = runBlocking {
     withContext(Dispatchers.IO) {
         val data = response.body().asString("application/json")
         Log.d("getErrorData", data)
@@ -81,40 +80,40 @@ fun getError(response: Response) : String = runBlocking{
 }
 
 
-fun getAllError(response: Response) : List<String> = runBlocking{
+fun getAllError(response: Response): List<String> = runBlocking {
     withContext(Dispatchers.IO) {
 
         val data = response.body().asString("application/json")
         Log.d("getErrorData", data)
 
 
-         if (data.contains("non_field_errors"))
-             return@withContext JsonDeserializer.decodeFromString<ErrorField>(data).non_field_errors
+        if (data.contains("non_field_errors"))
+            return@withContext JsonDeserializer.decodeFromString<ErrorField>(data).non_field_errors
         else
-             return@withContext data.replace("[\"", "").replace("\"]", "").split(",")
+            return@withContext data.replace("[\"", "").replace("\"]", "").split(",")
 
     }
 }
 
-fun FormatDate(date: String) : String{
+fun FormatDate(date: String): String {
 
     var format = SimpleDateFormat("yyyy-M-dd")
 
 
     val currentTime: String = SimpleDateFormat("yyyy-M-dd", Locale.getDefault()).format(Date())
-    Log.d("DAta2",currentTime)
+    Log.d("DAta2", currentTime)
     val t1 = format.parse(date)
     val t2 = format.parse(currentTime)
     // Toast.makeText(this, "D  ${t1.toString()}  D2  ${t2.toString()}  " , Toast.LENGTH_LONG).show()
-    Log.d("t2",t2.time.toString())
-    Log.d("t1",t1.time.toString())
+    Log.d("t2", t2.time.toString())
+    Log.d("t1", t1.time.toString())
     val difference = abs(t2.time - t1.time)
-    Log.d("DAta2",difference.toString())
+    Log.d("DAta2", difference.toString())
     val differenceDates = difference / (24 * 60 * 60 * 1000)
-    val dayDifference =  (differenceDates)
-    if(dayDifference == 1.toLong())
+    val dayDifference = (differenceDates)
+    if (dayDifference == 1.toLong())
         return "Gestern"
-    return if(dayDifference > 0) "Vor $dayDifference Tagen" else "Heute"
+    return if (dayDifference > 0) "Vor $dayDifference Tagen" else "Heute"
 }
 
 
@@ -124,7 +123,7 @@ fun TextView.toClickable(action: () -> Unit) {
 
     highlightColor = Color.TRANSPARENT
 
-    spannable[0 until spannable.length + 1] = object: ClickableSpan() {
+    spannable[0 until spannable.length + 1] = object : ClickableSpan() {
         override fun onClick(widget: View) {
             action()
         }
@@ -137,13 +136,14 @@ fun TextView.toClickable(action: () -> Unit) {
     movementMethod = LinkMovementMethod()
     text = spannable
 }
-enum class ActionType  {DoneHF,DoneHFS,PayHFS}
 
-fun ParseDate() : String{
+enum class ActionType { DoneHF, DoneHFS, PayHFS }
+
+fun ParseDate(): String {
     val sdf2 = SimpleDateFormat("yyyy-MM-dd HH:mm.ss", Locale.getDefault())
     val stwentyfourhour = sdf2.format(Date())
     Log.d("Parse Date", stwentyfourhour.replace(" ", "T").replace(".", ":") + "Z")
-    return stwentyfourhour.replace(" ", "T").replace(".", ":")+"Z"
+    return stwentyfourhour.replace(" ", "T").replace(".", ":") + "Z"
 }
 
 

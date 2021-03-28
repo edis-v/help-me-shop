@@ -11,7 +11,7 @@ import io.moxd.shopforme.R
 
 
 class CameraGalleryDialog
-    (var c: Activity) : Dialog(c), View.OnClickListener {
+(var c: Activity) : Dialog(c), View.OnClickListener {
 
     lateinit var camera: Button
     lateinit var gallery: Button

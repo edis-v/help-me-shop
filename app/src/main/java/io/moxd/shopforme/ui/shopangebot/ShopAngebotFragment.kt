@@ -33,9 +33,7 @@ import kotlinx.serialization.decodeFromString
 class ShopAngebotFragment : Fragment() {
 
 
-
-
-    val viewModel : ShopAngebotViewModel  by viewModels { ShopAngebotViewModelFactory(this,arguments) }
+    val viewModel: ShopAngebotViewModel by viewModels { ShopAngebotViewModelFactory(this, arguments) }
 
     lateinit var binding: ShopangebotLayoutBinding
 
@@ -60,22 +58,22 @@ class ShopAngebotFragment : Fragment() {
 
 
             shopangebotList.layoutManager = LinearLayoutManager(
-            root.context,
-            LinearLayoutManager.VERTICAL,
-            false
-        )
+                    root.context,
+                    LinearLayoutManager.VERTICAL,
+                    false
+            )
 
             shopangebotRefresh.setOnRefreshListener(SwipeRefreshLayout.OnRefreshListener {
                 when (shopangebotTab.selectedTabPosition) {
                     0 -> {
                         Log.d("Tab", "Angebot clicked")
 
-                       viewModel.getAngebotUpdate()
+                        viewModel.getAngebotUpdate()
                     }
                     1 -> {
                         Log.d("Tab", "Shop clicked")
 
-                         viewModel.getShopsUpdate()
+                        viewModel.getShopsUpdate()
                     }
                 }
                 shopangebotRefresh.setRefreshing(false)
@@ -112,33 +110,32 @@ class ShopAngebotFragment : Fragment() {
 
 
 
-            ViewGroupCompat.setTransitionGroup(shopangebotList,true)
+            ViewGroupCompat.setTransitionGroup(shopangebotList, true)
 
         }
-
 
 
         //observer
 
         binding.apply {
-            viewModel.Angebote.observe(viewLifecycleOwner){
+            viewModel.Angebote.observe(viewLifecycleOwner) {
                 if (it.isSuccessful) {
                     val Angebote = it.body()!!
 
                     shopangebotList.adapter =
-                        AngebotHelperAdapter(requireContext(), Angebote)
+                            AngebotHelperAdapter(requireContext(), Angebote)
 
 
                 } else {
                     //error
                 }
             }
-            viewModel.Shops.observe(viewLifecycleOwner){
+            viewModel.Shops.observe(viewLifecycleOwner) {
                 if (it.isSuccessful) {
                     val Shops = it.body()!!
 
                     shopangebotList.adapter =
-                        ShopAdapter(requireContext(), Shops)
+                            ShopAdapter(requireContext(), Shops)
 
 
                 } else {

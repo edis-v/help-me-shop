@@ -61,8 +61,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             Log.d(TAG, "Message data payload: ${remoteMessage.data}")
 
 
-                // Handle message within 10 seconds
-                handleNow()
+            // Handle message within 10 seconds
+            handleNow()
 
         }
 
@@ -113,7 +113,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         //api send token
 
 
-               ApiFirebase().updateToken(requireAuthManager().SessionID(),token.toString())
+        ApiFirebase().updateToken(requireAuthManager().SessionID(), token.toString())
 
 
         Log.d(TAG, "sendRegistrationTokenToServer($token)")
@@ -125,7 +125,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
      * @param messageBody FCM message body received.
      */
     private fun sendNotification(title: String, messageBody: String, urlimg: String) {
-        var image : Bitmap? = null
+        var image: Bitmap? = null
         try {
             val url = URL(urlimg)
             image = BitmapFactory.decodeStream(url.openConnection().getInputStream())
@@ -136,29 +136,29 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val intent = Intent(this, SplashScreen::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         val pendingIntent = PendingIntent.getActivity(
-            this, 0 /* Request code */, intent,
-            PendingIntent.FLAG_ONE_SHOT
+                this, 0 /* Request code */, intent,
+                PendingIntent.FLAG_ONE_SHOT
         )
 
         val channelId = getString(R.string.default_notification_channel_id)
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.drawable.ic_baseline_add_shopping_cart_24)
-            .setContentTitle(title)
-            .setContentText(messageBody)
-            .setAutoCancel(true)
-            .setLargeIcon(image)
-            .setSound(defaultSoundUri)
-            .setContentIntent(pendingIntent)
+                .setSmallIcon(R.drawable.ic_baseline_add_shopping_cart_24)
+                .setContentTitle(title)
+                .setContentText(messageBody)
+                .setAutoCancel(true)
+                .setLargeIcon(image)
+                .setSound(defaultSoundUri)
+                .setContentIntent(pendingIntent)
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         // Since android Oreo notification channel is needed.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
-                channelId,
-                "Channel human readable title",
-                NotificationManager.IMPORTANCE_DEFAULT
+                    channelId,
+                    "Channel human readable title",
+                    NotificationManager.IMPORTANCE_DEFAULT
             )
             notificationManager.createNotificationChannel(channel)
         }
