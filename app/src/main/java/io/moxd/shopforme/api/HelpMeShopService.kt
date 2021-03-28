@@ -27,9 +27,11 @@ interface HelpMeShopService {
 
     ) : Response<UserGSON>
 
+    @FormUrlEncoded
     @PUT(  "api/user/location/{sessionId}")
     suspend fun updateLocation(@Path("sessionId")  sessionid: String,
-                              @Body location :LocationDataGSON,
+                              @Field("lat_point") lat : Double ,
+                               @Field("long_point") long:Double
 
                               ) : Response<UserGSON>
     @Multipart
@@ -56,7 +58,7 @@ interface HelpMeShopService {
 
     @FormUrlEncoded
     @POST("api/shop/add ")
-    suspend fun createShop(@Field("session_id") sessionid: String , @Field("buylist") id: String) : Response<ShopGSON>
+    suspend fun createShop(@Field("session_id") sessionid: String , @Field("buylist") id: String) : Response<ShopGSONCreate>
 
 
     @DELETE("api/buylist/delete/{sessionId}/{id}")
@@ -91,4 +93,14 @@ interface HelpMeShopService {
     @GET("api/angebot/hf/{sessionId}")
     suspend fun  getAngeboteHF(@Path("sessionId") sessionid: String) : Response<List<AngebotHelper>>
 
+    @GET("api/user/search/{sessionId}")
+    suspend fun getOtherUsers(@Path("sessionId") sessionid: String , @Query("radius") radius:Int) : Response<List<ShopMap>>
+
+ @GET("api/user/search/{sessionId}")
+ suspend fun getOtherUsersMax(@Path("sessionId") sessionid: String , @Query("radius") radius:Int = 100) : Response<List<ShopMap>>
+
+
+ @FormUrlEncoded
+    @POST("api/angebot/add")
+    suspend fun createAngebot(@Field("session_id") sessionid: String,@Field("shop") shop:Int) : Response<AngebotHelper>
 }

@@ -147,6 +147,14 @@ class ShopAdd : Fragment() {
         }
 
         binding.apply {
+
+            viewModel.ShopDelte.observe(viewLifecycleOwner) {
+                    if(it.isSuccessful)
+                        (context as MainActivity).supportFragmentManager.popBackStack()
+                    else
+                        Log.d("Error", getErrorRetro(it.errorBody()))
+            }
+
             viewModel.Shop.observe(viewLifecycleOwner){
                 if (it.isSuccessful){
 

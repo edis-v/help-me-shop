@@ -19,6 +19,8 @@ class ShopAddViewModel @AssistedInject constructor( @Assisted savedStateHandle: 
 
     private val _shop =  MutableLiveData<Response<ShopGSON>>()
     val Shop : LiveData<Response<ShopGSON>> = _shop
+    private val _shopdelte =  MutableLiveData<Response<ShopGSON>>()
+    val ShopDelte : LiveData<Response<ShopGSON>> = _shopdelte
     val sessionId :  String  = savedStateHandle["ssid"] ?: requireAuthManager().SessionID()
     val modelid : Int =  savedStateHandle["id"] ?: throw Exception("No Model ID")
     private val _user =  MutableLiveData<Response<UserGSON>>()
@@ -37,7 +39,7 @@ class ShopAddViewModel @AssistedInject constructor( @Assisted savedStateHandle: 
 
     fun deleteShop(){
         viewModelScope.launch {
-          _shop.value=   apiShopAdd.deleteShop(sessionId,modelid.toString())
+            _shopdelte.value =   apiShopAdd.deleteShop(sessionId,modelid.toString())
         }
     }
     fun shopDoneHF(path : String){

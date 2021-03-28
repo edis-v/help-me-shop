@@ -10,6 +10,7 @@ import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Looper
 import android.provider.Settings
+import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.ActivityResultRegistry
 import androidx.activity.result.contract.ActivityResultContracts
@@ -21,6 +22,7 @@ import androidx.lifecycle.LifecycleOwner
 import com.google.android.gms.location.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.moxd.shopforme.data.model.LocationDataGSON
+import io.moxd.shopforme.data.model.LocationGSON
 
 class ShopcartLifecycleObserver (private val registry : ActivityResultRegistry, private  val viewModel: ShopcartViewModel, val context: Context):
     DefaultLifecycleObserver
@@ -74,7 +76,7 @@ class ShopcartLifecycleObserver (private val registry : ActivityResultRegistry, 
                     //
                     MaterialAlertDialogBuilder(context)
                         .setTitle("Berechtigung")
-                        .setMessage("Um dem Helfer ihre Location zu zeigen benötigen wir die Berechting auf ihre Location")
+                        .setMessage("Um dem Helfer ihren Standort zu zeigen benötigen wir die Berechting auf ihren Standort")
                         .setNeutralButton("Nein Danke") { _, _ ->
                             // Respond to neutral button press
                         }
@@ -122,8 +124,8 @@ class ShopcartLifecycleObserver (private val registry : ActivityResultRegistry, 
             val mLastLocation = locationResult.lastLocation
             val lat: Double = mLastLocation.latitude
             val long: Double = mLastLocation.longitude
-
-             viewModel.updateLocation(LocationDataGSON("Point", listOf(lat,long)))
+            Log.d("Location", "lat $lat  ::: long $long")
+             viewModel.updateLocation(LocationGSON("Point", listOf(lat,long)))
         }}
 
 

@@ -20,6 +20,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Path
 import timber.log.Timber
 
 
@@ -68,15 +69,15 @@ class ApiShopcart {
             .build()
 
         private val service: HelpMeShopService = retrofit.create(HelpMeShopService::class.java)
-    suspend fun updateLocation(sessionId: String , locationDataGSON: LocationDataGSON) = service.updateLocation(sessionId , locationDataGSON)
+    suspend fun updateLocation(sessionId: String , lat:Double , long:Double) = service.updateLocation(sessionId , lat,long)
 
     suspend fun getBuyList( sessionId: String) = service.getBuyList(sessionId)
     suspend fun getShops(sessionId: String) = service.getShops(sessionId)
 
 
     suspend fun deleteBuyList(sessionId: String,id: String) = service.deleteBuyList(sessionId,id)
-
     suspend fun createShop(sessionId: String,buylist:String) = service.createShop(sessionId,buylist)
+
 
 }
 
@@ -155,6 +156,28 @@ class ShopAngebot{
     suspend fun getShops(sessionId: String) = service.getShops(sessionId)
 
     suspend fun getAngebote(sessionId: String) = service.getAngeboteHF(sessionId)
+}
+
+class ApiMap{
+    private val retrofit: Retrofit = Retrofit.Builder()
+            .baseUrl("https://moco.fluffistar.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+    private val service: HelpMeShopService = retrofit.create(HelpMeShopService::class.java)
+
+
+    suspend fun getOtherUsers(sessionId: String,radius:Int) = service.getOtherUsers(sessionId,radius)
+    suspend fun getOtherUsersMax(sessionId: String ) = service.getOtherUsersMax(sessionId )
+
+    //api create Angebot
+    suspend fun createAngebot(sessionId: String, id:Int) = service.createAngebot(sessionId,id)
+
+    suspend fun updateLocation(sessionId: String , lat:Double , long:Double) = service.updateLocation(sessionId , lat , long)
+
+
+    suspend fun getProfile(sessionId: String) : Response<UserGSON> = service.getProfile(sessionId)
+
 }
 
 

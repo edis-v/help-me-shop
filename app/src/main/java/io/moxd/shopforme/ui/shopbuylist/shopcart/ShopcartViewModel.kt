@@ -1,24 +1,19 @@
 package io.moxd.shopforme.ui.shopbuylist.shopcart
 
-import android.content.Context
 import androidx.lifecycle.*
-import androidx.recyclerview.widget.RecyclerView
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import io.moxd.shopforme.adapter.BuyListAdapter
-import io.moxd.shopforme.api.ApiProfile
 import io.moxd.shopforme.api.ApiShopcart
-import io.moxd.shopforme.data.model.BuyListGSON
-import io.moxd.shopforme.data.model.LocationDataGSON
-import io.moxd.shopforme.data.model.ShopGSON
-import io.moxd.shopforme.data.model.UserGSON
+import io.moxd.shopforme.data.model.*
 import io.moxd.shopforme.requireAuthManager
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import retrofit2.Response
 
+
 class ShopcartViewModel @AssistedInject constructor(
-    @Assisted savedStateHandle: SavedStateHandle,
-    val apiShopcart: ApiShopcart
+        @Assisted savedStateHandle: SavedStateHandle,
+        val apiShopcart: ApiShopcart
 
 ): ViewModel()  {
     val sessionId :  String  = savedStateHandle["ssid"] ?: requireAuthManager().SessionID()
@@ -33,8 +28,8 @@ class ShopcartViewModel @AssistedInject constructor(
     private val _shop =  MutableLiveData<Response<List<ShopGSON>>>()
     val Shop :   LiveData<Response<List<ShopGSON>>> = _shop
 
-    private val _shopcreated =  MutableLiveData<Response<ShopGSON>>()
-    val ShopCreated :   LiveData<Response<ShopGSON>> = _shopcreated
+    private val _shopcreated =  MutableLiveData<Response<ShopGSONCreate>>()
+    val ShopCreated :   LiveData<Response<ShopGSONCreate>> = _shopcreated
 
     private  val _location =  MutableLiveData<Response<UserGSON>>()
     val Location :   LiveData<Response<UserGSON>> = _location
@@ -52,9 +47,10 @@ class ShopcartViewModel @AssistedInject constructor(
 
        }
    }
-    fun updateLocation(locationDataGSON: LocationDataGSON){
+    fun updateLocation(locationDataGSON: LocationGSON){
         viewModelScope.launch {
-         _location.value =  apiShopcart.updateLocation(sessionId,locationDataGSON)
+
+         _location.value =  apiShopcart.updateLocation(sessionId, locationDataGSON.coordinates[0],locationDataGSON.coordinates[1])
         }
     }
 
@@ -67,17 +63,17 @@ class ShopcartViewModel @AssistedInject constructor(
 
 
 
-    fun delteBuylist(id:String){
+    fun delteBuylist(id: String){
         viewModelScope.launch {
-            _buylistdelte.value = apiShopcart.deleteBuyList(sessionId,id)
+            _buylistdelte.value = apiShopcart.deleteBuyList(sessionId, id)
         }
 
 
     }
 
-    fun createShop(id:String){
+    fun createShop(id: String){
         viewModelScope.launch {
-            _shopcreated.value = apiShopcart.createShop(sessionId,id)
+            _shopcreated.value =  apiShopcart.createShop(sessionId,id)
         }
     }
 

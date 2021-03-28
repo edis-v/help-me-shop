@@ -14,7 +14,10 @@ class LocationData( private  val type: String, private val  coordinates: List<Do
    }
 }
 
-class LocationDataGSON(@SerializedName("type") private  val type: String, @SerializedName("coordinates")  private val  coordinates: List<Double>) : java.io.Serializable{
+
+data class LocationGSON(@SerializedName("type") val type: String = "Point", @SerializedName("coordinates")  val  coordinates: List<Double>)
+
+class LocationDataGSON(@SerializedName("type") private  val type: String = "Point", @SerializedName("coordinates")  private val  coordinates: List<Double>) {
     fun getLatLong() : LatLng{
         return  LatLng( coordinates[0], coordinates[1])
     }
