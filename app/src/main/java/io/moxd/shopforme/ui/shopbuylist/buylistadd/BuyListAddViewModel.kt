@@ -31,24 +31,16 @@ class BuyListAddViewModel @AssistedInject constructor(
     init {
         getItems()
     }
-    val list = mutableListOf<ArticleAddGson>()
-   fun createArticles(){
-       viewModelScope.launch {
-           list.clear()
-           for (item in Items.value?.body()!!.filter { it.anzahl.value!! > 0 })
-               apiBuyListAdd.createArticle(ArticleGson(item.id,item.anzahl.value!!)).body()!!
 
-        createBuylist()
-       }
-   }
+
 
    fun createBuylist(){
        viewModelScope.launch {
+           val list = mutableListOf<ArticleGson>()
+           for (item in Items.value?.body()!!.filter { it.anzahl.value!! > 0 })
+               list.add(   ArticleGson(item.id, item.anzahl.value!!))
 
-           val data = mutableListOf<Int>()
-           for(art in list)
-               data.add(art.id)
-           _buylist.value =   apiBuyListAdd.createBuyList(sessionId,data.toIntArray())
+           _buylist.value =   apiBuyListAdd.createBuyList(BuyListCreate(sessionId,list))
        }
    }
 

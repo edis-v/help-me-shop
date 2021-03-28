@@ -65,9 +65,9 @@ class AuthManager constructor(context: Context) {
 
         }
     }*/
-    companion object {
+   /* companion object {
         var User : UserME? = null //switch not normal objects
-    }
+    }*/
     suspend fun login2(email: String, password: String) {
              
         val log = Fuel.post(
@@ -147,7 +147,7 @@ class AuthManager constructor(context: Context) {
                                 try {
 
 
-                                    User = Json.decodeFromString<UserME>(result.get());
+                            //        User = Json.decodeFromString<UserME>(result.get());
 
                                     Log.d("SessionID" , sessionId)
                                     eventChannel.send(Result.AuthSucess(SessionDto(sessionId)))

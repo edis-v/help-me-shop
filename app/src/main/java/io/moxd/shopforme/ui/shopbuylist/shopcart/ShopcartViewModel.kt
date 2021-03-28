@@ -27,14 +27,19 @@ class ShopcartViewModel @AssistedInject constructor(
     private val _buylist =  MutableLiveData<Response<List<BuyListGSON>>>()
     val BuyList :   LiveData<Response<List<BuyListGSON>>> = _buylist
 
+    private val _buylistdelte =  MutableLiveData<Response<BuyListGSON>>()
+    val BuyListDelte :   LiveData<Response<BuyListGSON>> = _buylistdelte
+
     private val _shop =  MutableLiveData<Response<List<ShopGSON>>>()
     val Shop :   LiveData<Response<List<ShopGSON>>> = _shop
+
+    private val _shopcreated =  MutableLiveData<Response<ShopGSON>>()
+    val ShopCreated :   LiveData<Response<ShopGSON>> = _shopcreated
 
     private  val _location =  MutableLiveData<Response<UserGSON>>()
     val Location :   LiveData<Response<UserGSON>> = _location
 
     init {
-
         if(selectedTab == "default")
             getShopUpdate()
         else
@@ -57,6 +62,22 @@ class ShopcartViewModel @AssistedInject constructor(
         viewModelScope.launch {
             _shop.value = apiShopcart.getShops(sessionId)
 
+        }
+    }
+
+
+
+    fun delteBuylist(id:String){
+        viewModelScope.launch {
+            _buylistdelte.value = apiShopcart.deleteBuyList(sessionId,id)
+        }
+
+
+    }
+
+    fun createShop(id:String){
+        viewModelScope.launch {
+            _shopcreated.value = apiShopcart.createShop(sessionId,id)
         }
     }
 

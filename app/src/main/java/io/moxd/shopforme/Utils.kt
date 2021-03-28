@@ -137,6 +137,15 @@ fun TextView.toClickable(action: () -> Unit) {
     movementMethod = LinkMovementMethod()
     text = spannable
 }
+enum class ActionType  {DoneHF,DoneHFS,PayHFS}
+
+fun ParseDate() : String{
+    val sdf2 = SimpleDateFormat("yyyy-MM-dd HH:mm.ss", Locale.getDefault())
+    val stwentyfourhour = sdf2.format(Date())
+    Log.d("Parse Date", stwentyfourhour.replace(" ", "T").replace(".", ":") + "Z")
+    return stwentyfourhour.replace(" ", "T").replace(".", ":")+"Z"
+}
+
 
 val <T> T.exhaustive: T
     get() = this

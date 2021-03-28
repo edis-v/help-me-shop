@@ -42,6 +42,7 @@ import io.moxd.shopforme.data.model.Beleg
 import io.moxd.shopforme.data.model.ShopGSON
 import io.moxd.shopforme.databinding.AddShopLayoutBinding
 import io.moxd.shopforme.databinding.MaxShopCardviewBinding
+import io.moxd.shopforme.ui.dialog.CameraGalleryDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
@@ -54,7 +55,7 @@ import java.util.*
 
 class ShopAdd : Fragment() {
 
-
+    lateinit var observer: ShopAddLifecycleObserver
     lateinit var binding: MaxShopCardviewBinding
 
     val viewModel: ShopAddViewModel by viewModels {
@@ -73,12 +74,65 @@ class ShopAdd : Fragment() {
             ViewCompat.setTransitionName(root, "max_shop${viewModel.modelid}")
             maxShopCardviewMenuDelete.setOnClickListener {
                 // delete()
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Shop Löschen")
+                    .setMessage("Sind sie sich sicher ?")
+                    .setNeutralButton("Cancel") { _, _ ->
+                        // Respond to neutral button press
+                    }
+                    .setPositiveButton("Ja") { _, _ ->
+                        viewModel.deleteShop()
+
+                    }.show()
             }
             maxShopCardviewMenuShop.setOnClickListener {
-                //done()
+                val popup = CameraGalleryDialog(requireActivity())
+
+
+
+                popup.show()
+                popup.gallery.setOnClickListener { observer.GalleryAction(if (viewModel.UserType() == "Helfer")ActionType.DoneHF else ActionType.DoneHFS)
+                    popup.dismiss()
+                }
+
+                popup.camera.setOnClickListener { observer.CameraAction(if (viewModel.UserType() == "Helfer")ActionType.DoneHF else ActionType.DoneHFS)
+                    popup.dismiss()
+                }
             }
             maxShopCardviewMenuPayed.setOnClickListener {
                 //payed()
+                if(viewModel.UserType() == "Helfer"){
+
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setTitle("Bezahlt worden")
+                        .setMessage("Ja oder Noch nicht")
+                        .setNeutralButton("Cancel") { _, _ ->
+                            // Respond to neutral button press
+                        }.setNegativeButton("Noch nicht"){ _, _ ->
+                            //maybe send alert to user
+                        }
+                        .setPositiveButton("Ja") { _, _ ->
+
+                            viewModel.shopPayHF()
+                        }.show()
+
+
+                } else {
+
+                    val popup = CameraGalleryDialog(requireActivity())
+
+
+
+                    popup.show()
+                    popup.gallery.setOnClickListener { observer.GalleryAction(ActionType.PayHFS)
+                        popup.dismiss()
+                    }
+
+                    popup.camera.setOnClickListener { observer.CameraAction(ActionType.PayHFS)
+                        popup.dismiss()
+                    }
+
+                }
 
             }
             maxShopCardviewMenuReport.setOnClickListener {
@@ -98,14 +152,21 @@ class ShopAdd : Fragment() {
 
                     val model = it.body()!!
 
+
+
+                    maxShopCardviewMenuDelete.visibility = if (model.helper == null ) View.VISIBLE else View.GONE
+                    maxShopCardviewMenuReport.visibility = if (model.helper == null ) View.GONE else View.VISIBLE
+                    maxShopCardviewMenuShop.visibility = if(viewModel.UserType() == "Helfer" || model.bill_hf != null) View.VISIBLE else View.GONE
+                    maxShopCardviewMenuPayed.visibility = if(viewModel.UserType() == "Helfer" || model.payed_prove == null) View.GONE else View.VISIBLE
+
                     val belege : MutableList<Beleg> = mutableListOf()
 
                     if(!model.bill_hf.isNullOrEmpty())
-                        belege.add(Beleg("K", model.helper!!, model.bill_hf!!))
+                        belege.add(Beleg("K", if(viewModel.UserType() == "Helfer") "Ich" else "${model.helper?.firstname} ${model.helper?.name}", model.bill_hf))
                     if(!model.bill_hfs.isNullOrEmpty())
-                        belege.add(Beleg("K", model.helpsearcher!!, model.bill_hfs!!))
+                        belege.add(Beleg("K", if(viewModel.UserType() == "Helfer")  "${model.helpsearcher.firstname} ${model.helpsearcher.name}" else "Ich"  , model.bill_hfs))
                     if(!model.payed_prove.isNullOrEmpty())
-                        belege.add(Beleg("P", model?.helpsearcher!!, model.payed_prove!!))
+                        belege.add(Beleg("P", if(viewModel.UserType() == "Helfer")  "${model.helpsearcher.firstname} ${model.helpsearcher.name}" else "Ich" , model.payed_prove))
                     maxShopImagerecycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
                     maxShopImagerecycler.adapter = BelegeAdapter(requireContext(), belege)
 
@@ -113,7 +174,7 @@ class ShopAdd : Fragment() {
 
                     maxShopCardviewTitle.text = FormatDate( model.creation_date)
                     maxShopCardviewBezahlt.text = if(model.payed) "Bezahlt" else   "Zu Bezahlen"
-                    if (AuthManager.User?.usertype_txt == "Helfer") {
+                    if (viewModel.UserType() == "Helfer") {
                         maxShopCardviewMenuPayed.text = "Bezahlung erhalten"
                         maxShopCardviewMenuShop.text = "Einkauf erledigt"
                         maxShopCardviewMenuPayed.isEnabled = (model?.done!! && model?.payed_prove != null)
@@ -134,7 +195,7 @@ class ShopAdd : Fragment() {
                         maxShopCardviewRealPreis.visibility = View.GONE
                     }
 
-                    maxShopCardviewPhonenumber.text = if (AuthManager.User?.usertype_txt == "Helfer") model!!.helpsearcher.phone_number else if (model!!.helper != null) model!!.helper?.phone_number else "Kein Helfer"
+                    maxShopCardviewPhonenumber.text = if (viewModel.UserType() == "Helfer") model!!.helpsearcher.phone_number else if (model!!.helper != null) model!!.helper?.phone_number else "Kein Helfer"
                     maxShopCardviewBezahlt.text = if (model!!.payed) "Bezahlt" else "Zu Bezahlen"
                     maxShopCardviewPreis.text = "Geschätzter Preis: ${
                         String.format(
@@ -197,390 +258,11 @@ class ShopAdd : Fragment() {
             scrimColor = Color.TRANSPARENT
 
         }
+        observer = ShopAddLifecycleObserver(requireActivity().activityResultRegistry,viewModel,requireContext())
+        lifecycle.addObserver(observer)
         return inflater.inflate(R.layout.max_shop_cardview, container, false)
 
     }
 
 }
 
-
-
-  /*
-
-    fun delete(){
-
-        GlobalScope.launch(Dispatchers.IO) {
-
-                Fuel.delete(
-                        RestPath.shopdelete(requireAuthManager().SessionID(), model!!.id)
-                ).responseString { request, response, result ->
-
-                    when (result) {
-
-
-                        is Result.Failure -> {
-                            (context as Activity).runOnUiThread() {
-                                Log.d(
-                                        "Error",
-                                        getError(response)
-                                )
-                                Toast.makeText(
-                                        context,
-                                        getError(response),
-                                        Toast.LENGTH_LONG
-                                )
-                                        .show()
-
-
-                                Log.d("Buylist", request.headers.toString())
-                            }
-                        }
-                        is Result.Success -> {
-                            val data = result.get()
-
-                            Log.d("Shop", data)
-
-                            (context as Activity).runOnUiThread {
-                                exit()
-                            }
-
-                        }
-                    }
-                }.join()
-
-            }
-
-    }
-
-    fun report(){
-        //nice to have
-
-    }
-
-    fun done(){
-        //create dialog from galleri  or take a picture or abort
-        //than upload like profile upload
-        MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Rechnung")
-                .setMessage("Upload From?")
-                .setNeutralButton("Cancel") { _, _ ->
-                    // Respond to neutral button press
-                }.setNegativeButton("Camera"){ _, _ ->
-                    val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-
-                    intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
-                    intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Test Subject")
-                    val chooseIntent = Intent.createChooser(intent, "Select Picture")
-                    mGetContentDoneCamera.launch(chooseIntent)
-                }
-                .setPositiveButton("Gallery") { _, _ ->
-                    val intent = Intent()
-                    intent.type = "image/*"
-                    intent.action = Intent.ACTION_GET_CONTENT
-                    intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
-                    intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Test Subject")
-                    val chooseIntent = Intent.createChooser(intent, "Select Picture")
-                    mGetContentDoneGallery.launch(chooseIntent)
-
-                }.show()
-
-    }
-    override fun onRequestPermissionsResult(
-            requestCode: Int,
-            permissions: Array<out String>,
-            grantResults: IntArray
-    ) {
-        when(requestCode){
-            PERMISSION_CODE -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                } else {
-                    Toast.makeText(this.context, "Permission denied", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-    }
-
-
-    fun getImageUri(inContext: Context, inImage: Bitmap): Uri? {
-        val bytes = ByteArrayOutputStream()
-        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
-        val path = Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null)
-        return Uri.parse(path)
-    }
-
-    fun getRealPathFromURI(uri: Uri?): String? {
-        var path = ""
-        if (requireContext().getContentResolver() != null) {
-            val cursor: Cursor? = requireContext().contentResolver.query(uri!!, null, null, null, null)
-            if (cursor != null) {
-                cursor.moveToFirst()
-                val idx = cursor.getColumnIndex(Images.ImageColumns.DATA)
-                path = cursor.getString(idx)
-                cursor.close()
-            }
-        }
-        return path
-    }
-    var mGetContentPayedGallery = registerForActivityResult(ActivityResultContracts.StartActivityForResult()
-    ) {
-        Log.d("Picturerun", "Running")
-
-
-
-        Log.d("Picturerun", "Running")
-        if (it.resultCode == Activity.RESULT_OK) {
-
-            val uri = it.data!!.data
-
-
-            Log.d("Picturerun", getPath(uri!!)!!)
-
-            val data = FileDataPart.from(getPath(uri!!)!!, name = "payed_prove")
-            // from(data?.data?.encodedPath.toString() , name = "profile_pic")
-
-            val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
-
-                    //do actions
-                    val url =  if(AuthManager.User?.usertype_txt == "Helfer" )RestPath.shopaddpayHF(requireAuthManager().SessionID(), model!!.id) else RestPath.shopaddpayHFS(requireAuthManager().SessionID(), model!!.id)
-                    Log.d("URL: ", url)
-                    val asyncupload = Fuel.upload(url, Method.PUT)
-                            .add(data)
-                            .responseString { _, response, result ->
-                                when (result) {
-                                    is Result.Failure -> {
-                                        Log.d("error", getError(response))
-                                        Toast.makeText(this@ShopAdd.context, getError(response), Toast.LENGTH_LONG).show()
-                                    }
-                                    is Result.Success -> {
-                                        Toast.makeText(this@ShopAdd.context, "Upload Sucess", Toast.LENGTH_LONG).show()
-                                        Log.d("Succsess", "Upload")
-                                    }
-                                }
-                            }
-                    asyncupload.join();
-                }
-            job.start()
-        }
-    }
-    var mGetContentPayedCamera = registerForActivityResult(ActivityResultContracts.StartActivityForResult()
-    ) {
-        Log.d("Picturerun", "Running")
-
-
-
-        Log.d("Picturerun", "Running")
-        if(  it.resultCode == Activity.RESULT_OK   ){
-            val photo = it.data!!.getExtras()!!.get("data") as Bitmap
-
-            // CALL THIS METHOD TO GET THE URI FROM THE BITMAP
-            val tempUri = getImageUri(this.requireActivity().applicationContext, photo)
-
-
-                val data = FileDataPart.from(getRealPathFromURI(tempUri!!)!!, name = "payed_prove")
-
-
-            // from(data?.data?.encodedPath.toString() , name = "profile_pic")
-
-            val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
-
-                    //do actions
-                    val url =    RestPath.shopaddpayHFS(requireAuthManager().SessionID(), model!!.id)
-                    Log.d("URL: ", url)
-                    val asyncupload = Fuel.upload(url, Method.PUT)
-                            .add(data)
-                            .responseString { _, response, result ->
-                                when (result) {
-                                    is Result.Failure -> {
-                                        Log.d("error", getError(response))
-                                        Toast.makeText(this@ShopAdd.context, getError(response), Toast.LENGTH_LONG).show()
-                                    }
-                                    is Result.Success -> {
-                                        Toast.makeText(this@ShopAdd.context, "Upload Sucess", Toast.LENGTH_LONG).show()
-                                        Log.d("Succsess", "Upload")
-                                    }
-                                }
-                            }
-                    asyncupload.join();
-                }
-            job.start()
-
-
-        }}
-
-    var mGetContentDoneGallery = registerForActivityResult(ActivityResultContracts.StartActivityForResult()
-    ) {
-        Log.d("Picturerun", "Running")
-
-
-
-        Log.d("Picturerun", "Running")
-        if (it.resultCode == Activity.RESULT_OK) {
-
-            val uri = it.data!!.data
-
-
-            Log.d("Picturerun", getPath( uri!!)!!)
-
-            val data = FileDataPart.from(getPath(uri!!)!!, name = if (AuthManager.User?.usertype_txt == "Helfer") "bill_hf" else "bill_hfs")
-            // from(data?.data?.encodedPath.toString() , name = "profile_pic")
-
-            val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
-
-                    //do actions
-                    val url =  RestPath.shopadddone(requireAuthManager().SessionID(), model!!.id, if (AuthManager.User?.usertype_txt == "Helfer") "hf" else "hfs")
-                    Log.d("URL: ", url)
-                    val asyncupload = Fuel.upload(url, Method.PUT, if (AuthManager.User?.usertype_txt == "Helfer") listOf() else listOf("done" to true))
-                            .add(data)
-                            .responseString { _, response, result ->
-                                when (result) {
-                                    is Result.Failure -> {
-                                        Log.d("error", getError(response))
-                                        Toast.makeText(this@ShopAdd.context, getError(response), Toast.LENGTH_LONG).show()
-                                    }
-                                    is Result.Success -> {
-                                        Toast.makeText(this@ShopAdd.context, "Upload Sucess", Toast.LENGTH_LONG).show()
-                                        Log.d("Succsess", "Upload")
-                                    }
-                                }
-                            }
-                    asyncupload.join();
-                }
-            job.start()
-        }
-    }
-    var mGetContentDoneCamera = registerForActivityResult(ActivityResultContracts.StartActivityForResult()
-    ) {
-        Log.d("Picturerun", "Running")
-
-
-
-        Log.d("Picturerun", "Running")
-        if(  it.resultCode == Activity.RESULT_OK   ){
-            val photo = it.data!!.getExtras()!!.get("data") as Bitmap
-
-            // CALL THIS METHOD TO GET THE URI FROM THE BITMAP
-            val tempUri = getImageUri(this.requireActivity().applicationContext, photo)
-
-
-            val data = FileDataPart.from(getRealPathFromURI(tempUri!!)!!, name = if (AuthManager.User?.usertype_txt == "Helfer") "bill_hf" else "bill_hfs")
-            // from(data?.data?.encodedPath.toString() , name = "profile_pic")
-
-            val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
-
-                    //do actions
-                    val url =  RestPath.shopadddone(requireAuthManager().SessionID(), model!!.id, if (AuthManager.User?.usertype_txt == "Helfer") "hf" else "hfs")
-                    Log.d("URL: ", url)
-                    val asyncupload = Fuel.upload(url, Method.PUT, if (AuthManager.User?.usertype_txt == "Helfer") listOf() else listOf("done" to true))
-                            .add(data)
-                            .responseString { _, response, result ->
-                                when (result) {
-                                    is Result.Failure -> {
-                                        Log.d("error", getError(response))
-                                        Toast.makeText(this@ShopAdd.context, getError(response), Toast.LENGTH_LONG).show()
-                                    }
-                                    is Result.Success -> {
-                                        Toast.makeText(this@ShopAdd.context, "Upload Sucess", Toast.LENGTH_LONG).show()
-                                        Log.d("Succsess", "Upload")
-                                    }
-                                }
-                            }
-                    asyncupload.join();
-                }
-            job.start()
-
-
-        }}
-
-    fun getPath(uri: Uri?): String? {
-        var cursor: Cursor = this.requireContext().contentResolver.query(uri!!, null, null, null, null)!!
-        cursor.moveToFirst()
-        var document_id: String = cursor.getString(0)
-        document_id = document_id.substring(document_id.lastIndexOf(":") + 1)
-        cursor.close()
-        cursor = this.requireContext().contentResolver!!.query(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                null, MediaStore.Images.Media._ID + " = ? ", arrayOf(document_id), null)!!
-        cursor.moveToFirst()
-        val path: String = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA))
-        cursor.close()
-        return path
-    }
-
-
-
-
-
-
-
-    fun ParseDate(Date: Date) : String{
-        val sdf2 = SimpleDateFormat("yyyy-MM-dd HH:mm.ss", Locale.getDefault())
-        val stwentyfourhour = sdf2.format(Date)
-        Log.d("Parse Date", stwentyfourhour.replace(" ", "T").replace(".", ":") + "Z")
-        return stwentyfourhour.replace(" ", "T").replace(".", ":")+"Z"
-    }
-
-
-
-    fun payed(){
-        //create dialog from galleri  or take a picture
-        //than upload like profile upload
-        if (AuthManager.User?.usertype_txt == "Helfer")
-            MaterialAlertDialogBuilder(requireContext())
-                    .setTitle("Bezahlt worden")
-                    .setMessage("Ja oder Noch nicht")
-                    .setNeutralButton("Cancel") { _, _ ->
-                        // Respond to neutral button press
-                    }.setNegativeButton("Noch nicht"){ _, _ ->
-                      //maybe send alert to user
-                    }
-                    .setPositiveButton("Ja") { _, _ ->
-                        val job: Job = GlobalScope.launch(context = Dispatchers.IO) {
-
-                                //do actions
-                                val url =  RestPath.shopaddpayHF(requireAuthManager().SessionID(), model!!.id)
-                                Log.d("URL: ", url)
-
-
-                                val asyncupload = Fuel.upload(url, Method.PUT, listOf("payed" to true, "finished_date" to ParseDate(Date())))
-                                        .responseString { _, response, result ->
-                                            when (result) {
-                                                is Result.Failure -> {
-                                                    Log.d("error", getError(response))
-                                                    Toast.makeText(this@ShopAdd.context, getError(response), Toast.LENGTH_LONG).show()
-                                                }
-                                                is Result.Success -> {
-                                                    Toast.makeText(this@ShopAdd.context, "Update Sucess", Toast.LENGTH_LONG).show()
-                                                    Log.d("Succsess", "Update")
-                                                }
-                                            }
-                                        }
-                                asyncupload.join();
-                            }
-                        job.start()
-
-                    }.show()
-            else
-        MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Bezahlungsbeleg")
-                .setMessage("Upload From?")
-                .setNeutralButton("Cancel") { _, _ ->
-                    // Respond to neutral button press
-                }.setNegativeButton("Camera"){ _, _ ->
-                    val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-
-                    intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
-                    intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Test Subject")
-                    val chooseIntent = Intent.createChooser(intent, "Select Picture")
-                    mGetContentPayedCamera.launch(chooseIntent)
-                }
-                .setPositiveButton("Gallery") { _, _ ->
-                    val intent = Intent()
-                    intent.type = "image/*"
-                    intent.action = Intent.ACTION_GET_CONTENT
-                    intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
-                    intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Test Subject")
-                    val chooseIntent = Intent.createChooser(intent, "Select Picture")
-                    mGetContentPayedGallery.launch(chooseIntent)
-
-                }.show() */*/*/

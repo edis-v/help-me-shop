@@ -8,3 +8,5 @@ class BuyList(val id:Int , val articles: List<Article> ,val creation_date :Strin
 
 data class BuyListGSON(val id:Int , val articles: List<Article> ,val creation_date :String ) : java.io.Serializable {
 }
+
+data class  BuyListCreate(val session_id: String, val articlesdata: List<ArticleGson>)

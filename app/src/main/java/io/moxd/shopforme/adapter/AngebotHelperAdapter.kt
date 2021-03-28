@@ -27,7 +27,7 @@ import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import kotlin.concurrent.thread
 
-class AngebotHelperAdapter (private val context: Context, var itemModelArrayList: MutableList<AngebotHelper>) :
+class AngebotHelperAdapter (private val context: Context, var itemModelArrayList: List<AngebotHelper>) :
         RecyclerView.Adapter<AngebotHelperAdapter.Viewholder>() {
 
 

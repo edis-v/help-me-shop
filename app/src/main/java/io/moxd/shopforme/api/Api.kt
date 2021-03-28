@@ -3,6 +3,7 @@ package io.moxd.shopforme.api
 
 import android.util.Log
 import com.github.kittinunf.fuel.Fuel
+import com.github.kittinunf.fuel.core.BodyLength
 import com.github.kittinunf.fuel.core.FuelManager
 import com.github.kittinunf.fuel.core.Method
 import com.github.kittinunf.fuel.core.awaitUnit
@@ -71,6 +72,12 @@ class ApiShopcart {
 
     suspend fun getBuyList( sessionId: String) = service.getBuyList(sessionId)
     suspend fun getShops(sessionId: String) = service.getShops(sessionId)
+
+
+    suspend fun deleteBuyList(sessionId: String,id: String) = service.deleteBuyList(sessionId,id)
+
+    suspend fun createShop(sessionId: String,buylist:String) = service.createShop(sessionId,buylist)
+
 }
 
 class ApiShopAdd {
@@ -82,8 +89,19 @@ class ApiShopAdd {
     private val service: HelpMeShopService = retrofit.create(HelpMeShopService::class.java)
     suspend fun getProfile(sessionId: String) : Response<UserGSON> = service.getProfile(sessionId)
 
+    suspend fun deleteShop(sessionId: String,id: String) = service.deleteShop(sessionId,id)
+
+    suspend fun shopDoneHF(sessionId: String,id: String, image: MultipartBody.Part) = service.shopDoneHF(sessionId,id,image)
+
+    suspend fun shopDoneHFS(sessionId: String,id: String, image: MultipartBody.Part) = service.shopDoneHFS(sessionId,id,image)
+
+    suspend fun shopPayHF(sessionId: String,id: String) = service.shopPayHF(sessionId,id)
+
+    suspend fun shopPayHFS(sessionId: String,id: String,  image: MultipartBody.Part) = service.shopPayHFS(sessionId,id,image)
 
     suspend fun  getShop(sessionId: String , id :String) = service.getShop(sessionId,id)
+
+
 }
 
 class ApiBuyListAdd{
@@ -96,10 +114,48 @@ class ApiBuyListAdd{
 
     suspend fun  getItems() = service.getItems()
 
-    suspend fun createArticle( articleAddGson: ArticleGson) = service.createArticle(articleAddGson)
 
-    suspend fun  createBuyList( sessionId: String , articles : IntArray) = service.createBuyList(sessionId,articles)
+    suspend fun  createBuyList( buyListCreate: BuyListCreate) = service.createBuyList( buyListCreate)
 
 }
+class ApiAngebot{
+    private val retrofit: Retrofit = Retrofit.Builder()
+        .baseUrl("https://moco.fluffistar.com/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    private val service: HelpMeShopService = retrofit.create(HelpMeShopService::class.java)
+
+
+    suspend fun getAngebote(sessionId: String) = service.getAngeboteHFS(sessionId)
+
+    suspend fun replyAngebot(sessionId: String,id: String,approve:Boolean) = service.replyAngebot(sessionId,id,approve)
+}
+
+class ApiHome{
+    private val retrofit: Retrofit = Retrofit.Builder()
+        .baseUrl("https://moco.fluffistar.com/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    private val service: HelpMeShopService = retrofit.create(HelpMeShopService::class.java)
+    suspend fun getProfile(sessionId: String) : Response<UserGSON> = service.getProfile(sessionId)
+
+}
+
+
+class ShopAngebot{
+    private val retrofit: Retrofit = Retrofit.Builder()
+        .baseUrl("https://moco.fluffistar.com/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    private val service: HelpMeShopService = retrofit.create(HelpMeShopService::class.java)
+
+    suspend fun getShops(sessionId: String) = service.getShops(sessionId)
+
+    suspend fun getAngebote(sessionId: String) = service.getAngeboteHF(sessionId)
+}
+
 
 

@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.core.view.ViewGroupCompat
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,23 +19,25 @@ import com.github.kittinunf.result.Result
 import com.google.android.material.tabs.TabLayout
 import io.moxd.shopforme.*
 import io.moxd.shopforme.adapter.AngebotHelperAdapter
+import io.moxd.shopforme.adapter.ShopAdapter
 import io.moxd.shopforme.data.RestPath
 
 import io.moxd.shopforme.data.model.AngebotHelper
 import io.moxd.shopforme.data.model.Shop
+import io.moxd.shopforme.databinding.ShopangebotLayoutBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 
 class ShopAngebotFragment : Fragment() {
-    lateinit var list : RecyclerView
-    lateinit var tabLayout : TabLayout
-    lateinit var  refreshlayout : SwipeRefreshLayout
-    var angebotlist: List<AngebotHelper> = mutableListOf()
-    //   lateinit var Buyadapter : BuyListAdapter
-    //  lateinit var Shopadapter : ShopAdapter
-    var shop: List<Shop> = mutableListOf()
+
+
+
+
+    val viewModel : ShopAngebotViewModel  by viewModels { ShopAngebotViewModelFactory(this,arguments) }
+
+    lateinit var binding: ShopangebotLayoutBinding
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -42,177 +45,110 @@ class ShopAngebotFragment : Fragment() {
             savedInstanceState: Bundle?
     ): View? {
 
-        val root = inflater.inflate(R.layout.shopangebot_layout, container, false)
-        list = root.findViewById(R.id.shopangebot_list)
-        list.layoutManager = LinearLayoutManager(
-                root.context,
-                LinearLayoutManager.VERTICAL,
-                false
-        )
-        GetAgebotList()
-        tabLayout = root.findViewById(R.id.shopangebot_tab)
-        refreshlayout = root.findViewById(R.id.shopangebot_Refresh)
-        ViewGroupCompat.setTransitionGroup(list,true)
+        return inflater.inflate(R.layout.shopangebot_layout, container, false)
 
 
-
-        list.addItemDecoration(DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL))
-        root.findViewById<com.nambimobile.widgets.efab.FabOption>(R.id.shopangebot_filter).setOnClickListener {
-                //fgilter
-        }
-
-
-
-
-
-        refreshlayout.setOnRefreshListener(SwipeRefreshLayout.OnRefreshListener {
-            when (tabLayout.selectedTabPosition) {
-                0 -> {
-                    Log.d("Tab", "Angebot clicked")
-
-                        GetAgebotList()
-                }
-                1 -> {
-                    Log.d("Tab", "Shop clicked")
-
-                  //  GetShop()
-                }
-            }
-            refreshlayout.setRefreshing(false)
-        })
-        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                when (tab!!.text) {
-                    "Shoppen" -> {
-                        Log.d("Tab", "Shop clicked")
-                   //     GetShop()
-
-                    }
-                    "Angebote" -> {
-                        Log.d("Tab", "Angebote clicked")
-
-                        GetAgebotList()
-                    }
-                }
-            }
-
-            override fun onTabReselected(tab: TabLayout.Tab?) {
-                // Handle tab reselect
-            }
-
-            override fun onTabUnselected(tab: TabLayout.Tab?) {
-                // Handle tab unselect
-            }
-        })
-
-
-
-        return root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding = ShopangebotLayoutBinding.bind(view)
         postponeEnterTransition()
         view.doOnPreDraw { startPostponedEnterTransition() }
 
-    }
-
-  /*  fun GetShop(){
-        GlobalScope.launch(context = Dispatchers.IO) {
-
-                //do actions
-
-                Fuel.get(
-                        RestPath.shop(requireAuthManager().SessionID())
-                ).responseString { _, response, result ->
-
-                    when (result) {
+        binding.apply {
 
 
-                        is Result.Failure -> {
-                            this@ShopAngebotFragment.activity?.runOnUiThread() {
-                                Log.d(
-                                        "Error",
-                                      getError(response)
-                                )
-                                Toast.makeText(
-                                        this@ShopAngebotFragment.requireContext(),
-                                        getError(response),
-                                        Toast.LENGTH_LONG
-                                ).show()
-                            }
+            shopangebotList.layoutManager = LinearLayoutManager(
+            root.context,
+            LinearLayoutManager.VERTICAL,
+            false
+        )
+
+            shopangebotRefresh.setOnRefreshListener(SwipeRefreshLayout.OnRefreshListener {
+                when (shopangebotTab.selectedTabPosition) {
+                    0 -> {
+                        Log.d("Tab", "Angebot clicked")
+
+                       viewModel.getAngebotUpdate()
+                    }
+                    1 -> {
+                        Log.d("Tab", "Shop clicked")
+
+                         viewModel.getShopsUpdate()
+                    }
+                }
+                shopangebotRefresh.setRefreshing(false)
+            })
+
+
+
+            shopangebotTab.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+
+                override fun onTabSelected(tab: TabLayout.Tab?) {
+                    when (tab!!.text) {
+                        "Shoppen" -> {
+                            Log.d("Tab", "Shop clicked")
+                            viewModel.getShopsUpdate()
+
                         }
-                        is Result.Success -> {
-                            val data = result.get()
+                        "Angebote" -> {
+                            Log.d("Tab", "Angebote clicked")
 
-                            Log.d("USerProfile", data)
-
-                            this@ShopAngebotFragment.activity?.runOnUiThread() {
-
-                                shop =
-                                        JsonDeserializer.decodeFromString<List<Shop>>(
-                                                data
-                                        );
-                                list.adapter =
-                                        ShopAdapter(this@ShopAngebotFragment.requireContext(), shop)
-
-                            }
+                            viewModel.getAngebotUpdate()
                         }
                     }
-                }.join()
+                }
+
+                override fun onTabReselected(tab: TabLayout.Tab?) {
+                    // Handle tab reselect
+                }
+
+                override fun onTabUnselected(tab: TabLayout.Tab?) {
+                    // Handle tab unselect
+                }
+            })
 
 
+
+
+            ViewGroupCompat.setTransitionGroup(shopangebotList,true)
 
         }
-    }*/
-
-    fun GetAgebotList(){
-        GlobalScope.launch(context = Dispatchers.IO) {
-
-                //do actions
-
-                Fuel.get(
-                        RestPath.angebote(requireAuthManager().SessionID())
-                ).responseString { _, response, result ->
-
-                    when (result) {
 
 
-                        is Result.Failure -> {
-                            this@ShopAngebotFragment.activity?.runOnUiThread() {
-                                Log.d(
-                                        "Error",
-                                        getError(response)
-                                )
-                                Toast.makeText(
-                                        this@ShopAngebotFragment.requireContext(),
-                                        getError(response),
-                                        Toast.LENGTH_LONG
-                                ).show()
-                            }
-                        }
-                        is Result.Success -> {
-                            val data = result.get()
 
-                            Log.d("USerProfile", data)
+        //observer
 
-                            this@ShopAngebotFragment.activity?.runOnUiThread() {
+        binding.apply {
+            viewModel.Angebote.observe(viewLifecycleOwner){
+                if (it.isSuccessful) {
+                    val Angebote = it.body()!!
 
-                                angebotlist =
-                                        JsonDeserializer.decodeFromString<List<AngebotHelper>>(
-                                                data
-                                        );
-                                list.adapter =
-                                        AngebotHelperAdapter(this@ShopAngebotFragment.requireContext(), angebotlist.toMutableList())
-
-                            }
-                        }
-                    }
-                }.join()
+                    shopangebotList.adapter =
+                        AngebotHelperAdapter(requireContext(), Angebote)
 
 
-            
+                } else {
+                    //error
+                }
+            }
+            viewModel.Shops.observe(viewLifecycleOwner){
+                if (it.isSuccessful) {
+                    val Shops = it.body()!!
+
+                    shopangebotList.adapter =
+                        ShopAdapter(requireContext(), Shops)
+
+
+                } else {
+                    //error
+                }
+            }
         }
+
+
     }
+
+
 }

@@ -27,7 +27,7 @@ class BelegeAdapter (private val context: Context, val itemModelArrayList: List<
         // to set data to textview and imageview of each card layout
         val model: Beleg = itemModelArrayList[position]
 
-        holder.User.text = if(model.user.id == AuthManager.User?.id) "Ich" else "${ model.user.firstname } ${ model.user.name }"
+        holder.User.text = model.user
         holder.type.text = if(model.type == "K") "KassenZettle" else "Bezahlung"
         Picasso.get().load(model.beleg).into(holder.beleg)
 

@@ -46,11 +46,6 @@ class ProfileViewModel @AssistedInject  constructor(
         }
     }
 
-    fun OnUpdateProfilePicClick(){
-        viewModelScope.launch {
-
-        }
-    }
 
 
     fun uploadimg(uri: String){

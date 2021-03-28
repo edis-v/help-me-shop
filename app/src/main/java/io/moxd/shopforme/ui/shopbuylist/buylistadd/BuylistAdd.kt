@@ -100,7 +100,7 @@ class BuylistAdd: Fragment() {
                     }
                     .setPositiveButton("Ja") { _, _ ->
                         // Respond to positive button press
-                        viewModel.createArticles()
+                        viewModel.createBuylist()
 
                     }
                     .show()
@@ -109,17 +109,7 @@ class BuylistAdd: Fragment() {
 
 
 
-        binding.apply {
-            viewModel.Articles.observe(viewLifecycleOwner){
-                if(it.isSuccessful)
-                {
-                    viewModel.createBuylist()
-                }
-                else{
-                    Log.d("ErrorArticle" , getErrorRetro( it.errorBody()))
-                    //error
-                }
-            }
+
 
             viewModel.BuyList.observe(viewLifecycleOwner){
                 if(it.isSuccessful){
@@ -142,6 +132,6 @@ class BuylistAdd: Fragment() {
         }
 
     }
-}
+
 
 

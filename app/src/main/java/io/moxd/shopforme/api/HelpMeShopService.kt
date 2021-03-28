@@ -2,6 +2,7 @@ package io.moxd.shopforme.api
 
 import androidx.lifecycle.LiveData
 import androidx.room.Update
+import io.moxd.shopforme.ParseDate
 import io.moxd.shopforme.data.model.*
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -50,12 +51,44 @@ interface HelpMeShopService {
     @GET("api/items")
     suspend fun getItems() : Response<List<ItemGSON>>
 
-
-    @POST("api/article/add")
-    suspend fun createArticle(@Body ArticleGson : ArticleGson) : Response<ArticleAddGson>
+    @DELETE("api/shop/delete/{sessionId}/{id}")
+    suspend fun deleteShop(@Path("sessionId") sessionid: String , @Path("id") id: String) : Response<ShopGSON>
 
     @FormUrlEncoded
+    @POST("api/shop/add ")
+    suspend fun createShop(@Field("session_id") sessionid: String , @Field("buylist") id: String) : Response<ShopGSON>
+
+
+    @DELETE("api/buylist/delete/{sessionId}/{id}")
+    suspend fun deleteBuyList(@Path("sessionId") sessionid: String , @Path("id") id: String) : Response<BuyListGSON>
+
+
+    @FormUrlEncoded
+    @PUT("api/shop/pay/{sessionId}/{id}")
+    suspend fun  shopPayHF(@Path("sessionId") sessionid: String , @Path("id") id: String , @Field("payed")  payed : Boolean =true , @Field("finished_date") date : String = ParseDate() ): Response<ShopGSON>
+
+    @Multipart
+    @PUT("api/shop/payprove/{sessionId}/{id}")
+    suspend fun shopPayHFS(@Path("sessionId") sessionid: String , @Path("id") id: String ,  @Part image : MultipartBody.Part): Response<ShopGSON>
+
+    @Multipart
+    @PUT("api/shop/doneHF/{sessionId}/{id}")
+    suspend fun shopDoneHF(@Path("sessionId") sessionid: String , @Path("id") id: String,   @Part image : MultipartBody.Part ) : Response<ShopGSON>
+
+    @Multipart
+    @PUT("api/shop/doneHFS/{sessionId}/{id}")
+    suspend fun shopDoneHFS(@Path("sessionId") sessionid: String , @Path("id") id: String, @Part image : MultipartBody.Part ,@Part("done") done : Boolean = true) : Response<ShopGSON>
+
+
     @POST("api/buylist/add")
-    suspend fun createBuyList (@Field("sessionId")  sessionid: String,
-                               @Field("articles")  articles :IntArray) : Response<BuyListGSON>
+    suspend fun createBuyList (@Body buylist:BuyListCreate) : Response<BuyListGSON>
+    @GET("api/angebot/hfs/{sessionId}")
+    suspend fun  getAngeboteHFS(@Path("sessionId") sessionid: String) : Response<List<AngebotGSON>>
+    @FormUrlEncoded
+    @PUT("api/angebot/hfs/{sessionId}/{id}")
+    suspend fun replyAngebot(@Path("sessionId")  sessionid: String , @Path("id")  id: String, @Field("approve") approve : Boolean, @Field("viewed") viewed : Boolean = true ) : Response<AngebotGSON>
+
+    @GET("api/angebot/hf/{sessionId}")
+    suspend fun  getAngeboteHF(@Path("sessionId") sessionid: String) : Response<List<AngebotHelper>>
+
 }

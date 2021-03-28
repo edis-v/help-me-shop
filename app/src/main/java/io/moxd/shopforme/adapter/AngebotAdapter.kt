@@ -17,8 +17,10 @@ import com.squareup.picasso.Picasso
 import io.moxd.shopforme.*
 import io.moxd.shopforme.data.RestPath
 import io.moxd.shopforme.data.model.Angebot
+import io.moxd.shopforme.data.model.AngebotGSON
 import io.moxd.shopforme.data.model.AngebotHelper
 import io.moxd.shopforme.data.model.Shop
+import io.moxd.shopforme.ui.angebot.AngebotViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
@@ -26,7 +28,7 @@ import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 
-class AngebotAdapter  (private val context: Context, var itemModelArrayList: MutableList<Angebot>) :
+class AngebotAdapter  (private val context: Context, var itemModelArrayList: MutableList<AngebotGSON>, val viewModel: AngebotViewModel) :
         RecyclerView.Adapter<AngebotAdapter.Viewholder>() {
 
 
@@ -37,9 +39,11 @@ class AngebotAdapter  (private val context: Context, var itemModelArrayList: Mut
         return Viewholder(view)
     }
 
+    var lastmodel : AngebotGSON? = null
+
     override fun onBindViewHolder(holder: Viewholder, position: Int) {
         // to set data to textview and imageview of each card layout
-        val model: Angebot = itemModelArrayList[position]
+        val model: AngebotGSON = itemModelArrayList[position]
 
         holder.date.text = FormatDate( model.creation_date)
         holder.user.text = model.helper.firstname + " "+model.helper.name
@@ -47,17 +51,27 @@ class AngebotAdapter  (private val context: Context, var itemModelArrayList: Mut
         Picasso.get().load(model.helper.profile_pic).into(holder.profilepic);
 
         holder.wrong.setOnClickListener {
-            updateAngebot(model,false,it)
+            lastmodel = model
+            viewModel.replyAngebot(model.id.toString(),false)
+
 
 
         }
 
         holder.right.setOnClickListener {
-            updateAngebot(model,true, it)
+            lastmodel = model
+            viewModel.replyAngebot(model.id.toString(),true)
+
 
         }
 
     }
+    fun deleteSuccesses(){
+        if(lastmodel != null){
+            val pos =  itemModelArrayList.indexOf(lastmodel)
+            itemModelArrayList.remove(lastmodel)
+            this.notifyItemRemoved(pos)
+        }}
 
     override fun getItemCount(): Int {
 
@@ -65,36 +79,7 @@ class AngebotAdapter  (private val context: Context, var itemModelArrayList: Mut
     }
 
 
-    fun updateAngebot(model:Angebot,approve: Boolean, v : View){
-        GlobalScope.launch(context = Dispatchers.IO) {
 
-                Fuel.put(
-                        RestPath.angebotapprove(requireAuthManager().SessionID(), model.id), listOf("viewed" to true, "approve" to approve)
-                ).responseString { request, response, result ->
-
-                    when (result) {
-                        is Result.Success -> {
-                            Log.d("result", result.get())
-                            val pos =  itemModelArrayList.indexOf(model)
-                            itemModelArrayList.remove(model)
-                            this@AngebotAdapter.notifyItemRemoved(pos)
-                            Snackbar.make(v,  "Success", Snackbar.LENGTH_LONG).show()
-                        }
-                        is Result.Failure -> {
-                            Log.d(
-                                    "Error",
-                                    getError(response)
-                            )
-                            Snackbar.make(v,  getError(response), Snackbar.LENGTH_LONG).show()
-
-                        }
-
-                    }
-
-
-                }.join()
-            }
-    }
 
     inner class Viewholder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val user: TextView

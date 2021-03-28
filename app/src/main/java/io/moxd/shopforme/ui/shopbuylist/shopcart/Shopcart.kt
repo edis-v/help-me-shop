@@ -136,23 +136,26 @@ class Shopcart : Fragment() {
 
         }
 
-    binding.apply {
+        binding.apply {
         viewModel.BuyList.observe(viewLifecycleOwner) {
             if (it.isSuccessful) {
                 val BuyList = it.body()!!
 
                 shopcartList.adapter =
-                    BuyListAdapter(this@Shopcart.requireContext(), BuyList.toMutableList())
+                    BuyListAdapter(
+                        this@Shopcart.requireContext(),
+                        BuyList.toMutableList(),
+                        viewModel
+                    )
 
 
             } else {
                 //error
             }
         }
+    }
 
-
-
-    binding.apply {
+        binding.apply {
         viewModel.Location.observe(viewLifecycleOwner){
             if(it.isSuccessful){
                 Snackbar.make(view,"Location updated Successfully",Snackbar.LENGTH_LONG).show()
@@ -162,8 +165,59 @@ class Shopcart : Fragment() {
         }
     }
 
+        binding.apply {
+
+            viewModel.BuyListDelte.observe(viewLifecycleOwner){
+                if(it.isSuccessful){
 
 
+                    (shopcartList.adapter as BuyListAdapter).deleteSuccesses()
+                    Snackbar
+                        .make(
+                            view,
+                            "EinkaufsListe gelöscht",
+                            Snackbar.LENGTH_LONG
+                        )
+                        .show()
+                }else{
+                    Snackbar
+                        .make(
+                            view,
+                            getErrorRetro(it.errorBody()),
+                            Snackbar.LENGTH_LONG
+                        )  .show()
+                }
+            }
+
+            viewModel.ShopCreated.observe(viewLifecycleOwner){
+                if(it.isSuccessful){
+                    Snackbar
+                        .make(
+                            view,
+                            "Einkauf erstellt",
+                            Snackbar.LENGTH_LONG
+                        ).setAction(
+                            "Go to Shop")
+                        {
+
+                            val ft = (context as MainActivity).supportFragmentManager.beginTransaction()
+                            ft.replace(R.id.mainframe, Shopcart())
+                            ft.commit()
+                        }
+                        .show()
+                }else{
+                    Snackbar
+                        .make(
+                            view,
+                            getErrorRetro(it.errorBody()),
+                            Snackbar.LENGTH_LONG
+                        )  .show()
+                }
+            }
+
+        }
+
+        binding.apply {
         viewModel.Shop.observe(viewLifecycleOwner) {
             if (it.isSuccessful) {
                 val Shop = it.body()!!
@@ -177,6 +231,7 @@ class Shopcart : Fragment() {
             }
         }
     }
+    }
 
 
 
@@ -191,13 +246,5 @@ class Shopcart : Fragment() {
     }
 
 
-    fun shopDeleted(){
-        Snackbar
-                .make(
-                        requireView(),
-                        "Shop is deleted",
-                        Snackbar.LENGTH_LONG
-                ).show()
-    }
 
-}
+
