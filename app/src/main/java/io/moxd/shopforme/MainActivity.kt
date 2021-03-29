@@ -46,7 +46,19 @@ class MainActivity : AppCompatActivity() {
                         setupActionBarWithGraph(R.navigation.nav_graph_main)
                     }
 
+                    is AuthManager.Result.LoggedIn -> {
+                        setupActionBarWithGraph(R.navigation.nav_graph_main)
+                        // User Manager?
+                    }
+
                     is AuthManager.Result.AuthError -> {
+                        setupActionBarWithGraph(R.navigation.nav_graph_auth)
+                        val action = SplashScreenDirections.actionSplashScreenToLoginFragment()
+                        navController.navigate(action)
+                    }
+
+                    is AuthManager.Result.LoginNeeded -> {
+                        setupActionBarWithGraph(R.navigation.nav_graph_auth)
                         val action = SplashScreenDirections.actionSplashScreenToLoginFragment()
                         navController.navigate(action)
                     }

@@ -30,7 +30,7 @@ class SplashScreen : Fragment(R.layout.splashscreen) {
 
         lifecycleScope.launchWhenStarted {
             delay(500)
-            requireAuthManager().auth2()
+            requireAuthManager().loginCheck()
         }
     }
 }

@@ -149,5 +149,15 @@ class ApiLogin : Api(){
 }
 
 class ApiRegistration : Api(){
-    suspend fun registration(name: String,firstname: String,password: String,password2: String,email: String,phonenumber: String,Street: String,profile_pic:String,plz:String,City: String,usertype: String) = service.registration(name,firstname,password,password2,email,phonenumber,Street,profile_pic, plz, City, usertype)
+    suspend fun registration(
+            name: String,
+            firstname: String,
+            password: String,
+            email: String,
+            phoneNumber: String,
+            street: String,
+            postalCode:String,
+            city: String,
+            userType: String
+    ) = service.registration(name,firstname,password,password,email,phoneNumber,street,null, postalCode, city, userType)
 }

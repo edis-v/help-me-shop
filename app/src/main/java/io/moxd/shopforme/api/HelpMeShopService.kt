@@ -117,9 +117,24 @@ interface HelpMeShopService {
 
     @FormUrlEncoded
     @POST("api/user/login")
-    suspend fun login(@Field("email" ) email :String , @Field("password") password : String) : Response<SessionDto>
+    suspend fun login(
+            @Field("email" ) email: String,
+            @Field("password") password: String
+    ) : Response<SessionDto>
 
     @FormUrlEncoded
     @POST("api/user/add")
-    suspend fun registration(@Field("name" ) name :String , @Field("firstname") firstname : String ,@Field("password" ) password :String ,@Field("password2" ) password2 :String ,@Field("email" ) email :String ,@Field("phone_number" ) phone_number :String ,@Field("Street" ) Street :String ,@Field("profile_pic" ) profile_pic :String ,@Field("plz" ) plz :String ,@Field("City" ) City :String ,@Field("usertype" ) usertype :String ) : Response<UserGSON>
+    suspend fun registration(
+            @Field("name" ) name: String,
+            @Field("firstname") firstname: String,
+            @Field("password" ) password: String,
+            @Field("password2" ) password2: String,
+            @Field("email" ) email: String,
+            @Field("phone_number" ) phone_number: String,
+            @Field("Street" ) Street: String,
+            @Field("profile_pic" ) profile_pic: String?,
+            @Field("plz" ) plz: String,
+            @Field("City" ) City: String,
+            @Field("usertype" ) usertype: String
+    ) : Response<UserGSON>
 }

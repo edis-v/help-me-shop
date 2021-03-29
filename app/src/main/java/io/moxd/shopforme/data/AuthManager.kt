@@ -13,224 +13,82 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.createDataStore
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.coroutines.awaitStringResponse
-import io.moxd.shopforme.MainActivity
+import io.moxd.shopforme.*
+import io.moxd.shopforme.api.ApiLogin
+import io.moxd.shopforme.api.ApiProfile
 import io.moxd.shopforme.api.ApiRegistration
 import io.moxd.shopforme.data.AuthManager.PreferencesKeys.EMAIL
 import io.moxd.shopforme.data.AuthManager.PreferencesKeys.PASSWORD
 import io.moxd.shopforme.data.AuthManager.PreferencesKeys.SESSION_ID
 import io.moxd.shopforme.data.dto.SessionDto
 import io.moxd.shopforme.data.model.*
-import io.moxd.shopforme.getAllError
-import io.moxd.shopforme.getError
-import io.moxd.shopforme.getErrorRetro
 import io.moxd.shopforme.service.AlarmServiceSession
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import timber.log.Timber
 import java.io.IOException
+import kotlin.concurrent.fixedRateTimer
 
 // Einmalig erzeugte Klasse um alle Loginanfragen und die Persisitierung der Session zu managen
 class AuthManager constructor(private val context: Context) {
 
-    // DataStore Objekt der Nutzerdaten erstellen
-    private val dataStore = context.createDataStore("user_preferences")
+    private val dataStore = context.createDataStore("auth_preferences")
+
+    private val timer = fixedRateTimer("reauth", true, 0.toLong(), 30.minutes.toLong()) {
+        GlobalScope.launch {
+            // Reauth jede 30 min
+            auth()
+        }
+    }
 
     // Privater Channel und öffentlicher Flow für den Zugriff von außen
     private val eventChannel = Channel<Result>()
     val events = eventChannel.receiveAsFlow()
 
-    // Login Request + Events und Persisiterung der Session
-    /* suspend fun login(email: String, password: String) {
-         try {
-             val session = Fuel.post(
-                     RestPath.login,
-                     listOf("email" to email, "password" to password)
-             ).awaitObject<SessionDto>(kotlinxDeserializerOf(JsonDeserializer))
+    private val apiLogin = ApiLogin()
 
-             dataStore.edit { preferences ->
-                 preferences[SESSION_ID] = session.id
-             }
-             eventChannel.send(Result.AuthSucess(session))
-
-         } catch (exception: Exception) {
-             // TODO: Error handling sauber umsetzen mit echten Fällen
-             eventChannel.send(Result.AuthError(exception))
-
-         }
-     }*/
-    /* companion object {
-         var User : UserME? = null //switch not normal objects
-     }*/
-    suspend fun login2(email: String, password: String) {
-
-        val log = Fuel.post(
-                RestPath.login,
-                listOf("email" to email, "password" to password)
-        ).responseString { request, response, result ->
-
-            when (result) {
-                is com.github.kittinunf.result.Result.Success -> {
-                    GlobalScope.launch {
-                        val session = Json.decodeFromString<SessionDto>(result.get());
-                        dataStore.edit { preferences ->
-                            preferences[SESSION_ID] = session.id
-                            preferences[EMAIL] = email
-                            preferences[PASSWORD] = password
-                        }
-
-                        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                        val intent = Intent(context, AlarmServiceSession::class.java)    //create an intent for the BroadcastReceiver Class
-                        val pendingIntent = PendingIntent.getBroadcast(         //create a Pending Intent (Broadcast Intent ) so the AlarmManager can execute my BroadcastReceiver
-                                context, 234, intent, 0
-                        )
-
-                        alarmManager[AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 30 * 60 * 1000] = pendingIntent
-
-                        auth2()
-                        eventChannel.send(Result.AuthSucess(session))
-                    }
-                }
-                is com.github.kittinunf.result.Result.Failure -> {
-                    Timber.d(getError(response))
-                    GlobalScope.launch {
-                        eventChannel.send(Result.AuthError(result.getException()))
-                    }
-                }
-            }
-
-        }.join()
-
-
-    }
-
-    // Login mit persisiterter Session Id
-    suspend fun auth() {
+    suspend fun loginCheck() = withContext(Dispatchers.IO) {
         val preferences = dataStore.data.first()
-        val sessionId = preferences[SESSION_ID] ?: ""
-        if (sessionId.isNotEmpty()) {
-            try {
-                // TODO: sessionId per Request erneuern?
-                Fuel.get(
-                        RestPath.user(sessionId)
-                ).awaitStringResponse()
+        val loginEmail = preferences[EMAIL] ?: ""
+        val loginPassword = preferences[PASSWORD] ?: ""
 
-                eventChannel.send(Result.AuthSucess(SessionDto(sessionId)))
-            } catch (exception: Exception) {
-                unauth()
-                eventChannel.send(Result.AuthError(exception))
-            }
+        val isLoggedIn = loginEmail.isNotEmpty() and loginPassword.isNotEmpty()
+
+        if (!isLoggedIn) {
+            eventChannel.send(Result.LoginNeeded)
+        } else {
+            eventChannel.send(Result.LoggedIn)
         }
     }
 
-    suspend fun auth2() {
+    suspend fun auth() = withContext(Dispatchers.IO) {
         val preferences = dataStore.data.first()
-        val sessionId = preferences[SESSION_ID] ?: ""
-        val loginEmail = preferences[EMAIL] ?: ""
-        val loginPassword = preferences[PASSWORD] ?: ""
-        if (loginEmail.isNotEmpty() and loginPassword.isNotEmpty())
-            if (sessionId.isNotEmpty()) {
+        val email = preferences[EMAIL] ?: ""
+        val password = preferences[PASSWORD] ?: ""
 
+        val response = apiLogin.login(email, password)
 
-                Fuel.get(
-                        RestPath.user(sessionId)
-                ).responseString { request, response, result ->
-                    when (result) {
-                        is com.github.kittinunf.result.Result.Success -> {
-                            GlobalScope.launch {
-                                try {
+        if(response.isSuccessful) {
+            val session = response.body()!!
 
-
-                                    //        User = Json.decodeFromString<UserME>(result.get());
-
-                                    Log.d("SessionID", sessionId)
-                                    eventChannel.send(Result.AuthSucess(SessionDto(sessionId)))
-
-                                } catch (ex: java.lang.Exception) {
-
-
-                                    login2(loginEmail, loginPassword)
-
-                                }
-                            }
-                        }
-                        is com.github.kittinunf.result.Result.Failure -> {
-                            Log.d("Error", getError(response))
-                            GlobalScope.launch {
-
-                                eventChannel.send(Result.AuthError(result.getException()))
-                            }
-                        }
-                    }
-
-                }
-
-
-            } else {
-
-                login2(loginEmail, loginPassword)
+            dataStore.edit { preferences ->
+                preferences[SESSION_ID] = session.id
+                preferences[EMAIL] = email
+                preferences[PASSWORD] = password
             }
-        else {
-            GlobalScope.launch {
-                eventChannel.send(Result.AuthError(IOException()))
-            }
+
+            eventChannel.send(Result.AuthSucess(session))
+        } else {
+            eventChannel.send(Result.AuthError(getErrorRetro(response.errorBody())))
         }
     }
 
     suspend fun unauth() {
         dataStore.edit { it.clear() }
-        //    eventChannel.send(Result.UnauthSucess)
-    }
-
-    fun register(registration: Registration) = runBlocking(Dispatchers.IO)  {
-
-
-        val response =  ApiRegistration().registration(registration.name,registration.firstName ,registration.password,registration.password)
-
-        if(response.isSuccessful){
-
-        }else
-        {
-            val error = getErrorRetro(response.errorBody())
-        }
-
-        Fuel.post(
-                RestPath.register,
-                listOf(
-                        "name" to registration.name,
-                        "firstname" to registration.firstName,
-                        "password" to registration.password,
-                        "password2" to registration.password,
-                        "email" to registration.email,
-                        "phone_number" to registration.phoneNumber,
-                        "Street" to registration.address,
-                        "profile_pic" to null,
-                        "plz" to registration.postalCode,
-                        "City" to registration.city,
-                        "usertype" to UserType2.Type[0].second
-                )
-        ).responseString { request, response, result ->
-            when (result) {
-                is com.github.kittinunf.result.Result.Success -> {
-
-                    GlobalScope.launch {
-                        eventChannel.send(Result.RegisterSuccess(registration.email, registration.password))
-                    }
-                }
-                is com.github.kittinunf.result.Result.Failure -> {
-                    val errorMessages = getAllError(response)
-                    GlobalScope.launch {
-                        eventChannel.send(Result.RegisterError(result.getException(), errorMessages))
-                    }
-                }
-            }
-        }.join()
-
+        eventChannel.send(Result.UnauthDone)
     }
 
     private object PreferencesKeys {
@@ -284,10 +142,12 @@ class AuthManager constructor(private val context: Context) {
     }
 
     sealed class Result {
-        object UnauthSucess : Result()
+        object LoginNeeded : Result()
+        object LoggedIn : Result()
+        object UnauthDone : Result()
         data class AuthSucess(val session: SessionDto) : Result()
-        data class AuthError(val exception: Exception) : Result()
+        data class AuthError(val error: String) : Result()
         data class RegisterSuccess(val email: String, val password: String) : Result()
-        data class RegisterError(val exception: Exception, val errorMessages: List<String>) : Result()
+        data class RegisterError(val error: String) : Result()
     }
 }
