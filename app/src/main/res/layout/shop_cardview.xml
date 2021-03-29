@@ -3,11 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/shop_cardview"
-    android:layout_width="match_parent"
-    android:layout_height="120dp"
-    android:layout_margin="4dp"
+    style="@style/Widget.ShopForMe.MaterialCard"
     android:transitionName="shopmin"
-    app:cardBackgroundColor="@color/white"
     app:cardElevation="4dp">
 
     <RelativeLayout
@@ -19,13 +16,10 @@
             android:id="@+id/shop_cardview_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
+            android:layout_marginBottom="8dp"
             android:text="Einkauf vom 22.78.68"
-            android:textSize="24dp"
-
+            android:textAppearance="@style/TextAppearance.ShopForMe.Headline6"
             android:transitionName="shoptitle"
-
-
             />
 
 
@@ -36,10 +30,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/shop_cardview_title"
+            android:textAppearance="@style/TextAppearance.ShopForMe.Subtitle1"
             android:layout_marginRight="10dp"
             android:layout_marginBottom="2dp"
             android:text="Items 22"
-            android:textSize="20dp"
+
 
             android:transitionName="shopanzahl" />
 
@@ -48,12 +43,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/shop_cardview_title"
-            android:layout_marginRight="10dp"
+            android:layout_marginRight="16dp"
             android:layout_toRightOf="@id/shop_cardview_anzahl"
             android:text="Preis: 22€"
-
-            android:textSize="20dp"
-            android:textStyle="normal"
+            android:textAppearance="@style/TextAppearance.ShopForMe.Subtitle1"
             android:transitionName="shopprice" />
 
         <TextView
@@ -62,9 +55,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/shop_cardview_anzahl"
-            android:layout_marginTop="0dp"
             android:text="Bezahlt am 22.7.99"
-            android:textSize="20dp"
+            android:textAppearance="@style/TextAppearance.ShopForMe.Subtitle1"
 
             android:transitionName="shoppayed" />
 
@@ -72,7 +64,7 @@
             android:id="@+id/shop_cardview_status"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             app:srcCompat="@drawable/ic_done"
             />

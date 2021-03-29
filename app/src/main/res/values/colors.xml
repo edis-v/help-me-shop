@@ -14,7 +14,7 @@
     <color name="colorSecondary">#2a9d8f</color>
     <color name="colorSecondaryDark">#264653</color>
     <color name="colorSecondaryLight">#2a9d8f</color>
-    <color name="textColorPrimary">#FFFF</color>
+    <color name="textColorPrimary">#8a000000</color>
 
     <color name="mapbox">#3A4EBD</color>
     <color name="divivder">#7E7E7E</color>

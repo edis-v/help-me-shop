@@ -26,6 +26,7 @@ class CameraGalleryDialog
         gallery.setOnClickListener(this)
         cancel.setOnClickListener(this)
         camera.setOnClickListener(this)
+        this.window?.setBackgroundDrawableResource(android.R.color.transparent);
     }
 
     override fun onClick(v: View) {

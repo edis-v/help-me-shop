@@ -21,18 +21,19 @@
         android:textSize="20dp"
         android:text="Adam Omari"
         />
+
     <TextView
         android:id="@+id/angebot_helper_shop"
         android:layout_width="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_below="@id/angebot_helper_user"
         android:layout_height="wrap_content"
-        android:textSize="18dp"
-        android:text="Einkauf vom 22-07-1999 22:48"
+        android:layout_below="@id/angebot_helper_user"
+        android:layout_marginTop="10dp"
         android:layout_marginRight="10dp"
         android:layout_toLeftOf="@id/angebot_helper_status"
         android:layout_toRightOf="@id/angebot_helper_user_pic"
-        />
+        android:text="Einkauf vom 22-07-1999 22:48"
+        android:textColor="@android:color/secondary_text_light_nodisable"
+        android:textSize="18dp" />
     <ImageView
         android:id="@+id/angebot_helper_user_pic"
         android:layout_width="100dp"
