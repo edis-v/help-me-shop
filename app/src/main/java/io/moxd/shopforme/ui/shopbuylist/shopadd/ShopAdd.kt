@@ -86,7 +86,7 @@ class ShopAdd : Fragment() {
                         }.show()
             }
             maxShopCardviewMenuShop.setOnClickListener {
-                val popup = CameraGalleryDialog(requireActivity())
+                val popup = CameraGalleryDialog(requireActivity(),"Kassenbon")
 
 
 
@@ -121,7 +121,7 @@ class ShopAdd : Fragment() {
 
                 } else {
 
-                    val popup = CameraGalleryDialog(requireActivity())
+                    val popup = CameraGalleryDialog(requireActivity(),"Rechnung")
 
 
 

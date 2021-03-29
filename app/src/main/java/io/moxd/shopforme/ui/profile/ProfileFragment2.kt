@@ -58,7 +58,7 @@ class ProfileFragment2 : Fragment() {
 
             uploadnewpic.setOnClickListener {
 
-                val popup = CameraGalleryDialog(requireActivity())
+                val popup = CameraGalleryDialog(requireActivity(),"Bild ändern")
 
 
 
