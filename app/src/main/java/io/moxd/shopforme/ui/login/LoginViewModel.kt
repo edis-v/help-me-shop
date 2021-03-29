@@ -75,8 +75,6 @@ class LoginViewModel(
     // Eventübersicht (data class wenn Argumente nötig)
     sealed class LoginEvent {
         object LoggingIn : LoginEvent()
-        data class LoginSuccess(val session: SessionDto) : LoginEvent()
-        data class LoginFailed(val exception: Exception) : LoginEvent()
         object NoInput : LoginEvent()
         object EmptyEmail : LoginEvent()
         object EmptyPassword : LoginEvent()

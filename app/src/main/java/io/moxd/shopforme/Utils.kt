@@ -42,9 +42,9 @@ val PASSWORD_PATTERN =
                 ".{4,}" +               //at least 4 characters
                 "$");
 
-fun requireUserManager() = SplashScreen.userManager!!
-fun requireAuthManager() = SplashScreen.authManager!!
-var ActitityMain: Activity? = null
+fun requireUserManager() = MainActivity.userManager!!
+fun requireAuthManager() = MainActivity.authManager!!
+
 val JsonDeserializer = Json {
     ignoreUnknownKeys = true // Nicht alle Keys müssen im Dto/Model vorhanden sein
     ;coerceInputValues = true

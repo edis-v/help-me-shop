@@ -12,17 +12,13 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.createDataStore
 import com.github.kittinunf.fuel.Fuel
-import com.github.kittinunf.fuel.coroutines.awaitObject
 import com.github.kittinunf.fuel.coroutines.awaitStringResponse
-import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
-import io.moxd.shopforme.ActitityMain
-import io.moxd.shopforme.JsonDeserializer
+import io.moxd.shopforme.MainActivity
 import io.moxd.shopforme.data.AuthManager.PreferencesKeys.EMAIL
 import io.moxd.shopforme.data.AuthManager.PreferencesKeys.PASSWORD
 import io.moxd.shopforme.data.AuthManager.PreferencesKeys.SESSION_ID
 import io.moxd.shopforme.data.dto.SessionDto
 import io.moxd.shopforme.data.model.*
-import io.moxd.shopforme.data.proto_serializer.toProto
 import io.moxd.shopforme.getAllError
 import io.moxd.shopforme.getError
 import io.moxd.shopforme.service.AlarmServiceSession
@@ -37,7 +33,7 @@ import timber.log.Timber
 import java.io.IOException
 
 // Einmalig erzeugte Klasse um alle Loginanfragen und die Persisitierung der Session zu managen
-class AuthManager constructor(context: Context) {
+class AuthManager constructor(private val context: Context) {
 
     // DataStore Objekt der Nutzerdaten erstellen
     private val dataStore = context.createDataStore("user_preferences")
@@ -85,10 +81,10 @@ class AuthManager constructor(context: Context) {
                             preferences[PASSWORD] = password
                         }
 
-                        val alarmManager = ActitityMain!!.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                        val intent = Intent(ActitityMain as Context, AlarmServiceSession::class.java)    //create an intent for the BroadcastReceiver Class
+                        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                        val intent = Intent(context, AlarmServiceSession::class.java)    //create an intent for the BroadcastReceiver Class
                         val pendingIntent = PendingIntent.getBroadcast(         //create a Pending Intent (Broadcast Intent ) so the AlarmManager can execute my BroadcastReceiver
-                                ActitityMain?.applicationContext, 234, intent, 0
+                                context, 234, intent, 0
                         )
 
                         alarmManager[AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 30 * 60 * 1000] = pendingIntent

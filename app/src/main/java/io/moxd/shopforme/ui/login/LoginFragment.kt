@@ -124,26 +124,6 @@ class LoginFragment : Fragment(R.layout.auth_login_fragment) {
 
                         }
                     }
-
-                    // Login Status
-
-                    is LoginViewModel.LoginEvent.LoginSuccess -> {
-                        // NavGraph zu nav_graph_main wechseln anstatt zum HomeFragment zu navigieren
-                        // Vorteil: Kein Navigation Stack / Back button
-                        (requireActivity() as MainActivity).setupActionBarWithGraph(R.navigation.nav_graph_main)
-                    }
-                    is LoginViewModel.LoginEvent.LoginFailed -> {
-                        Log.i(TAG, "handleEvents: LoginFailed")
-                        Log.i(TAG, "handleEvents: ${event.exception.message}")
-                        Toast.makeText(this@LoginFragment.context, "${event.exception.message}", Toast.LENGTH_LONG).show()
-                        // TODO: Meldung an User
-                    }
-                    is LoginViewModel.LoginEvent.LoggingIn -> {
-                        Log.i(TAG, "handleEvents: LoggingIn")
-                        // TODO: Blockiere UI und zeige vllt. einen Ladebalken
-                        //login wurde nicht gecallt in manchen Fällen also so implementiert Ursache ... was ist unterschied zwischen loginsucsees und logggingIN ?? //hypothe
-                        (requireActivity() as MainActivity).setupActionBarWithGraph(R.navigation.nav_graph_main)
-                    }
                 }
             }
         }
