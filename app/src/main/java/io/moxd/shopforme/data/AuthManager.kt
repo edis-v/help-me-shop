@@ -24,6 +24,7 @@ import io.moxd.shopforme.getAllError
 import io.moxd.shopforme.getError
 import io.moxd.shopforme.getErrorRetro
 import io.moxd.shopforme.service.AlarmServiceSession
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -186,7 +187,7 @@ class AuthManager constructor(private val context: Context) {
         //    eventChannel.send(Result.UnauthSucess)
     }
 
-    fun register(registration: Registration) = runBlocking {
+    fun register(registration: Registration) = runBlocking(Dispatchers.IO)  {
 
 
         val response =  ApiRegistration().registration(registration.name,registration.firstName ,registration.password,registration.password)
@@ -239,7 +240,7 @@ class AuthManager constructor(private val context: Context) {
     }
 
 
-    fun SessionID(): String = runBlocking {
+    fun SessionID(): String = runBlocking(Dispatchers.IO)  {
         var ssid: String = ""
         dataStore.getValueFlow(SESSION_ID, "").take(1).collect {
             ssid = it
@@ -247,7 +248,8 @@ class AuthManager constructor(private val context: Context) {
         return@runBlocking ssid
     }
 
-    private fun Email(): String = runBlocking {
+    private fun Email(): String = runBlocking(Dispatchers.IO) {
+
         var ssid: String = ""
         dataStore.getValueFlow(EMAIL, "").take(1).collect {
             ssid = it
@@ -255,7 +257,7 @@ class AuthManager constructor(private val context: Context) {
         return@runBlocking ssid
     }
 
-    private fun Password(): String = runBlocking {
+    private fun Password(): String = runBlocking(Dispatchers.IO)  {
         var ssid: String = ""
         dataStore.getValueFlow(PASSWORD, "").take(1).collect {
             ssid = it
