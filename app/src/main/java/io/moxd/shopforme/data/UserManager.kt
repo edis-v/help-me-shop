@@ -35,7 +35,7 @@ class UserManager constructor(private val context: Context) {
     // Privater Channel und öffentlicher Flow für den Zugriff von außen
     private val eventChannel = Channel<Result>()
     val events = eventChannel.receiveAsFlow()
-
+/*
     fun profile(): UserGSON = runBlocking(Dispatchers.IO) {
         val preferences = dataStore.data.first()
 
@@ -49,7 +49,7 @@ class UserManager constructor(private val context: Context) {
                 City = preferences[CITY] ?: "",
                 usertype_txt = preferences[USER_TYPE] ?: ""
         )
-    }
+    }*/
 
     suspend fun updateProfile() {
         val sessionId = requireAuthManager().SessionID()
@@ -57,9 +57,9 @@ class UserManager constructor(private val context: Context) {
 
         if(response.isSuccessful) {
             saveUser(response.body()!!)
-            eventChannel.send(Result.ProfileFetched)
+            eventChannel.send(Result.ProfileUpdated)
         } else {
-            eventChannel.send(Result.ProfileNotFetched(getErrorRetro(response.errorBody())))
+            eventChannel.send(Result.ProfileUpdateFailed(getErrorRetro(response.errorBody())))
         }
     }
 
@@ -109,8 +109,8 @@ class UserManager constructor(private val context: Context) {
     }
 
     sealed class Result {
-        object ProfileFetched : Result()
-        data class ProfileNotFetched(val error: String): Result()
+        object ProfileUpdated : Result()
+        data class ProfileUpdateFailed(val error: String): Result()
         data class RegisterSuccess(val email: String, val password: String) : Result()
         data class RegisterError(val error: String) : Result()
     }

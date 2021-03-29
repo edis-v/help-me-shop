@@ -11,6 +11,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
 import io.moxd.shopforme.data.AuthManager
+import io.moxd.shopforme.data.UserManager
 import io.moxd.shopforme.ui.splashscreen.SplashScreenDirections
 import kotlinx.coroutines.flow.collect
 import java.util.*
@@ -32,12 +33,10 @@ class MainActivity : AppCompatActivity() {
 
         // Eine AuthManager Instanz erzeugen (benötigt context ggf. für DataStore)
         authManager = AuthManager(this)
+        userManager = UserManager(this)
 
         // ActionBar mit Auth Navigation Graph einstellen
         setupActionBarWithGraph(R.navigation.nav_graph_auth)
-
-
-
 
         lifecycleScope.launchWhenCreated {
             authManager?.events?.collect { result ->
@@ -82,8 +81,7 @@ class MainActivity : AppCompatActivity() {
 
 
     companion object {
-
         var authManager: AuthManager? = null
-
+        var userManager: UserManager? = null
     }
 }

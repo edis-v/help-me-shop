@@ -181,7 +181,7 @@ class RegistrationFragment : Fragment(R.layout.auth_registration_fragment) {
                     }
                     is RegistrationViewModel.RegistrationEvent.Success -> {
                         Snackbar.make(requireView(), "Erfolgreich registriert", Snackbar.LENGTH_LONG).show()
-                        requireAuthManager().login2(event.email, event.password)
+                        requireAuthManager().login(event.email, event.password)
                     }
                     is RegistrationViewModel.RegistrationEvent.Error -> {
                         Snackbar.make(requireView(), event.lastError, Snackbar.LENGTH_LONG).show()

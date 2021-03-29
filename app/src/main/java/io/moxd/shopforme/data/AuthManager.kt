@@ -1,34 +1,22 @@
 package io.moxd.shopforme.data
 
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
-import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.createDataStore
-import com.github.kittinunf.fuel.Fuel
-import com.github.kittinunf.fuel.coroutines.awaitStringResponse
 import io.moxd.shopforme.*
 import io.moxd.shopforme.api.ApiLogin
-import io.moxd.shopforme.api.ApiProfile
-import io.moxd.shopforme.api.ApiRegistration
 import io.moxd.shopforme.data.AuthManager.PreferencesKeys.EMAIL
 import io.moxd.shopforme.data.AuthManager.PreferencesKeys.PASSWORD
 import io.moxd.shopforme.data.AuthManager.PreferencesKeys.SESSION_ID
 import io.moxd.shopforme.data.dto.SessionDto
 import io.moxd.shopforme.data.model.*
-import io.moxd.shopforme.service.AlarmServiceSession
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
-import timber.log.Timber
 import java.io.IOException
 import kotlin.concurrent.fixedRateTimer
 
@@ -69,6 +57,10 @@ class AuthManager constructor(private val context: Context) {
         val email = preferences[EMAIL] ?: ""
         val password = preferences[PASSWORD] ?: ""
 
+        login(email, password)
+    }
+
+    suspend fun login(email: String, password: String) = withContext(Dispatchers.IO) {
         val response = apiLogin.login(email, password)
 
         if(response.isSuccessful) {

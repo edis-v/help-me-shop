@@ -10,6 +10,7 @@ import io.moxd.shopforme.PASSWORD_PATTERN
 import io.moxd.shopforme.data.AuthManager
 import io.moxd.shopforme.data.model.Registration
 import io.moxd.shopforme.requireAuthManager
+import io.moxd.shopforme.requireUserManager
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
@@ -83,7 +84,7 @@ class RegistrationViewModel(
                         eventChannel.send(RegistrationEvent.Success(result.email, result.password))
                     }
                     is AuthManager.Result.RegisterError -> {
-                        eventChannel.send(RegistrationEvent.Error(result.errorMessages.first()))
+                        eventChannel.send(RegistrationEvent.Error(result.error))
                     }
                 }
             }
@@ -145,7 +146,7 @@ class RegistrationViewModel(
     }
 
     fun performRegistration() = viewModelScope.launch {
-        requireAuthManager().register(Registration(email, pw, lastName, firstName, address, postalCode, city, phoneNum))
+        requireUserManager().register(Registration(email, pw, lastName, firstName, address, postalCode, city, phoneNum))
     }
 
     // Eventübersicht (data class wenn Argumente nötig)
