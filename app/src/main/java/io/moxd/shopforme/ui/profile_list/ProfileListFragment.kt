@@ -16,18 +16,18 @@ import kotlinx.coroutines.launch
 class ProfileListFragment : Fragment() {
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.profile_list_fragment, container, false)
-        root.findViewById<TextView>(R.id.profilelist_ausloggen).setOnClickListener{
+        root.findViewById<TextView>(R.id.profilelist_ausloggen).setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
                 requireAuthManager().unauth()
-              //  requireUserManager().sessionRevoked()
+                //  requireUserManager().sessionRevoked()
             }
             (requireActivity() as MainActivity).setupActionBarWithGraph(R.navigation.nav_graph_auth)
         }
-        root.findViewById<TextView>(R.id.profilelist_profile).setOnClickListener{
+        root.findViewById<TextView>(R.id.profilelist_profile).setOnClickListener {
             val ft = (requireActivity() as MainActivity).getSupportFragmentManager().beginTransaction()
             ft.replace(R.id.mainframe, ProfileFragment2())
             ft.commit()

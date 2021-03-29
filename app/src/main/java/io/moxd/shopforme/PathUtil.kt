@@ -14,7 +14,7 @@ fun getRealPathFromURI_API19(context: Context, uri: Uri): String? {
 
 
     // DocumentProvider
-    if ( DocumentsContract.isDocumentUri(context, uri)) {
+    if (DocumentsContract.isDocumentUri(context, uri)) {
         // ExternalStorageProvider
         if (isExternalStorageDocument(uri)) {
             val docId = DocumentsContract.getDocumentId(uri)
@@ -28,7 +28,7 @@ fun getRealPathFromURI_API19(context: Context, uri: Uri): String? {
         } else if (isDownloadsDocument(uri)) {
             val id = DocumentsContract.getDocumentId(uri)
             val contentUri: Uri = ContentUris.withAppendedId(
-                Uri.parse("content://downloads/public_downloads"), java.lang.Long.valueOf(id)
+                    Uri.parse("content://downloads/public_downloads"), java.lang.Long.valueOf(id)
             )
             return getDataColumn(context, contentUri, null, null)
         } else if (isMediaDocument(uri)) {
@@ -45,7 +45,7 @@ fun getRealPathFromURI_API19(context: Context, uri: Uri): String? {
             }
             val selection = "_id=?"
             val selectionArgs = arrayOf(
-                split[1]
+                    split[1]
             )
             return getDataColumn(context, contentUri, selection, selectionArgs)
         }
@@ -53,10 +53,10 @@ fun getRealPathFromURI_API19(context: Context, uri: Uri): String? {
 
         // Return the remote address
         return if (isGooglePhotosUri(uri)) uri.getLastPathSegment() else getDataColumn(
-            context,
-            uri,
-            null,
-            null
+                context,
+                uri,
+                null,
+                null
         )
     } else if ("file".equals(uri.getScheme(), ignoreCase = true)) {
         return uri.getPath()
@@ -75,18 +75,18 @@ fun getRealPathFromURI_API19(context: Context, uri: Uri): String? {
  * @return The value of the _data column, which is typically a file path.
  */
 fun getDataColumn(
-    context: Context, uri: Uri?, selection: String?,
-    selectionArgs: Array<String>?
+        context: Context, uri: Uri?, selection: String?,
+        selectionArgs: Array<String>?
 ): String? {
     var cursor: Cursor? = null
     val column = "_data"
     val projection = arrayOf(
-        column
+            column
     )
     try {
         cursor = context.getContentResolver().query(
-            uri!!, projection, selection, selectionArgs,
-            null
+                uri!!, projection, selection, selectionArgs,
+                null
         )
         if (cursor != null && cursor.moveToFirst()) {
             val index: Int = cursor.getColumnIndexOrThrow(column)

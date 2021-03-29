@@ -1,26 +1,18 @@
 package io.moxd.shopforme.adapter
 
 import android.content.Context
-import android.graphics.Paint
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
-import io.moxd.shopforme.FormatDate
-import io.moxd.shopforme.MainActivity
 import io.moxd.shopforme.R
 import io.moxd.shopforme.data.AuthManager
 import io.moxd.shopforme.data.model.Beleg
-import io.moxd.shopforme.data.model.Shop
-import io.moxd.shopforme.ui.shopbuylist.ShopAdd
 
-class BelegeAdapter (private val context: Context, val itemModelArrayList: List<Beleg>) :
+class BelegeAdapter(private val context: Context, val itemModelArrayList: List<Beleg>) :
         RecyclerView.Adapter<BelegeAdapter.Viewholder>() {
 
 
@@ -35,8 +27,8 @@ class BelegeAdapter (private val context: Context, val itemModelArrayList: List<
         // to set data to textview and imageview of each card layout
         val model: Beleg = itemModelArrayList[position]
 
-        holder.User.text = if(model.user.id == AuthManager.User?.id) "Ich" else "${ model.user.firstname } ${ model.user.name }"
-        holder.type.text = if(model.type == "K") "KassenZettle" else "Bezahlung"
+        holder.User.text = model.user
+        holder.type.text = if (model.type == "K") "KassenZettle" else "Bezahlung"
         Picasso.get().load(model.beleg).into(holder.beleg)
 
     }
@@ -47,12 +39,10 @@ class BelegeAdapter (private val context: Context, val itemModelArrayList: List<
     }
 
 
-
-
     inner class Viewholder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val type : TextView
+        val type: TextView
         val User: TextView
-        val beleg : ImageView
+        val beleg: ImageView
 
         init {
             type = itemView.findViewById(R.id.maxshop_type)

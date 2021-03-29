@@ -33,6 +33,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import timber.log.Timber
 import java.io.IOException
 
 // Einmalig erzeugte Klasse um alle Loginanfragen und die Persisitierung der Session zu managen
@@ -46,29 +47,29 @@ class AuthManager constructor(context: Context) {
     val events = eventChannel.receiveAsFlow()
 
     // Login Request + Events und Persisiterung der Session
-   /* suspend fun login(email: String, password: String) {
-        try {
-            val session = Fuel.post(
-                    RestPath.login,
-                    listOf("email" to email, "password" to password)
-            ).awaitObject<SessionDto>(kotlinxDeserializerOf(JsonDeserializer))
+    /* suspend fun login(email: String, password: String) {
+         try {
+             val session = Fuel.post(
+                     RestPath.login,
+                     listOf("email" to email, "password" to password)
+             ).awaitObject<SessionDto>(kotlinxDeserializerOf(JsonDeserializer))
 
-            dataStore.edit { preferences ->
-                preferences[SESSION_ID] = session.id
-            }
-            eventChannel.send(Result.AuthSucess(session))
+             dataStore.edit { preferences ->
+                 preferences[SESSION_ID] = session.id
+             }
+             eventChannel.send(Result.AuthSucess(session))
 
-        } catch (exception: Exception) {
-            // TODO: Error handling sauber umsetzen mit echten Fällen
-            eventChannel.send(Result.AuthError(exception))
+         } catch (exception: Exception) {
+             // TODO: Error handling sauber umsetzen mit echten Fällen
+             eventChannel.send(Result.AuthError(exception))
 
-        }
-    }*/
-    companion object {
-        var User : UserME? = null //switch not normal objects
-    }
+         }
+     }*/
+    /* companion object {
+         var User : UserME? = null //switch not normal objects
+     }*/
     suspend fun login2(email: String, password: String) {
-             
+
         val log = Fuel.post(
                 RestPath.login,
                 listOf("email" to email, "password" to password)
@@ -90,14 +91,14 @@ class AuthManager constructor(context: Context) {
                                 ActitityMain?.applicationContext, 234, intent, 0
                         )
 
-                        alarmManager[AlarmManager.RTC_WAKEUP, System.currentTimeMillis() +  30*60*1000 ] = pendingIntent
+                        alarmManager[AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 30 * 60 * 1000] = pendingIntent
 
                         auth2()
                         eventChannel.send(Result.AuthSucess(session))
                     }
                 }
                 is com.github.kittinunf.result.Result.Failure -> {
-                    Log.d("Error", getError(response))
+                    Timber.d(getError(response))
                     GlobalScope.launch {
                         eventChannel.send(Result.AuthError(result.getException()))
                     }
@@ -146,9 +147,9 @@ class AuthManager constructor(context: Context) {
                                 try {
 
 
-                                    User = Json.decodeFromString<UserME>(result.get());
+                                    //        User = Json.decodeFromString<UserME>(result.get());
 
-                                    Log.d("SessionID" , sessionId)
+                                    Log.d("SessionID", sessionId)
                                     eventChannel.send(Result.AuthSucess(SessionDto(sessionId)))
 
                                 } catch (ex: java.lang.Exception) {
@@ -175,51 +176,51 @@ class AuthManager constructor(context: Context) {
 
                 login2(loginEmail, loginPassword)
             }
-        else
-        {
+        else {
             GlobalScope.launch {
-            eventChannel.send(Result.AuthError( IOException()))}
+                eventChannel.send(Result.AuthError(IOException()))
+            }
         }
     }
 
     suspend fun unauth() {
         dataStore.edit { it.clear() }
-    //    eventChannel.send(Result.UnauthSucess)
+        //    eventChannel.send(Result.UnauthSucess)
     }
 
     fun register(registration: Registration) {
 
-            Fuel.post(
+        Fuel.post(
                 RestPath.register,
                 listOf(
-                    "name" to registration.name,
-                    "firstname" to  registration.firstName,
-                    "password" to registration.password,
-                    "password2" to registration.password,
-                    "email" to registration.email,
-                    "phone_number" to registration.phoneNumber,
-                    "Street" to registration.address,
-                    "profile_pic" to null,
-                    "plz" to registration.postalCode,
-                    "City" to registration.city,
-                    "usertype" to UserType2.Type[0].second
+                        "name" to registration.name,
+                        "firstname" to registration.firstName,
+                        "password" to registration.password,
+                        "password2" to registration.password,
+                        "email" to registration.email,
+                        "phone_number" to registration.phoneNumber,
+                        "Street" to registration.address,
+                        "profile_pic" to null,
+                        "plz" to registration.postalCode,
+                        "City" to registration.city,
+                        "usertype" to UserType2.Type[0].second
                 )
-            ).responseString { request, response, result ->
-                when (result) {
-                    is com.github.kittinunf.result.Result.Success -> {
+        ).responseString { request, response, result ->
+            when (result) {
+                is com.github.kittinunf.result.Result.Success -> {
 
-                        GlobalScope.launch {
-                            eventChannel.send(Result.RegisterSuccess(registration.email, registration.password))
-                        }
-                    }
-                    is com.github.kittinunf.result.Result.Failure -> {
-                        val errorMessages = getAllError(response)
-                        GlobalScope.launch {
-                            eventChannel.send(Result.RegisterError(result.getException(), errorMessages))
-                        }
+                    GlobalScope.launch {
+                        eventChannel.send(Result.RegisterSuccess(registration.email, registration.password))
                     }
                 }
-            }.join()
+                is com.github.kittinunf.result.Result.Failure -> {
+                    val errorMessages = getAllError(response)
+                    GlobalScope.launch {
+                        eventChannel.send(Result.RegisterError(result.getException(), errorMessages))
+                    }
+                }
+            }
+        }.join()
 
     }
 
@@ -230,12 +231,12 @@ class AuthManager constructor(context: Context) {
     }
 
 
-      fun SessionID():  String= runBlocking {
-        var ssid : String = "Peter"
-         dataStore.getValueFlow(SESSION_ID, "").take(1).collect {
-              ssid = it
+    fun SessionID(): String = runBlocking {
+        var ssid: String = "Peter"
+        dataStore.getValueFlow(SESSION_ID, "").take(1).collect {
+            ssid = it
         }
-        return@runBlocking  ssid
+        return@runBlocking ssid
     }
 
 

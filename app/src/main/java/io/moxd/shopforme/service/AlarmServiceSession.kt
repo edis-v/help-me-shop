@@ -10,14 +10,14 @@ import java.lang.Exception
 
 class AlarmServiceSession : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
-         //refresh session
+        //refresh session
         try {
 
 
             GlobalScope.launch {
                 requireAuthManager().auth2()
             }
-        }catch (ex:Exception){
+        } catch (ex: Exception) {
 
         }
     }

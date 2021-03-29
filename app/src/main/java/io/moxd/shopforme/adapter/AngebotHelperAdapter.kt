@@ -27,7 +27,7 @@ import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import kotlin.concurrent.thread
 
-class AngebotHelperAdapter (private val context: Context, var itemModelArrayList: MutableList<AngebotHelper>) :
+class AngebotHelperAdapter(private val context: Context, var itemModelArrayList: List<AngebotHelper>) :
         RecyclerView.Adapter<AngebotHelperAdapter.Viewholder>() {
 
 
@@ -42,41 +42,36 @@ class AngebotHelperAdapter (private val context: Context, var itemModelArrayList
         // to set data to textview and imageview of each card layout
         val model: AngebotHelper = itemModelArrayList[position]
 
-        holder.date.text = FormatDate( model.creation_date)
-        holder.user.text =  model.shop.helpsearcher.firstname + " "+model.shop.helpsearcher.name
-     val imgurl = model.shop.helpsearcher.profile_pic
+        holder.date.text = FormatDate(model.creation_date)
+        holder.user.text = model.shop.helpsearcher.firstname + " " + model.shop.helpsearcher.name
+        val imgurl = model.shop.helpsearcher.profile_pic
 
-        Log.d("URLIMG",imgurl)
+        Log.d("URLIMG", imgurl)
         val pic = Picasso.get()
         pic.isLoggingEnabled = true
 
-            Thread {
-                val bm = Picasso.get().load(imgurl).get()
+        Thread {
+            val bm = Picasso.get().load(imgurl).get()
 
-                ( context as Activity).runOnUiThread {
-                    holder.profilepic.setImageBitmap(bm)
-                }
+            (context as Activity).runOnUiThread {
+                holder.profilepic.setImageBitmap(bm)
+            }
 
-            }.start()
+        }.start()
 
 
-        if(model.viewed)
-            if(model.approve) {
+        if (model.viewed)
+            if (model.approve) {
                 holder.status.setImageResource(R.drawable.ic_done)
                 holder.status.setColorFilter(ContextCompat.getColor(context, R.color.IconAccept), android.graphics.PorterDuff.Mode.SRC_IN); // change color right
-            }
-            else{
+            } else {
                 holder.status.setImageResource(R.drawable.ic_wrong)
                 holder.status.setColorFilter(ContextCompat.getColor(context, R.color.red), android.graphics.PorterDuff.Mode.SRC_IN);
             }
-        else
-        {
+        else {
             holder.status.setImageResource(R.drawable.ic_baseline_timelapse_24)
             holder.status.setColorFilter(ContextCompat.getColor(context, R.color.divivder), android.graphics.PorterDuff.Mode.SRC_IN);
         }
-
-
-
 
 
     }
@@ -87,14 +82,12 @@ class AngebotHelperAdapter (private val context: Context, var itemModelArrayList
     }
 
 
-
-
     inner class Viewholder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val user: TextView
         val date: TextView
 
-        val profilepic : ImageView
-        val status  : ImageView
+        val profilepic: ImageView
+        val status: ImageView
 
         init {
             user = itemView.findViewById(R.id.angebot_helper_user)

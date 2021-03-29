@@ -31,23 +31,22 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ProfileFragment2 : Fragment()    {
+class ProfileFragment2 : Fragment() {
 
-    private val viewModel : ProfileViewModel by viewModels {
+    private val viewModel: ProfileViewModel by viewModels {
         ProfileViewModelFactory(this, arguments)
     }
-    lateinit var observer : ProfileLifecycleObserver
+    lateinit var observer: ProfileLifecycleObserver
     lateinit var binding: AuthProfileFragmentBinding
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
-        observer = ProfileLifecycleObserver(requireActivity().activityResultRegistry,viewModel,requireContext())
+        observer = ProfileLifecycleObserver(requireActivity().activityResultRegistry, viewModel, requireContext())
         lifecycle.addObserver(observer)
-        return inflater.inflate(R.layout.auth_profile_fragment,container,false)
+        return inflater.inflate(R.layout.auth_profile_fragment, container, false)
     }
-
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -59,34 +58,37 @@ class ProfileFragment2 : Fragment()    {
 
             uploadnewpic.setOnClickListener {
 
-                val popup = CameraGalleryDialog(requireActivity())
+                val popup = CameraGalleryDialog(requireActivity(),"Bild ändern")
 
 
 
                 popup.show()
-                popup.gallery.setOnClickListener { observer.GalleryAction()
-                popup.dismiss()
+                popup.gallery.setOnClickListener {
+                    observer.GalleryAction()
+                    popup.dismiss()
                 }
 
-                popup.camera.setOnClickListener { observer.CameraAction()
+                popup.camera.setOnClickListener {
+                    observer.CameraAction()
                     popup.dismiss()
                 }
 
             }
             updateProfileBtn.setOnClickListener { viewModel.OnEditClicked() }
-            cancelProfileBtn.setOnClickListener {  viewModel.OnCancelClicked()}
+            cancelProfileBtn.setOnClickListener { viewModel.OnCancelClicked() }
             saveProfileBtn.setOnClickListener {
 
 
                 //update Viewmodel Data
 
-                viewModel.OnUpdateClicked( nameField.text.toString(),
-                    firstnameField.text.toString(),
-                    phonenumberField.text.toString(),
-                    StreetField.text.toString(),
-                    plzField.text.toString(),
-                    CityField.text.toString(),
-                    if(usertypeField.selectedItem.toString() == "Helfer") "HF" else "HFS") }
+                viewModel.OnUpdateClicked(nameField.text.toString(),
+                        firstnameField.text.toString(),
+                        phonenumberField.text.toString(),
+                        StreetField.text.toString(),
+                        plzField.text.toString(),
+                        CityField.text.toString(),
+                        if (usertypeField.selectedItem.toString() == "Helfer") "HF" else "HFS")
+            }
             profileButtonBack.setOnClickListener {
                 //TODO Nav Graph
                 val ft = (requireActivity() as MainActivity).supportFragmentManager.beginTransaction()
@@ -97,80 +99,71 @@ class ProfileFragment2 : Fragment()    {
 
 
 
-        viewModel.user?.observe(viewLifecycleOwner){
+        viewModel.user?.observe(viewLifecycleOwner) {
             //update UI
 
-                if (it.isSuccessful) {
+            if (it.isSuccessful) {
 
-                    binding.apply {
-                        val Profile = it.body()!!
+                binding.apply {
+                    val Profile = it.body()!!
 
-                        var usertypes_txt = arrayListOf<String>("Helfer", "HilfeSuchender")
-                        val ad = ArrayAdapter<String>(
+                    var usertypes_txt = arrayListOf<String>("Helfer", "HilfeSuchender")
+                    val ad = ArrayAdapter<String>(
                             root.context,
                             R.layout.support_simple_spinner_dropdown_item,
                             usertypes_txt
-                        )
-                        usertypeField.adapter = ad
-                        nameField.setText(Profile.name)
-                        firstnameField.setText(Profile.firstname)
-                        emailField.setText(Profile.email)
-                        StreetField.setText(Profile.Street)
-                        phonenumberField.setText(Profile.phone_number)
-                        plzField.setText(Profile.plz.toString())
-                        CityField.setText(Profile.City)
-                        Picasso.get().load(Profile.profile_pic).into(ProfilePicField)
-                        if (Profile.usertype_txt == "Helfer")
-                            usertypeField.setSelection(0)
-                        else
-                            usertypeField.setSelection(1)
+                    )
+                    usertypeField.adapter = ad
+                    nameField.setText(Profile.name)
+                    firstnameField.setText(Profile.firstname)
+                    emailField.setText(Profile.email)
+                    StreetField.setText(Profile.Street)
+                    phonenumberField.setText(Profile.phone_number)
+                    plzField.setText(Profile.plz.toString())
+                    CityField.setText(Profile.City)
+                    Picasso.get().load(Profile.profile_pic).into(ProfilePicField)
+                    if (Profile.usertype_txt == "Helfer")
+                        usertypeField.setSelection(0)
+                    else
+                        usertypeField.setSelection(1)
 
-                    }
-                }else {
-
-                    viewModel.getProfile()
-
-                    Snackbar.make(view,getErrorRetro(it.errorBody()),Snackbar.LENGTH_LONG).show()
-
-                    Timber.d(getErrorRetro(it.errorBody()))
                 }
+            } else {
 
+                viewModel.getProfile()
 
+                Snackbar.make(view, getErrorRetro(it.errorBody()), Snackbar.LENGTH_LONG).show()
 
+                Timber.d(getErrorRetro(it.errorBody()))
+            }
 
 
         }
 
 
-        viewModel.edit.observe(viewLifecycleOwner){
+        viewModel.edit.observe(viewLifecycleOwner) {
 
-    binding.apply {
-            firstnameField.isEnabled = it
-            nameField.isEnabled = it
-            StreetField.isEnabled = it
-            phonenumberField.isEnabled = it
-            emailField.isEnabled = false
-            StreetField.isEnabled = it
-            usertypeField.isEnabled = it
-            plzField.isEnabled  =it
-            usertypeField.isClickable = it
-            CityField.isEnabled = it
+            binding.apply {
+                firstnameField.isEnabled = it
+                nameField.isEnabled = it
+                StreetField.isEnabled = it
+                phonenumberField.isEnabled = it
+                emailField.isEnabled = false
+                StreetField.isEnabled = it
+                usertypeField.isEnabled = it
+                plzField.isEnabled = it
+                usertypeField.isClickable = it
+                CityField.isEnabled = it
 
-        cancelProfileBtn.visibility = if(it) View.VISIBLE else View.GONE
-        saveProfileBtn.visibility = if(it) View.VISIBLE else View.GONE
+                cancelProfileBtn.visibility = if (it) View.VISIBLE else View.GONE
+                saveProfileBtn.visibility = if (it) View.VISIBLE else View.GONE
 
-        updateProfileBtn.visibility = if(it) View.GONE else View.VISIBLE
-
-
+                updateProfileBtn.visibility = if (it) View.GONE else View.VISIBLE
 
 
-    }}
+            }
+        }
     }
-
-
-
-
-
 
 
 }

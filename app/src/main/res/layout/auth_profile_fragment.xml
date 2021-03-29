@@ -18,17 +18,16 @@
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/profile_buttonBack"
-            android:layout_width="35dp"
-            android:layout_height="29dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_width="51dp"
+            android:layout_height="41dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="24dp"
             android:background="@null"
-            app:layout_constraintStart_toStartOf="parent"
             android:tint="@color/colorPrimaryDark"
+            app:layout_constraintStart_toStartOf="parent"
 
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_baseline_arrow_back_24"
-
 
 
             />

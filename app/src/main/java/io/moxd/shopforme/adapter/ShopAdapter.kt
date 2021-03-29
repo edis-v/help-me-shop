@@ -10,18 +10,15 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
-import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.recyclerview.widget.RecyclerView
-import androidx.transition.Fade
-import com.google.android.material.transition.MaterialElevationScale
 import io.moxd.shopforme.FormatDate
 import io.moxd.shopforme.MainActivity
 import io.moxd.shopforme.R
-import io.moxd.shopforme.data.model.Shop
-import io.moxd.shopforme.ui.shopbuylist.ShopAdd
+import io.moxd.shopforme.data.model.ShopGSON
+import io.moxd.shopforme.ui.shopbuylist.shopadd.ShopAdd
 
 
-class ShopAdapter(private val context: Context, val itemModelArrayList: List<Shop>) :
+class ShopAdapter(private val context: Context, val itemModelArrayList: List<ShopGSON>) :
         RecyclerView.Adapter<ShopAdapter.Viewholder>() {
 
 
@@ -34,26 +31,26 @@ class ShopAdapter(private val context: Context, val itemModelArrayList: List<Sho
 
     override fun onBindViewHolder(holder: Viewholder, position: Int) {
         // to set data to textview and imageview of each card layout
-        val model: Shop = itemModelArrayList[position]
+        val model: ShopGSON = itemModelArrayList[position]
 
 
 
-        ViewCompat.setTransitionName(holder.itemView,"shop${model.id}")
+        ViewCompat.setTransitionName(holder.itemView, "shop${model.id}")
         holder.Title.paintFlags = holder.Title.paintFlags or Paint.UNDERLINE_TEXT_FLAG
         holder.Title.text = FormatDate(model.creation_date)
-        holder.payed.text = if(model.payed) "Bezahlt" else   "Zu Bezahlen"
-        holder.price.text =   "Preis: ${ String.format(
-                "%.2f",
-                model.buylist.articles.sumOf { (it.count * it.item.cost) })} €"
-        holder.count.text = "Anzahl: ${ model.buylist.articles.sumBy {  it.count  } }"
-        if(model.helper == null)
-        {
+        holder.payed.text = if (model.payed) "Bezahlt" else "Zu Bezahlen"
+        holder.price.text = "Preis: ${
+            String.format(
+                    "%.2f",
+                    model.buylist.articles.sumOf { (it.count * it.item.cost) })
+        } €"
+        holder.count.text = "Anzahl: ${model.buylist.articles.sumBy { it.count }}"
+        if (model.helper == null) {
             //searcvhing
             holder.status.setImageResource(R.drawable.ic_baseline_person_search_24)
             holder.status.setColorFilter(ContextCompat.getColor(context, R.color.divivder), android.graphics.PorterDuff.Mode.SRC_IN);
-        }
-        else if (model.done)
-            when(model.payed){
+        } else if (model.done)
+            when (model.payed) {
                 true -> { // green arrow
                     holder.status.setImageResource(R.drawable.ic_done)
                     holder.status.setColorFilter(ContextCompat.getColor(context, R.color.IconAccept), android.graphics.PorterDuff.Mode.SRC_IN);
@@ -71,18 +68,18 @@ class ShopAdapter(private val context: Context, val itemModelArrayList: List<Sho
 
 
 
-         holder.itemView.setOnClickListener {
-             val f = ShopAdd() 
+        holder.itemView.setOnClickListener {
+            val f = ShopAdd()
 
-             val args = Bundle()
-             args.putSerializable("model",model)
-             f.arguments  = args
-          //   val extras = FragmentNavigatorExtras(it to emailCardDetailTransitionName)
-                    (context as MainActivity).supportFragmentManager.beginTransaction()
-                     .replace(R.id.mainframe, f,"detail").addToBackStack(null).addSharedElement(it, "max_shop${model.id}").commit();
+            val args = Bundle()
+            args.putInt("id", model.id)
+            f.arguments = args
+            //   val extras = FragmentNavigatorExtras(it to emailCardDetailTransitionName)
+            (context as MainActivity).supportFragmentManager.beginTransaction()
+                    .replace(R.id.mainframe, f, "detail").addToBackStack(null).addSharedElement(it, "max_shop${model.id}").commit();
 
 
-         }
+        }
 
     }
 
@@ -92,14 +89,12 @@ class ShopAdapter(private val context: Context, val itemModelArrayList: List<Sho
     }
 
 
-
-
     inner class Viewholder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val Title: TextView
         val price: TextView
         val count: TextView
         val payed: TextView
-        val status : ImageView
+        val status: ImageView
 
         init {
             Title = itemView.findViewById(R.id.shop_cardview_title)

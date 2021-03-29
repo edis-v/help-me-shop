@@ -47,26 +47,28 @@ class MainActivity : AppCompatActivity() {
 
         GlobalScope.launch(Dispatchers.Main) {
 
-                // Authentifizierungsversuch (gelingt wenn eine Session gespeichert ist)
+            // Authentifizierungsversuch (gelingt wenn eine Session gespeichert ist)
 
-                    authManager?.auth2() // sessionId in dataStore?
+            authManager?.auth2() // sessionId in dataStore?
 
 
-                // Auf Events des AuthManagers in Coroutine reagieren
+            // Auf Events des AuthManagers in Coroutine reagieren
 
-                    authManager?.events?.collect { result ->
-                        when(result) {
-                            is AuthManager.Result.AuthSucess -> { Log.d("NAV","MAIN")
-                                setupActionBarWithGraph(R.navigation.nav_graph_main)}
-
-                            is  AuthManager.Result.AuthError ->  {
-                                Log.d("NAV","AUTH")
-                                setupActionBarWithGraph(R.navigation.nav_graph_auth)}
-
-                        }
+            authManager?.events?.collect { result ->
+                when (result) {
+                    is AuthManager.Result.AuthSucess -> {
+                        Log.d("NAV", "MAIN")
+                        setupActionBarWithGraph(R.navigation.nav_graph_main)
                     }
-                  }
 
+                    is AuthManager.Result.AuthError -> {
+                        Log.d("NAV", "AUTH")
+                        setupActionBarWithGraph(R.navigation.nav_graph_auth)
+                    }
+
+                }
+            }
+        }
 
 
     }
@@ -81,7 +83,7 @@ class MainActivity : AppCompatActivity() {
         navController = navHostFragment.findNavController()
         val graph = inflater.inflate(id)
         navController.graph = graph
-      //  setupActionBarWithNavController(navController)
+        //  setupActionBarWithNavController(navController)
     }
 
 
