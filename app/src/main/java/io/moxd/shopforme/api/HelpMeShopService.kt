@@ -3,6 +3,7 @@ package io.moxd.shopforme.api
 import androidx.lifecycle.LiveData
 import androidx.room.Update
 import io.moxd.shopforme.ParseDate
+import io.moxd.shopforme.data.dto.SessionDto
 import io.moxd.shopforme.data.model.*
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -114,5 +115,11 @@ interface HelpMeShopService {
     @PUT("api/user/firebase/{sessionId}")
     suspend fun updateFirebase(@Path("sessionId") sessionid: String, @Field("firebase_token") token: String)
 
+    @FormUrlEncoded
+    @POST("api/user/login")
+    suspend fun login(@Field("email" ) email :String , @Field("password") password : String) : Response<SessionDto>
 
+    @FormUrlEncoded
+    @POST("api/user/add")
+    suspend fun registration(@Field("name" ) name :String , @Field("firstname") firstname : String ,@Field("password" ) password :String ,@Field("password2" ) password2 :String ,@Field("email" ) email :String ,@Field("phone_number" ) phone_number :String ,@Field("Street" ) Street :String ,@Field("profile_pic" ) profile_pic :String ,@Field("plz" ) plz :String ,@Field("City" ) City :String ,@Field("usertype" ) usertype :String ) : Response<UserGSON>
 }

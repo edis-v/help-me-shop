@@ -14,6 +14,7 @@ import androidx.datastore.preferences.createDataStore
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.coroutines.awaitStringResponse
 import io.moxd.shopforme.MainActivity
+import io.moxd.shopforme.api.ApiRegistration
 import io.moxd.shopforme.data.AuthManager.PreferencesKeys.EMAIL
 import io.moxd.shopforme.data.AuthManager.PreferencesKeys.PASSWORD
 import io.moxd.shopforme.data.AuthManager.PreferencesKeys.SESSION_ID
@@ -21,6 +22,7 @@ import io.moxd.shopforme.data.dto.SessionDto
 import io.moxd.shopforme.data.model.*
 import io.moxd.shopforme.getAllError
 import io.moxd.shopforme.getError
+import io.moxd.shopforme.getErrorRetro
 import io.moxd.shopforme.service.AlarmServiceSession
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
@@ -184,7 +186,17 @@ class AuthManager constructor(private val context: Context) {
         //    eventChannel.send(Result.UnauthSucess)
     }
 
-    fun register(registration: Registration) {
+    fun register(registration: Registration) = runBlocking {
+
+
+        val response =  ApiRegistration().registration(registration.name,registration.firstName ,registration.password,registration.password)
+
+        if(response.isSuccessful){
+
+        }else
+        {
+            val error = getErrorRetro(response.errorBody())
+        }
 
         Fuel.post(
                 RestPath.register,
@@ -228,7 +240,7 @@ class AuthManager constructor(private val context: Context) {
 
 
     fun SessionID(): String = runBlocking {
-        var ssid: String = "Peter"
+        var ssid: String = ""
         dataStore.getValueFlow(SESSION_ID, "").take(1).collect {
             ssid = it
         }
@@ -236,7 +248,7 @@ class AuthManager constructor(private val context: Context) {
     }
 
     private fun Email(): String = runBlocking {
-        var ssid: String = "Peter"
+        var ssid: String = ""
         dataStore.getValueFlow(EMAIL, "").take(1).collect {
             ssid = it
         }
@@ -244,7 +256,7 @@ class AuthManager constructor(private val context: Context) {
     }
 
     private fun Password(): String = runBlocking {
-        var ssid: String = "Peter"
+        var ssid: String = ""
         dataStore.getValueFlow(PASSWORD, "").take(1).collect {
             ssid = it
         }

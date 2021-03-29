@@ -144,4 +144,10 @@ class ApiFirebase : Api() {
 }
 
 
+class ApiLogin : Api(){
+    suspend fun login(email:String , password:String) = service.login(email,password)
+}
 
+class ApiRegistration : Api(){
+    suspend fun registration(name: String,firstname: String,password: String,password2: String,email: String,phonenumber: String,Street: String,profile_pic:String,plz:String,City: String,usertype: String) = service.registration(name,firstname,password,password2,email,phonenumber,Street,profile_pic, plz, City, usertype)
+}

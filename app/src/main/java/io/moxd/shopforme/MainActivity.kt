@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithGraph(R.navigation.nav_graph_auth)
 
 
-    
+
 
         lifecycleScope.launchWhenCreated {
             authManager?.events?.collect { result ->
