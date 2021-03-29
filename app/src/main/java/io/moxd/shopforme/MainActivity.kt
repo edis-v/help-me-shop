@@ -1,7 +1,6 @@
 package io.moxd.shopforme
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
@@ -11,11 +10,11 @@ import com.github.kittinunf.fuel.core.FuelManager
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
-
 import io.moxd.shopforme.data.AuthManager
-import io.moxd.shopforme.data.UserManager
 import io.moxd.shopforme.ui.splashscreen.SplashScreenDirections
 import kotlinx.coroutines.flow.collect
+import java.util.*
+import kotlin.concurrent.fixedRateTimer
 
 class MainActivity : AppCompatActivity() {
 
@@ -33,10 +32,12 @@ class MainActivity : AppCompatActivity() {
 
         // Eine AuthManager Instanz erzeugen (benötigt context ggf. für DataStore)
         authManager = AuthManager(this)
-        userManager = UserManager(this)
 
         // ActionBar mit Auth Navigation Graph einstellen
         setupActionBarWithGraph(R.navigation.nav_graph_auth)
+
+
+    
 
         lifecycleScope.launchWhenCreated {
             authManager?.events?.collect { result ->
@@ -69,8 +70,8 @@ class MainActivity : AppCompatActivity() {
 
 
     companion object {
-        // Nur eine (von außen unveränderliche) Instanz der Manager erzeugen
+
         var authManager: AuthManager? = null
-        var userManager: UserManager? = null
+
     }
 }

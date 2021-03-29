@@ -1,22 +1,13 @@
 package io.moxd.shopforme.ui.login
 
-import android.util.Log
 import androidx.core.util.PatternsCompat
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.moxd.shopforme.data.AuthManager
-import io.moxd.shopforme.data.UserManager
-import io.moxd.shopforme.data.dto.SessionDto
-import io.moxd.shopforme.data.model.User
-import io.moxd.shopforme.data.proto_serializer.toModel
-import io.moxd.shopforme.exhaustive
-import io.moxd.shopforme.requireUserManager
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import java.lang.Exception
 
 private const val TAG = "LoginViewModel"
 

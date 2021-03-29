@@ -235,6 +235,22 @@ class AuthManager constructor(private val context: Context) {
         return@runBlocking ssid
     }
 
+    private fun Email(): String = runBlocking {
+        var ssid: String = "Peter"
+        dataStore.getValueFlow(EMAIL, "").take(1).collect {
+            ssid = it
+        }
+        return@runBlocking ssid
+    }
+
+    private fun Password(): String = runBlocking {
+        var ssid: String = "Peter"
+        dataStore.getValueFlow(PASSWORD, "").take(1).collect {
+            ssid = it
+        }
+        return@runBlocking ssid
+    }
+
 
     //extension to get Value From DataStore
     private fun <T> DataStore<Preferences>.getValueFlow(

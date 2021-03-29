@@ -42,9 +42,9 @@ val PASSWORD_PATTERN =
                 ".{4,}" +               //at least 4 characters
                 "$");
 
-fun requireUserManager() = MainActivity.userManager!!
-fun requireAuthManager() = MainActivity.authManager!!
 
+fun requireAuthManager() = MainActivity.authManager!!
+val Int.minutes get() = this * 60 * 1000
 val JsonDeserializer = Json {
     ignoreUnknownKeys = true // Nicht alle Keys müssen im Dto/Model vorhanden sein
     ;coerceInputValues = true
