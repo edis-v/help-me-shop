@@ -169,7 +169,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     symbolManager.deleteAll()
                     mystyle.addImage(
                             SYMBOL_ICON_ID, BitmapFactory.decodeResource(
-                            this@MapFragment.resources, R.drawable.icon_info
+                            this@MapFragment.resources, R.drawable.map_icon_1
                     )
                     )
 

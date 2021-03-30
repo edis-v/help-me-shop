@@ -75,11 +75,11 @@ interface HelpMeShopService {
     suspend fun shopPayHFS(@Path("sessionId") sessionid: String, @Path("id") id: String, @Part image: MultipartBody.Part): Response<ShopGSON>
 
     @Multipart
-    @PUT("api/shop/doneHF/{sessionId}/{id}")
+    @PUT("api/shop/donehf/{sessionId}/{id}")
     suspend fun shopDoneHF(@Path("sessionId") sessionid: String, @Path("id") id: String, @Part image: MultipartBody.Part): Response<ShopGSON>
 
     @Multipart
-    @PUT("api/shop/doneHFS/{sessionId}/{id}")
+    @PUT("api/shop/donehfs/{sessionId}/{id}")
     suspend fun shopDoneHFS(@Path("sessionId") sessionid: String, @Path("id") id: String, @Part image: MultipartBody.Part, @Part("done") done: Boolean = true): Response<ShopGSON>
 
 
@@ -105,7 +105,7 @@ interface HelpMeShopService {
 
     @FormUrlEncoded
     @POST("api/angebot/add")
-    suspend fun createAngebot(@Field("session_id") sessionid: String, @Field("shop") shop: Int): Response<AngebotHelper>
+    suspend fun createAngebot(@Field("session_id") sessionid: String, @Field("shop") shop: Int): Response<AngebotHelperCreate>
 
 
     @FormUrlEncoded

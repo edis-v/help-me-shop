@@ -49,6 +49,7 @@ class Shopcart : Fragment() {
         binding = AuthShopcartLayoutBinding.bind(view)
         postponeEnterTransition()
         view.doOnPreDraw { startPostponedEnterTransition() }
+
         //setup Listener
         binding.apply {
 
@@ -229,6 +230,7 @@ class Shopcart : Fragment() {
                 }
             }
         }
+
     }
 
 

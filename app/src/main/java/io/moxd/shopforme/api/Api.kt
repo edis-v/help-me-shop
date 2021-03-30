@@ -1,18 +1,24 @@
 package io.moxd.shopforme.api
 
 
-import io.moxd.shopforme.data.dto.SessionGSON
 import io.moxd.shopforme.data.model.*
 import okhttp3.MultipartBody
+import okhttp3.OkHttpClient
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 
 sealed class Api {
+    val okHttpClient = OkHttpClient.Builder()
+            .readTimeout(60, TimeUnit.SECONDS)
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .build()
     protected val retrofit: Retrofit = Retrofit.Builder()
             .baseUrl("https://moco.fluffistar.com/")
             .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient)
             .build()
 
     protected val service: HelpMeShopService = retrofit.create(HelpMeShopService::class.java)
@@ -130,7 +136,7 @@ class ApiFirebase : Api() {
 
 
 class ApiLogin : Api(){
-    suspend fun login(email:String , password:String) = service.login(email,password)
+    suspend fun login(email: String, password: String) = service.login(email, password)
 }
 
 class ApiRegistration : Api(){
@@ -141,8 +147,8 @@ class ApiRegistration : Api(){
             email: String,
             phoneNumber: String,
             street: String,
-            postalCode:String,
+            postalCode: String,
             city: String,
             userType: String
-    ) = service.registration(name,firstname,password,password,email,phoneNumber,street,null, postalCode, city, userType)
+    ) = service.registration(name, firstname, password, password, email, phoneNumber, street, null, postalCode, city, userType)
 }

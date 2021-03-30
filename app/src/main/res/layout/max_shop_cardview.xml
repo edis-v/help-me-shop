@@ -31,7 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:text="Einkauf vom 22.78.68"
+            android:text=""
             android:textColor="@color/black"
 
             android:textSize="24dp"
@@ -46,7 +46,7 @@
 
             android:layout_height="wrap_content"
 
-            android:text="Items 22"
+            android:text=""
             android:layout_marginBottom="10dp"
 
             app:layout_constraintLeft_toRightOf="@id/max_shop_cardview_exit"
@@ -62,7 +62,7 @@
             app:layout_constraintLeft_toLeftOf="@id/max_shop_cardview_anzahl"
             app:layout_constraintTop_toBottomOf="@id/max_shop_cardview_anzahl"
 
-            android:text="Preis: 22€"
+            android:text=""
             />
         <TextView
             android:id="@+id/max_shop_cardview_realPreis"
@@ -74,14 +74,14 @@
             app:layout_constraintLeft_toLeftOf="@id/max_shop_cardview_anzahl"
             app:layout_constraintTop_toBottomOf="@id/max_shop_cardview_Preis"
 
-            android:text="Preis: 22€"
+            android:text=""
             />
         <TextView
             android:id="@+id/max_shop_cardview_bezahlt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20dp"
-            android:text="Bezahlt am 22.7.99"
+            android:text=""
 
             app:layout_constraintLeft_toRightOf="@id/max_shop_cardview_exit"
             app:layout_constraintTop_toBottomOf="@id/max_shop_cardview_realPreis"
@@ -91,7 +91,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20dp"
-            android:text="222222222"
+            android:text=""
             android:autoLink="phone"
             android:linksClickable="true"
             app:layout_constraintLeft_toRightOf="@id/max_shop_cardview_exit"
@@ -139,6 +139,7 @@
                 android:elevation="4dp"
                 android:shadowColor="@color/colorSecondary"
                 android:text="Löschen"
+                android:visibility="gone"
                 android:textColor="@color/white"
                 android:textSize="16dp"
 
@@ -156,7 +157,7 @@
                 android:text="Fertig"
                 android:textColor="@color/white"
                 android:textSize="16dp"
-
+                android:visibility="gone"
                 />
 
         </LinearLayout>
@@ -180,7 +181,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentBottom="true"
-
+                android:visibility="gone"
                 android:backgroundTint="@color/mapbox_blue"
                 android:elevation="4dp"
                 android:text="Bezahlt"
@@ -195,7 +196,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentBottom="true"
-
+                android:visibility="gone"
                 android:backgroundTint="@color/mapbox_blue"
                 android:elevation="4dp"
                 android:text="Report"

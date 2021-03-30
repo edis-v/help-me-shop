@@ -27,16 +27,18 @@ class ShopAddViewModel @AssistedInject constructor(@Assisted savedStateHandle: S
 
     val User: LiveData<Response<UserGSON>> = _user
 
+    lateinit var Usertype :String
+
     init {
         viewModelScope.launch {
             _user.value = apiShopAdd.getProfile(sessionId)
+            Usertype = _user.value?.body()?.usertype_txt!!
+          //  getShopUpdate()
         }
-        getShopUpdate()
+
     }
 
-    fun UserType(): String {
-        return _user.value?.body()?.usertype_txt!!
-    }
+
 
     fun deleteShop() {
         viewModelScope.launch {
@@ -76,7 +78,7 @@ class ShopAddViewModel @AssistedInject constructor(@Assisted savedStateHandle: S
         viewModelScope.launch {
             val file: File = File(path)
             val requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file)
-            val body = MultipartBody.Part.createFormData("bill_hf", file.name, requestFile)
+            val body = MultipartBody.Part.createFormData("payed_prove", file.name, requestFile)
 
             _shop.value = apiShopAdd.shopPayHFS(sessionId, modelid.toString(), body)
         }

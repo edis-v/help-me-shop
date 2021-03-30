@@ -56,8 +56,8 @@ class ShopAdapter(private val context: Context, val itemModelArrayList: List<Sho
                     holder.status.setColorFilter(ContextCompat.getColor(context, R.color.IconAccept), android.graphics.PorterDuff.Mode.SRC_IN);
                 }
                 false -> {//red X
-                    holder.status.setImageResource(R.drawable.ic_wrong)
-                    holder.status.setColorFilter(ContextCompat.getColor(context, R.color.red), android.graphics.PorterDuff.Mode.SRC_IN);
+                    holder.status.setImageResource(R.drawable.ic_zu_bezahlen)
+                //    holder.status.setColorFilter(ContextCompat.getColor(context, R.color.red), android.graphics.PorterDuff.Mode.SRC_IN);
                 }
             }
         else {

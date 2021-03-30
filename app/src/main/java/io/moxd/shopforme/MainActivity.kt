@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
     private val firebaseAnalytics: FirebaseAnalytics
 
     init {
-        FuelManager.instance.basePath = "https://moco.fluffistar.com/"
+
         firebaseAnalytics = Firebase.analytics
     }
 
