@@ -1,7 +1,6 @@
 package io.moxd.shopforme.data
 
 import android.content.Context
-import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -14,7 +13,6 @@ import io.moxd.shopforme.api.ApiProfile
 import io.moxd.shopforme.data.AuthManager.PreferencesKeys.EMAIL
 import io.moxd.shopforme.data.AuthManager.PreferencesKeys.PASSWORD
 import io.moxd.shopforme.data.AuthManager.PreferencesKeys.SESSION_ID
-import io.moxd.shopforme.data.dto.SessionDto
 import io.moxd.shopforme.data.dto.SessionGSON
 import io.moxd.shopforme.data.model.*
 import io.moxd.shopforme.utils.getErrorRetro
@@ -77,7 +75,7 @@ class AuthManager constructor(private val context: Context) {
         val response = apiLogin.login(email, password)
 
         if(response.isSuccessful) {
-            val session = response.body()!!
+            val session: SessionGSON = response.body()!!
 
             dataStore.edit { preferences ->
                 preferences[SESSION_ID] = session.session_id

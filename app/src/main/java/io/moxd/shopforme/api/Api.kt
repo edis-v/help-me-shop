@@ -1,6 +1,7 @@
 package io.moxd.shopforme.api
 
 
+import io.moxd.shopforme.data.dto.SessionGSON
 import io.moxd.shopforme.data.model.*
 import okhttp3.MultipartBody
 import retrofit2.Response
