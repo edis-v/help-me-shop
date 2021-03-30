@@ -101,7 +101,18 @@ class ProfileFragment2 : Fragment() {
 
 
         viewModel.UserType.observe(viewLifecycleOwner){
-                Toast.makeText(requireContext(),"Usertype changed",Toast.LENGTH_LONG).show()
+            if(viewModel._old_usertype != it)
+                MaterialAlertDialogBuilder(requireContext())
+                        .setTitle("Usertype Geändert")
+                        .setMessage("App muss neustarten")
+
+                        .setPositiveButton("OK") { _, _ ->
+
+                            val intent = Intent(requireContext(), MainActivity::class.java)
+                            requireActivity().finish()
+                            requireActivity().startActivity(intent)
+
+                        }.show()
         }
 
 

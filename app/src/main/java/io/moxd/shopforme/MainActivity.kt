@@ -14,6 +14,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.ktx.messaging
 import io.moxd.shopforme.data.AuthManager
 import io.moxd.shopforme.data.UserManager
 import io.moxd.shopforme.ui.login.LoginFragment
@@ -65,7 +66,9 @@ class MainActivity : AppCompatActivity() {
                     }
 
                     is AuthManager.Result.AuthSucess -> {
+                        Firebase.messaging.isAutoInitEnabled = true
                         setupActionBarWithGraph(R.navigation.nav_graph_main)
+
                     }
 
                     is AuthManager.Result.AuthError -> {

@@ -35,10 +35,13 @@ class ProfileViewModel @AssistedInject constructor(
 
     val UserType : LiveData<String> = _usertype
 
+    var _old_usertype : String = ""
     init {
         viewModelScope.launch {
             _user.value = apiProfile.getProfile(sessionId)
-            _usertype.value = _user.value?.body()?.usertype_txt
+            _old_usertype = _user.value?.body()?.usertype_txt.toString()
+            _usertype.value  =   _user.value?.body()?.usertype_txt
+
             _edit.value = false
         }
     }
