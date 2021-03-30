@@ -8,3 +8,8 @@ data class SessionDto(
     @SerialName("session_id")
     val id: String
 )
+
+data class SessionGSON(
+
+        val session_id: String
+)
