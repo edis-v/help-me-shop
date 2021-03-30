@@ -14,6 +14,7 @@ import io.moxd.shopforme.data.AuthManager.PreferencesKeys.EMAIL
 import io.moxd.shopforme.data.AuthManager.PreferencesKeys.PASSWORD
 import io.moxd.shopforme.data.AuthManager.PreferencesKeys.SESSION_ID
 import io.moxd.shopforme.data.dto.SessionDto
+import io.moxd.shopforme.data.dto.SessionGSON
 import io.moxd.shopforme.data.model.*
 import io.moxd.shopforme.utils.getErrorRetro
 import io.moxd.shopforme.utils.minutes
@@ -78,7 +79,7 @@ class AuthManager constructor(private val context: Context) {
             val session = response.body()!!
 
             dataStore.edit { preferences ->
-                preferences[SESSION_ID] = session.id
+                preferences[SESSION_ID] = session.session_id
                 preferences[EMAIL] = email
                 preferences[PASSWORD] = password
             }
@@ -102,10 +103,8 @@ class AuthManager constructor(private val context: Context) {
 
 
     fun SessionID(): String = runBlocking(Dispatchers.IO)  {
-        var ssid: String = ""
-        dataStore.getValueFlow(SESSION_ID, "").take(1).collect {
-            ssid = it
-        }
+        val preferences = dataStore.data.first()
+        val ssid = preferences[SESSION_ID] ?:""
         return@runBlocking ssid
     }
 
@@ -154,7 +153,7 @@ class AuthManager constructor(private val context: Context) {
         object SessionInvalid : Result()
         object NoConnection : Result()
         object UnauthDone : Result()
-        data class AuthSucess(val session: SessionDto) : Result()
+        data class AuthSucess(val session: SessionGSON) : Result()
         data class AuthError(val error: String) : Result()
         data class RegisterSuccess(val email: String, val password: String) : Result()
         data class RegisterError(val error: String) : Result()

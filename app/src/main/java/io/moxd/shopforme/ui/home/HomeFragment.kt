@@ -98,6 +98,7 @@ class HomeFragment : Fragment(R.layout.main_home_fragment) {
                     Screen1()
                 } else {
                     //error
+                    getErrorRetro(it.errorBody())
                 }
             }
         }

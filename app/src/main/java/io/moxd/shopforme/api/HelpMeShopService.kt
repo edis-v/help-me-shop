@@ -2,6 +2,7 @@ package io.moxd.shopforme.api
 
 import io.moxd.shopforme.utils.ParseDate
 import io.moxd.shopforme.data.dto.SessionDto
+import io.moxd.shopforme.data.dto.SessionGSON
 import io.moxd.shopforme.data.model.*
 import okhttp3.MultipartBody
 import retrofit2.Response
@@ -116,7 +117,7 @@ interface HelpMeShopService {
     suspend fun login(
             @Field("email" ) email: String,
             @Field("password") password: String
-    ) : Response<SessionDto>
+    ) : Response<SessionGSON>
 
     @FormUrlEncoded
     @POST("api/user/add")
