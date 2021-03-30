@@ -107,9 +107,6 @@ class AuthManager constructor(private val context: Context) {
         return@runBlocking ssid
     }
 
-
-
-
     //extension to get Value From DataStore
     private fun <T> DataStore<Preferences>.getValueFlow(
             key: Preferences.Key<T>,

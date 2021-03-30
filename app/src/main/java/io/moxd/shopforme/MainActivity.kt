@@ -20,6 +20,7 @@ import io.moxd.shopforme.data.UserManager
 import io.moxd.shopforme.ui.login.LoginFragment
 import io.moxd.shopforme.ui.splashscreen.SplashScreenDirections
 import io.moxd.shopforme.utils.requireAuthManager
+import io.moxd.shopforme.utils.requireUserManager
 import kotlinx.coroutines.flow.collect
 import java.util.*
 
