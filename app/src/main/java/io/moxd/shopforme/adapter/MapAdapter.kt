@@ -20,7 +20,7 @@ import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.squareup.picasso.Picasso
-import io.moxd.shopforme.FormatDate
+import io.moxd.shopforme.utils.FormatDate
 import io.moxd.shopforme.R
 
 import io.moxd.shopforme.data.model.ShopMap

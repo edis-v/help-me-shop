@@ -9,11 +9,14 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.createDataStore
 import io.moxd.shopforme.*
 import io.moxd.shopforme.api.ApiLogin
+import io.moxd.shopforme.api.ApiProfile
 import io.moxd.shopforme.data.AuthManager.PreferencesKeys.EMAIL
 import io.moxd.shopforme.data.AuthManager.PreferencesKeys.PASSWORD
 import io.moxd.shopforme.data.AuthManager.PreferencesKeys.SESSION_ID
 import io.moxd.shopforme.data.dto.SessionDto
 import io.moxd.shopforme.data.model.*
+import io.moxd.shopforme.utils.getErrorRetro
+import io.moxd.shopforme.utils.minutes
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -25,7 +28,7 @@ class AuthManager constructor(private val context: Context) {
 
     private val dataStore = context.createDataStore("auth_preferences")
 
-    private val timer = fixedRateTimer("reauth", true, 0.toLong(), 30.minutes.toLong()) {
+    private val timer = fixedRateTimer("reauth", true, 30.minutes.toLong(), 30.minutes.toLong()) {
         GlobalScope.launch {
             // Reauth jede 30 min
             auth()
@@ -37,30 +40,38 @@ class AuthManager constructor(private val context: Context) {
     val events = eventChannel.receiveAsFlow()
 
     private val apiLogin = ApiLogin()
+    private val apiProfile = ApiProfile()
 
-    suspend fun loginCheck() = withContext(Dispatchers.IO) {
+    suspend fun checkSessionAndConnectivity() = withContext(Dispatchers.IO) {
         val preferences = dataStore.data.first()
-        val loginEmail = preferences[EMAIL] ?: ""
-        val loginPassword = preferences[PASSWORD] ?: ""
 
-        val isLoggedIn = loginEmail.isNotEmpty() and loginPassword.isNotEmpty()
+        val session = preferences[SESSION_ID] ?: return@withContext sendLoginNeeded()
+        val loginEmail = preferences[EMAIL] ?: return@withContext sendLoginNeeded()
+        val loginPassword = preferences[PASSWORD] ?: return@withContext sendLoginNeeded()
 
-        if (!isLoggedIn) {
-            eventChannel.send(Result.LoginNeeded)
+        if(context.isOnline()) {
+            // if user is online check if session is still valid using profile api
+            val response = apiProfile.getProfile(session)
+
+            if(response.isSuccessful) {
+                eventChannel.send(Result.SessionActive)
+            } else {
+                eventChannel.send(Result.SessionInvalid)
+            }
         } else {
-            eventChannel.send(Result.LoggedIn)
+            eventChannel.send(Result.NoConnection)
         }
     }
 
-    suspend fun auth() = withContext(Dispatchers.IO) {
+    suspend fun auth(retry: Boolean = false) = withContext(Dispatchers.IO) {
         val preferences = dataStore.data.first()
-        val email = preferences[EMAIL] ?: ""
-        val password = preferences[PASSWORD] ?: ""
+        val email = preferences[EMAIL] ?: return@withContext sendLoginNeeded()
+        val password = preferences[PASSWORD] ?: return@withContext sendLoginNeeded()
 
-        login(email, password)
+        auth(email, password)
     }
 
-    suspend fun login(email: String, password: String) = withContext(Dispatchers.IO) {
+    suspend fun auth(email: String, password: String) = withContext(Dispatchers.IO) {
         val response = apiLogin.login(email, password)
 
         if(response.isSuccessful) {
@@ -133,9 +144,15 @@ class AuthManager constructor(private val context: Context) {
                 }
     }
 
+    private val sendLoginNeeded: suspend () -> Unit = suspend {
+        eventChannel.send(Result.LoginNeeded)
+    }
+
     sealed class Result {
-        object LoginNeeded : Result()
-        object LoggedIn : Result()
+        object LoginNeeded: Result()
+        object SessionActive : Result()
+        object SessionInvalid : Result()
+        object NoConnection : Result()
         object UnauthDone : Result()
         data class AuthSucess(val session: SessionDto) : Result()
         data class AuthError(val error: String) : Result()

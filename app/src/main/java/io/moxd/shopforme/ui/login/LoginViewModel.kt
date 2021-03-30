@@ -44,7 +44,7 @@ class LoginViewModel(
             !PatternsCompat.EMAIL_ADDRESS.matcher(loginEmail).matches() -> eventChannel.send(LoginEvent.MalformedEmail)
             else -> {
                 eventChannel.send(LoginEvent.LoggingIn)
-                authManager.login(loginEmail, loginPassword)
+                authManager.auth(loginEmail, loginPassword)
             }
         }
     }

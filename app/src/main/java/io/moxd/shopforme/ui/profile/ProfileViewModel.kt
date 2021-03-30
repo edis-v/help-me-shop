@@ -10,7 +10,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.moxd.shopforme.api.*
 import io.moxd.shopforme.data.model.UserGSON
-import io.moxd.shopforme.requireAuthManager
+import io.moxd.shopforme.utils.requireAuthManager
 import kotlinx.coroutines.launch
 import okhttp3.MediaType
 import okhttp3.MultipartBody

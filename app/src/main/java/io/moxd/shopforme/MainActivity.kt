@@ -1,18 +1,21 @@
 package io.moxd.shopforme
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.github.kittinunf.fuel.core.FuelManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
 import io.moxd.shopforme.data.AuthManager
 import io.moxd.shopforme.data.UserManager
 import io.moxd.shopforme.ui.splashscreen.SplashScreenDirections
+import io.moxd.shopforme.utils.requireAuthManager
 import kotlinx.coroutines.flow.collect
 import java.util.*
 import kotlin.concurrent.fixedRateTimer
@@ -31,9 +34,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity)
 
+        val context = this
+
         // Eine AuthManager Instanz erzeugen (benötigt context ggf. für DataStore)
-        authManager = AuthManager(this)
-        userManager = UserManager(this)
+        authManager = AuthManager(applicationContext)
+        userManager = UserManager(applicationContext)
 
         // ActionBar mit Auth Navigation Graph einstellen
         setupActionBarWithGraph(R.navigation.nav_graph_auth)
@@ -41,22 +46,35 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launchWhenCreated {
             authManager?.events?.collect { result ->
                 when (result) {
-                    is AuthManager.Result.AuthSucess -> {
-                        setupActionBarWithGraph(R.navigation.nav_graph_main)
+                    is AuthManager.Result.NoConnection -> {
+                        MaterialAlertDialogBuilder(context)
+                                .setTitle("Keine Internetverbindung")
+                                .setMessage("Zurzeit kann diese App nur mit einer aktiven Internetverbindung genutzt werden.")
+                                .setNeutralButton("Ich habe wieder eine Verbindung!") { dialog, _ ->
+                                    dialog.dismiss()
+                                }
+                                .show()
                     }
 
-                    is AuthManager.Result.LoggedIn -> {
+                    is AuthManager.Result.SessionInvalid -> {
+                        // Versuche die Session zu erneuern
+                        requireAuthManager().auth()
+                    }
+
+                    is AuthManager.Result.AuthSucess -> {
+                        Log.d("Auth", "Sucess")
                         setupActionBarWithGraph(R.navigation.nav_graph_main)
-                        // User Manager?
                     }
 
                     is AuthManager.Result.AuthError -> {
+                        Log.d("Auth", "Error")
                         setupActionBarWithGraph(R.navigation.nav_graph_auth)
                         val action = SplashScreenDirections.actionSplashScreenToLoginFragment()
                         navController.navigate(action)
                     }
 
                     is AuthManager.Result.LoginNeeded -> {
+                        Log.d("Auth", "Login Needed")
                         setupActionBarWithGraph(R.navigation.nav_graph_auth)
                         val action = SplashScreenDirections.actionSplashScreenToLoginFragment()
                         navController.navigate(action)

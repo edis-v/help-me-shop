@@ -11,8 +11,6 @@ import android.provider.MediaStore
 
 
 fun getRealPathFromURI_API19(context: Context, uri: Uri): String? {
-
-
     // DocumentProvider
     if (DocumentsContract.isDocumentUri(context, uri)) {
         // ExternalStorageProvider

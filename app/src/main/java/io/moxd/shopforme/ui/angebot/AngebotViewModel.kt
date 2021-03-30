@@ -4,9 +4,8 @@ import androidx.lifecycle.*
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.moxd.shopforme.api.ApiAngebot
-import io.moxd.shopforme.api.ApiShopcart
 import io.moxd.shopforme.data.model.AngebotGSON
-import io.moxd.shopforme.requireAuthManager
+import io.moxd.shopforme.utils.requireAuthManager
 import kotlinx.coroutines.launch
 import retrofit2.Response
 

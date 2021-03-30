@@ -21,6 +21,7 @@ import io.moxd.shopforme.data.model.AngebotGSON
 import io.moxd.shopforme.data.model.AngebotHelper
 import io.moxd.shopforme.data.model.Shop
 import io.moxd.shopforme.ui.angebot.AngebotViewModel
+import io.moxd.shopforme.utils.FormatDate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect

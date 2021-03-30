@@ -20,6 +20,7 @@ import io.moxd.shopforme.adapter.BuyListAdapter
 import io.moxd.shopforme.adapter.ShopAdapter
 import io.moxd.shopforme.databinding.AuthShopcartLayoutBinding
 import io.moxd.shopforme.ui.shopbuylist.buylistadd.BuylistAdd
+import io.moxd.shopforme.utils.getErrorRetro
 
 class Shopcart : Fragment() {
 

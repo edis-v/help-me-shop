@@ -1,13 +1,12 @@
 package io.moxd.shopforme.ui.splashscreen
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import io.moxd.shopforme.R
 import io.moxd.shopforme.databinding.SplashscreenBinding
-import io.moxd.shopforme.requireAuthManager
+import io.moxd.shopforme.utils.requireAuthManager
 import kotlinx.coroutines.delay
 
 
@@ -30,7 +29,7 @@ class SplashScreen : Fragment(R.layout.splashscreen) {
 
         lifecycleScope.launchWhenStarted {
             delay(500)
-            requireAuthManager().loginCheck()
+            requireAuthManager().checkSessionAndConnectivity()
         }
     }
 }

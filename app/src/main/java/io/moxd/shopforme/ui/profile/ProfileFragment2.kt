@@ -25,6 +25,7 @@ import io.moxd.shopforme.*
 import io.moxd.shopforme.databinding.AuthProfileFragmentBinding
 import io.moxd.shopforme.ui.dialog.CameraGalleryDialog
 import io.moxd.shopforme.ui.profile_list.ProfileListFragment
+import io.moxd.shopforme.utils.getErrorRetro
 import timber.log.Timber
 import java.io.File
 import java.io.IOException

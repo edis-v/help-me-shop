@@ -3,17 +3,14 @@ package io.moxd.shopforme.ui.login
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import io.moxd.shopforme.MainActivity
 import io.moxd.shopforme.R
 import io.moxd.shopforme.databinding.AuthLoginFragmentBinding
-import io.moxd.shopforme.exhaustive
-import io.moxd.shopforme.toClickable
+import io.moxd.shopforme.utils.toClickable
 import kotlinx.coroutines.flow.collect
 
 private const val TAG = "LoginFragment"

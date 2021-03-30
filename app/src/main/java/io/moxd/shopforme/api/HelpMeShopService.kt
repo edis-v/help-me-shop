@@ -1,13 +1,9 @@
 package io.moxd.shopforme.api
 
-import androidx.lifecycle.LiveData
-import androidx.room.Update
-import io.moxd.shopforme.ParseDate
+import io.moxd.shopforme.utils.ParseDate
 import io.moxd.shopforme.data.dto.SessionDto
 import io.moxd.shopforme.data.model.*
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
 

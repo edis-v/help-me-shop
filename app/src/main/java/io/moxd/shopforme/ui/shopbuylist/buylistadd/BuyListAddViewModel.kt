@@ -5,7 +5,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.moxd.shopforme.api.ApiBuyListAdd
 import io.moxd.shopforme.data.model.*
-import io.moxd.shopforme.requireAuthManager
+import io.moxd.shopforme.utils.requireAuthManager
 import kotlinx.coroutines.launch
 import retrofit2.Response
 

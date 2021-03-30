@@ -12,7 +12,7 @@ import io.moxd.shopforme.data.UserManager.PreferencesKeys.EMAIL
 import io.moxd.shopforme.data.UserManager.PreferencesKeys.FIRST_NAME
 import io.moxd.shopforme.data.model.Registration
 import io.moxd.shopforme.data.model.UserType2
-import io.moxd.shopforme.getErrorRetro
+import io.moxd.shopforme.utils.getErrorRetro
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import io.moxd.shopforme.data.UserManager.PreferencesKeys.NAME
@@ -21,10 +21,7 @@ import io.moxd.shopforme.data.UserManager.PreferencesKeys.POSTAL_CODE
 import io.moxd.shopforme.data.UserManager.PreferencesKeys.STREET
 import io.moxd.shopforme.data.UserManager.PreferencesKeys.USER_TYPE
 import io.moxd.shopforme.data.model.UserGSON
-import io.moxd.shopforme.requireAuthManager
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
+import io.moxd.shopforme.utils.requireAuthManager
 
 class UserManager constructor(private val context: Context) {
     private val dataStore = context.createDataStore("user")

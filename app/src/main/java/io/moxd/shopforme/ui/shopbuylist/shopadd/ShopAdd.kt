@@ -43,6 +43,9 @@ import io.moxd.shopforme.data.model.ShopGSON
 import io.moxd.shopforme.databinding.AddShopLayoutBinding
 import io.moxd.shopforme.databinding.MaxShopCardviewBinding
 import io.moxd.shopforme.ui.dialog.CameraGalleryDialog
+import io.moxd.shopforme.utils.ActionType
+import io.moxd.shopforme.utils.FormatDate
+import io.moxd.shopforme.utils.getErrorRetro
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
@@ -92,7 +95,7 @@ class ShopAdd : Fragment() {
 
                 popup.show()
                 popup.gallery.setOnClickListener {
-                    observer.GalleryAction(if (viewModel.UserType() == "Helfer") ActionType.DoneHF else ActionType.DoneHFS)
+                    observer.GalleryAction(if (viewModel.UserType() == "Helfer")  ActionType.DoneHF else ActionType.DoneHFS)
                     popup.dismiss()
                 }
 

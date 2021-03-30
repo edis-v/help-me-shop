@@ -6,11 +6,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import io.moxd.shopforme.PASSWORD_PATTERN
+import io.moxd.shopforme.utils.PASSWORD_PATTERN
 import io.moxd.shopforme.data.AuthManager
 import io.moxd.shopforme.data.model.Registration
-import io.moxd.shopforme.requireAuthManager
-import io.moxd.shopforme.requireUserManager
+import io.moxd.shopforme.utils.requireAuthManager
+import io.moxd.shopforme.utils.requireUserManager
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest

@@ -1,27 +1,11 @@
 package io.moxd.shopforme.api
 
 
-import android.util.Log
-import com.github.kittinunf.fuel.Fuel
-import com.github.kittinunf.fuel.core.BodyLength
-import com.github.kittinunf.fuel.core.FuelManager
-import com.github.kittinunf.fuel.core.Method
-import com.github.kittinunf.fuel.core.awaitUnit
-import com.github.kittinunf.result.Result
-import io.moxd.shopforme.JsonDeserializer
-import io.moxd.shopforme.data.RestPath
 import io.moxd.shopforme.data.model.*
-import io.moxd.shopforme.getError
-import kotlinx.coroutines.*
-import kotlinx.serialization.decodeFromString
 import okhttp3.MultipartBody
-import retrofit2.Call
-import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Path
-import timber.log.Timber
 
 
 sealed class Api {
