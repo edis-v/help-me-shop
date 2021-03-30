@@ -63,7 +63,7 @@ class AuthManager constructor(private val context: Context) {
         }
     }
 
-    suspend fun auth(retry: Boolean = false) = withContext(Dispatchers.IO) {
+    suspend fun auth() = withContext(Dispatchers.IO) {
         val preferences = dataStore.data.first()
         val email = preferences[EMAIL] ?: return@withContext sendLoginNeeded()
         val password = preferences[PASSWORD] ?: return@withContext sendLoginNeeded()
