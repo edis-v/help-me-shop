@@ -3,22 +3,25 @@ package io.moxd.shopforme
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.github.kittinunf.fuel.core.FuelManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
 import io.moxd.shopforme.data.AuthManager
 import io.moxd.shopforme.data.UserManager
+import io.moxd.shopforme.ui.login.LoginFragment
 import io.moxd.shopforme.ui.splashscreen.SplashScreenDirections
 import io.moxd.shopforme.utils.requireAuthManager
 import kotlinx.coroutines.flow.collect
 import java.util.*
-import kotlin.concurrent.fixedRateTimer
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -62,19 +65,25 @@ class MainActivity : AppCompatActivity() {
                     }
 
                     is AuthManager.Result.AuthSucess -> {
-                        Log.d("Auth", "Sucess")
                         setupActionBarWithGraph(R.navigation.nav_graph_main)
                     }
 
                     is AuthManager.Result.AuthError -> {
-                        Log.d("Auth", "Error")
+                        supportFragmentManager.findFragmentById(R.id.nav_host_fragment)?.let { navHost ->
+                            navHost.getChildFragmentManager().getFragments().get(0)?.let { currentFragment ->
+                                if(currentFragment is LoginFragment) {
+                                    Snackbar.make(currentFragment.requireView(), "Login fehlgeschlagen", Snackbar.LENGTH_LONG).show()
+                                    return@collect
+                                }
+                            }
+                        }
+
                         setupActionBarWithGraph(R.navigation.nav_graph_auth)
                         val action = SplashScreenDirections.actionSplashScreenToLoginFragment()
                         navController.navigate(action)
                     }
 
                     is AuthManager.Result.LoginNeeded -> {
-                        Log.d("Auth", "Login Needed")
                         setupActionBarWithGraph(R.navigation.nav_graph_auth)
                         val action = SplashScreenDirections.actionSplashScreenToLoginFragment()
                         navController.navigate(action)
