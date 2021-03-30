@@ -28,7 +28,7 @@ class AuthManager constructor(private val context: Context) {
 
     private val dataStore = context.createDataStore("auth_preferences")
 
-    private val timer = fixedRateTimer("reauth", true, 30.minutes.toLong(), 30.minutes.toLong()) {
+    private val timer = fixedRateTimer("reauth", true, 0.minutes.toLong(), 30.minutes.toLong()) {
         GlobalScope.launch {
             // Reauth jede 30 min
             auth()
@@ -106,9 +106,6 @@ class AuthManager constructor(private val context: Context) {
         val ssid = preferences[SESSION_ID] ?:""
         return@runBlocking ssid
     }
-
-
-
 
     //extension to get Value From DataStore
     private fun <T> DataStore<Preferences>.getValueFlow(
