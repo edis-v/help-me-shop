@@ -74,6 +74,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync(this@MapFragment)
         observer = MapLifecycleObserver(requireActivity().activityResultRegistry, LocationServices.getFusedLocationProviderClient(requireContext()), viewModel, requireContext())
+        lifecycle.addObserver(observer)
         return root
 
 

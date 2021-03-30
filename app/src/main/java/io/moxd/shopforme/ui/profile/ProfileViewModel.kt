@@ -31,10 +31,14 @@ class ProfileViewModel @AssistedInject constructor(
     val edit: LiveData<Boolean> = _edit
     val user: LiveData<Response<UserGSON>> = _user
 
+    val _usertype = MutableLiveData<String>()
+
+    val UserType : LiveData<String> = _usertype
 
     init {
         viewModelScope.launch {
             _user.value = apiProfile.getProfile(sessionId)
+            _usertype.value = _user.value?.body()?.usertype_txt
             _edit.value = false
         }
     }
@@ -42,6 +46,7 @@ class ProfileViewModel @AssistedInject constructor(
     fun getProfile() {
         viewModelScope.launch {
             _user.value = apiProfile.getProfile(sessionId)
+            _usertype.value = _user.value?.body()?.usertype_txt
         }
     }
 
@@ -52,6 +57,7 @@ class ProfileViewModel @AssistedInject constructor(
             val requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file)
             val body = MultipartBody.Part.createFormData("profile_pic", file.name, requestFile)
             _user.value = apiProfile.updateProfilePic(sessionId, body)
+
 
 
         }
@@ -94,6 +100,7 @@ class ProfileViewModel @AssistedInject constructor(
                     City,
                     usertype
             )
+            _usertype.value = _user.value?.body()?.usertype_txt
             _edit.value = !_edit.value!!
         }
     }
