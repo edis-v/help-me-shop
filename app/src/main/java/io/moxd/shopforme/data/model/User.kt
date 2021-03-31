@@ -9,7 +9,7 @@ enum class UserType { Helfer, Hilfesuchender }
 
 class UserType2 {
     companion object {
-        val Type: List<Pair<String, String>> = listOf(Pair("Hilfesuchender", "HFS"), Pair("Helfer", "HF"))
+        val Type: List<Pair<String, String>> = listOf( Pair("Helfer", "HF") , Pair("Hilfesuchender", "HFS"))
     }
 }
 
