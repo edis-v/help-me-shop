@@ -47,10 +47,10 @@ class ShopcartViewModel @AssistedInject constructor(
         }
     }
 
-    fun updateLocation(locationDataGSON: LocationGSON) {
+    fun updateLocation(lat : Double , long : Double) {
         viewModelScope.launch {
 
-            _location.value = apiShopcart.updateLocation(sessionId, locationDataGSON.coordinates[0], locationDataGSON.coordinates[1])
+            _location.value = apiShopcart.updateLocation(sessionId, lat, long)
         }
     }
 

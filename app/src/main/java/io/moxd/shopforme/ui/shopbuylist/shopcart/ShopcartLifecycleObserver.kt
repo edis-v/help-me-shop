@@ -122,7 +122,7 @@ class ShopcartLifecycleObserver(private val registry: ActivityResultRegistry, pr
             val lat: Double = mLastLocation.latitude
             val long: Double = mLastLocation.longitude
             Log.d("Location", "lat $lat  ::: long $long")
-            viewModel.updateLocation(LocationGSON("Point", listOf(lat, long)))
+            viewModel.updateLocation(lat, long)
         }
     }
 
