@@ -10,7 +10,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 
-fun currentDateAsString(): String {
+fun currentDateTimeAsString(): String {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         val current = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy. HH:mm:ss")
@@ -22,7 +22,7 @@ fun currentDateAsString(): String {
     }
 }
 
-fun stringifiedDateOlderThan30Min(date: String): Boolean {
+fun stringifiedDateTimeMinsOld(date: String, minutes: Int = 30): Boolean {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         val current = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy. HH:mm:ss")
@@ -30,7 +30,7 @@ fun stringifiedDateOlderThan30Min(date: String): Boolean {
 
         val duration = Duration.between(parsedDate, current)
 
-        if(duration.toMinutes() >= 30) {
+        if(duration.toMinutes() >= minutes) {
             return true
         }
     } else {
@@ -40,7 +40,7 @@ fun stringifiedDateOlderThan30Min(date: String): Boolean {
         val diffInMillies = Math.abs(current.getTime() - parsedDate.getTime())
         val diff = TimeUnit.MINUTES.convert(diffInMillies, TimeUnit.MINUTES)
 
-        if(diff >= 30) {
+        if(diff >= minutes) {
             return true
         }
     }

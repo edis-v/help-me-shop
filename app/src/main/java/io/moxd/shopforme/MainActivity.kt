@@ -16,6 +16,7 @@ import io.moxd.shopforme.data.AuthManager
 import io.moxd.shopforme.data.UserManager
 import io.moxd.shopforme.ui.login.LoginFragment
 import io.moxd.shopforme.ui.splashscreen.SplashScreenDirections
+import io.moxd.shopforme.utils.requireAuthManager
 import kotlinx.coroutines.flow.collect
 import java.util.*
 
@@ -42,8 +43,14 @@ class MainActivity : AppCompatActivity() {
         // ActionBar mit Auth Navigation Graph einstellen
         setupActionBarWithGraph(R.navigation.nav_graph_auth)
 
+        lifecycleScope.launchWhenResumed {
+            // wenn session älter als 30 minuten, erneuere den Token
+            // TODO: Test this
+            requireAuthManager().reauth()
+        }
+
         lifecycleScope.launchWhenCreated {
-            authManager?.events?.collect { result ->
+            requireAuthManager().events.collect { result ->
                 when (result) {
                     is AuthManager.Result.NoConnection -> {
                         MaterialAlertDialogBuilder(context)

@@ -1,7 +1,6 @@
 package io.moxd.shopforme.data
 
 import android.content.Context
-import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -12,29 +11,21 @@ import io.moxd.shopforme.*
 import io.moxd.shopforme.api.ApiLogin
 import io.moxd.shopforme.api.ApiProfile
 import io.moxd.shopforme.data.AuthManager.PreferencesKeys.EMAIL
+import io.moxd.shopforme.data.AuthManager.PreferencesKeys.LAST_AUTH
 import io.moxd.shopforme.data.AuthManager.PreferencesKeys.PASSWORD
 import io.moxd.shopforme.data.AuthManager.PreferencesKeys.SESSION_ID
 import io.moxd.shopforme.data.dto.SessionGSON
 import io.moxd.shopforme.data.model.*
-import io.moxd.shopforme.utils.getErrorRetro
-import io.moxd.shopforme.utils.minutes
+import io.moxd.shopforme.utils.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import java.io.IOException
-import kotlin.concurrent.fixedRateTimer
 
 // Einmalig erzeugte Klasse um alle Loginanfragen und die Persisitierung der Session zu managen
 class AuthManager constructor(private val context: Context) {
 
     private val dataStore = context.createDataStore("auth_preferences")
-
-    private val timer = fixedRateTimer("reauth", true, 30.minutes.toLong(), 30.minutes.toLong()) {
-        GlobalScope.launch {
-            // Reauth jede 30 min
-            auth()
-        }
-    }
 
     // Privater Channel und öffentlicher Flow für den Zugriff von außen
     private val eventChannel = Channel<Result>()
@@ -66,7 +57,12 @@ class AuthManager constructor(private val context: Context) {
     }
 
     suspend fun reauth() = withContext(Dispatchers.IO) {
-        // check last login
+        // check last login 30 mins or more with preferences and utils
+        val preferences = dataStore.data.first()
+        val lastAuth = preferences[LAST_AUTH] ?: return@withContext sendLoginNeeded()
+        if(stringifiedDateTimeMinsOld(lastAuth, 30)) {
+            auth()
+        }
     }
 
     suspend fun auth(email: String, password: String) = withContext(Dispatchers.IO) {
@@ -79,6 +75,7 @@ class AuthManager constructor(private val context: Context) {
                 preferences[SESSION_ID] = session.session_id
                 preferences[EMAIL] = email
                 preferences[PASSWORD] = password
+                preferences[LAST_AUTH] = currentDateTimeAsString()
             }
 
             eventChannel.send(Result.AuthSucess(session))
@@ -96,6 +93,7 @@ class AuthManager constructor(private val context: Context) {
         val SESSION_ID = stringPreferencesKey("session_id")
         val EMAIL = stringPreferencesKey("email")
         val PASSWORD = stringPreferencesKey("password")
+        val LAST_AUTH = stringPreferencesKey("last_auth")
     }
 
 
