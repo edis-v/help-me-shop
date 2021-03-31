@@ -3,17 +3,14 @@ package io.moxd.shopforme.ui.login
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import io.moxd.shopforme.MainActivity
 import io.moxd.shopforme.R
 import io.moxd.shopforme.databinding.AuthLoginFragmentBinding
-import io.moxd.shopforme.exhaustive
-import io.moxd.shopforme.toClickable
+import io.moxd.shopforme.utils.toClickable
 import kotlinx.coroutines.flow.collect
 
 private const val TAG = "LoginFragment"
@@ -123,26 +120,6 @@ class LoginFragment : Fragment(R.layout.auth_login_fragment) {
                             loginTxtInputEmail.error = "Keine Valide Email"
 
                         }
-                    }
-
-                    // Login Status
-
-                    is LoginViewModel.LoginEvent.LoginSuccess -> {
-                        // NavGraph zu nav_graph_main wechseln anstatt zum HomeFragment zu navigieren
-                        // Vorteil: Kein Navigation Stack / Back button
-                        (requireActivity() as MainActivity).setupActionBarWithGraph(R.navigation.nav_graph_main)
-                    }
-                    is LoginViewModel.LoginEvent.LoginFailed -> {
-                        Log.i(TAG, "handleEvents: LoginFailed")
-                        Log.i(TAG, "handleEvents: ${event.exception.message}")
-                        Toast.makeText(this@LoginFragment.context, "${event.exception.message}", Toast.LENGTH_LONG).show()
-                        // TODO: Meldung an User
-                    }
-                    is LoginViewModel.LoginEvent.LoggingIn -> {
-                        Log.i(TAG, "handleEvents: LoggingIn")
-                        // TODO: Blockiere UI und zeige vllt. einen Ladebalken
-                        //login wurde nicht gecallt in manchen Fällen also so implementiert Ursache ... was ist unterschied zwischen loginsucsees und logggingIN ?? //hypothe
-                        (requireActivity() as MainActivity).setupActionBarWithGraph(R.navigation.nav_graph_main)
                     }
                 }
             }

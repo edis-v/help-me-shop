@@ -23,6 +23,7 @@ import io.moxd.shopforme.data.model.ArticleAdd
 import io.moxd.shopforme.data.model.Item
 import io.moxd.shopforme.databinding.AddBuylistLayoutBinding
 import io.moxd.shopforme.ui.shopbuylist.shopcart.Shopcart
+import io.moxd.shopforme.utils.getErrorRetro
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch

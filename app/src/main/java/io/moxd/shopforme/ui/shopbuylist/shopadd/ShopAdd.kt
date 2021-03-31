@@ -43,6 +43,9 @@ import io.moxd.shopforme.data.model.ShopGSON
 import io.moxd.shopforme.databinding.AddShopLayoutBinding
 import io.moxd.shopforme.databinding.MaxShopCardviewBinding
 import io.moxd.shopforme.ui.dialog.CameraGalleryDialog
+import io.moxd.shopforme.utils.ActionType
+import io.moxd.shopforme.utils.FormatDate
+import io.moxd.shopforme.utils.getErrorRetro
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
@@ -92,18 +95,18 @@ class ShopAdd : Fragment() {
 
                 popup.show()
                 popup.gallery.setOnClickListener {
-                    observer.GalleryAction(if (viewModel.UserType() == "Helfer") ActionType.DoneHF else ActionType.DoneHFS)
+                    observer.GalleryAction(if (viewModel.Usertype == "Helfer")  ActionType.DoneHF else ActionType.DoneHFS)
                     popup.dismiss()
                 }
 
                 popup.camera.setOnClickListener {
-                    observer.CameraAction(if (viewModel.UserType() == "Helfer") ActionType.DoneHF else ActionType.DoneHFS)
+                    observer.CameraAction(if (viewModel.Usertype == "Helfer") ActionType.DoneHF else ActionType.DoneHFS)
                     popup.dismiss()
                 }
             }
             maxShopCardviewMenuPayed.setOnClickListener {
                 //payed()
-                if (viewModel.UserType() == "Helfer") {
+                if (viewModel.Usertype == "Helfer") {
 
                     MaterialAlertDialogBuilder(requireContext())
                             .setTitle("Bezahlt worden")
@@ -150,6 +153,12 @@ class ShopAdd : Fragment() {
 
         }
 
+
+        viewModel.User.observe(viewLifecycleOwner){
+            if(it.isSuccessful)
+                viewModel.getShopUpdate()
+        }
+
         binding.apply {
 
             viewModel.ShopDelte.observe(viewLifecycleOwner) {
@@ -168,17 +177,17 @@ class ShopAdd : Fragment() {
 
                     maxShopCardviewMenuDelete.visibility = if (model.helper == null) View.VISIBLE else View.GONE
                     maxShopCardviewMenuReport.visibility = if (model.helper == null) View.GONE else View.VISIBLE
-                    maxShopCardviewMenuShop.visibility = if (viewModel.UserType() == "Helfer" || model.bill_hf != null) View.VISIBLE else View.GONE
-                    maxShopCardviewMenuPayed.visibility = if (viewModel.UserType() == "Helfer" || model.payed_prove == null) View.GONE else View.VISIBLE
+                    maxShopCardviewMenuShop.visibility = if (viewModel.Usertype == "Helfer" && model.bill_hf == null || model.bill_hf != null &&  model.bill_hfs == null) View.VISIBLE else View.GONE
+                    maxShopCardviewMenuPayed.visibility = if ( (viewModel.Usertype == "Helfer" && model.payed_prove ==null) || model.bill_hfs == null ||model.payed == true) View.GONE else View.VISIBLE
 
                     val belege: MutableList<Beleg> = mutableListOf()
 
                     if (!model.bill_hf.isNullOrEmpty())
-                        belege.add(Beleg("K", if (viewModel.UserType() == "Helfer") "Ich" else "${model.helper?.firstname} ${model.helper?.name}", model.bill_hf))
+                        belege.add(Beleg("K", if (viewModel.Usertype == "Helfer") "Ich" else "${model.helper?.firstname} ${model.helper?.name}", model.bill_hf))
                     if (!model.bill_hfs.isNullOrEmpty())
-                        belege.add(Beleg("K", if (viewModel.UserType() == "Helfer") "${model.helpsearcher.firstname} ${model.helpsearcher.name}" else "Ich", model.bill_hfs))
+                        belege.add(Beleg("K", if (viewModel.Usertype == "Helfer") "${model.helpsearcher.firstname} ${model.helpsearcher.name}" else "Ich", model.bill_hfs))
                     if (!model.payed_prove.isNullOrEmpty())
-                        belege.add(Beleg("P", if (viewModel.UserType() == "Helfer") "${model.helpsearcher.firstname} ${model.helpsearcher.name}" else "Ich", model.payed_prove))
+                        belege.add(Beleg("P", if (viewModel.Usertype == "Helfer") "${model.helpsearcher.firstname} ${model.helpsearcher.name}" else "Ich", model.payed_prove))
                     maxShopImagerecycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
                     maxShopImagerecycler.adapter = BelegeAdapter(requireContext(), belege)
 
@@ -186,7 +195,7 @@ class ShopAdd : Fragment() {
 
                     maxShopCardviewTitle.text = FormatDate(model.creation_date)
                     maxShopCardviewBezahlt.text = if (model.payed) "Bezahlt" else "Zu Bezahlen"
-                    if (viewModel.UserType() == "Helfer") {
+                    if (viewModel.Usertype == "Helfer") {
                         maxShopCardviewMenuPayed.text = "Bezahlung erhalten"
                         maxShopCardviewMenuShop.text = "Einkauf erledigt"
                         maxShopCardviewMenuPayed.isEnabled = (model?.done!! && model?.payed_prove != null)
@@ -205,7 +214,7 @@ class ShopAdd : Fragment() {
                         maxShopCardviewRealPreis.visibility = View.GONE
                     }
 
-                    maxShopCardviewPhonenumber.text = if (viewModel.UserType() == "Helfer") model!!.helpsearcher.phone_number else if (model!!.helper != null) model!!.helper?.phone_number else "Kein Helfer"
+                    maxShopCardviewPhonenumber.text = if (viewModel.Usertype == "Helfer") model!!.helpsearcher.phone_number else if (model!!.helper != null) model!!.helper?.phone_number else "Kein Helfer"
                     maxShopCardviewBezahlt.text = if (model!!.payed) "Bezahlt" else "Zu Bezahlen"
                     maxShopCardviewPreis.text = "Geschätzter Preis: ${
                         String.format(
@@ -224,8 +233,8 @@ class ShopAdd : Fragment() {
                                 maxShopCardviewStatus.setColorFilter(ContextCompat.getColor(requireContext(), R.color.IconAccept), android.graphics.PorterDuff.Mode.SRC_IN);
                             }
                             false -> {//red X
-                                maxShopCardviewStatus.setImageResource(R.drawable.ic_wrong)
-                                maxShopCardviewStatus.setColorFilter(ContextCompat.getColor(requireContext(), R.color.red), android.graphics.PorterDuff.Mode.SRC_IN);
+                                maxShopCardviewStatus.setImageResource(R.drawable.ic_zu_bezahlen)
+                           //     maxShopCardviewStatus.setColorFilter(ContextCompat.getColor(requireContext(), R.color.red), android.graphics.PorterDuff.Mode.SRC_IN);
                             }
                         }
                     else {
@@ -241,6 +250,7 @@ class ShopAdd : Fragment() {
 
                 } else {
                     // Server Failed
+                    getErrorRetro(it.errorBody())
                 }
             }
         }

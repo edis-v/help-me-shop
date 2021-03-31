@@ -7,7 +7,7 @@ import io.moxd.shopforme.api.ShopAngebot
 
 import io.moxd.shopforme.data.model.AngebotHelper
 import io.moxd.shopforme.data.model.ShopGSON
-import io.moxd.shopforme.requireAuthManager
+import io.moxd.shopforme.utils.requireAuthManager
 import kotlinx.coroutines.launch
 import retrofit2.Response
 

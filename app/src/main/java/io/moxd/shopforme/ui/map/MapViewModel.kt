@@ -6,7 +6,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.moxd.shopforme.api.ApiMap
 import io.moxd.shopforme.data.model.*
-import io.moxd.shopforme.requireAuthManager
+import io.moxd.shopforme.utils.requireAuthManager
 import kotlinx.coroutines.launch
 import retrofit2.Response
 
@@ -26,8 +26,8 @@ class MapViewModel @AssistedInject constructor(
     private val _otherusersmax = MutableLiveData<Response<List<ShopMap>>>()
     val OtherUsersMax: LiveData<Response<List<ShopMap>>> = _otherusersmax
 
-    private val _angebot = MutableLiveData<Response<AngebotHelper>>()
-    val Angebot: LiveData<Response<AngebotHelper>> = _angebot
+    private val _angebot = MutableLiveData<Response<AngebotHelperCreate>>()
+    val Angebot: LiveData<Response<AngebotHelperCreate>> = _angebot
 
     init {
         viewModelScope.launch {

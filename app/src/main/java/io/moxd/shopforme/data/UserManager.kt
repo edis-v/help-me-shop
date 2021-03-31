@@ -2,84 +2,116 @@ package io.moxd.shopforme.data
 
 import android.content.Context
 import android.util.Log
-import androidx.datastore.core.DataStore
-
-import com.github.kittinunf.fuel.Fuel
-import com.github.kittinunf.fuel.coroutines.awaitObject
-import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
-import io.moxd.shopforme.JsonDeserializer
-import io.moxd.shopforme.ProtoUser
-import io.moxd.shopforme.data.dto.SessionDto
-import io.moxd.shopforme.data.model.User
-
-import io.moxd.shopforme.data.proto_serializer.exists
-import io.moxd.shopforme.data.proto_serializer.toModel
-import io.moxd.shopforme.data.proto_serializer.toProto
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.createDataStore
+import io.moxd.shopforme.api.ApiProfile
+import io.moxd.shopforme.api.ApiRegistration
+import io.moxd.shopforme.data.UserManager.PreferencesKeys.CITY
+import io.moxd.shopforme.data.UserManager.PreferencesKeys.EMAIL
+import io.moxd.shopforme.data.UserManager.PreferencesKeys.FIRST_NAME
+import io.moxd.shopforme.data.model.Registration
+import io.moxd.shopforme.data.model.UserType2
+import io.moxd.shopforme.utils.getErrorRetro
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.launch
+import io.moxd.shopforme.data.UserManager.PreferencesKeys.NAME
+import io.moxd.shopforme.data.UserManager.PreferencesKeys.PHONE_NUMBER
+import io.moxd.shopforme.data.UserManager.PreferencesKeys.POSTAL_CODE
+import io.moxd.shopforme.data.UserManager.PreferencesKeys.STREET
+import io.moxd.shopforme.data.UserManager.PreferencesKeys.USER_TYPE
+import io.moxd.shopforme.data.model.UserGSON
+import io.moxd.shopforme.utils.requireAuthManager
 
-class UserManager(context: Context) {
+class UserManager constructor(private val context: Context) {
+    private val dataStore = context.createDataStore("user")
 
-/*    private val dataStore: DataStore<ProtoUser> = context.createDataStore (
-        fileName = "user.pb",
-        serializer = ProtoUserSerializer
-    )
-
-    val user: Flow<ProtoUser> = dataStore.data
+    private val apiProfile = ApiProfile()
+    private val apiRegistration = ApiRegistration()
 
     // Privater Channel und öffentlicher Flow für den Zugriff von außen
-    private val eventChannel = Channel<UserEvent>()
+    private val eventChannel = Channel<Result>()
     val events = eventChannel.receiveAsFlow()
+/*
+    fun profile(): UserGSON = runBlocking(Dispatchers.IO) {
+        val preferences = dataStore.data.first()
 
-    init {
-        // Interne Events handeln
-        CoroutineScope(Dispatchers.IO).launch {
-            events.collect { event ->
-                // Userprofil holen bei neuer Session
-                when(event) {
-                    is UserEvent.UserSessionInitialized -> {
-                        try {
-                            Log.i("GetUser", event.session.id)
-                            val user = Fuel.get(
-                                RestPath.user(event.session.id)
-                            ).awaitObject<User>(kotlinxDeserializerOf(JsonDeserializer))
-                            Log.i("ProfileFetched Send", user.toString())
+        return@runBlocking UserGSON (
+                name = preferences[NAME] ?: "",
+                firstname = preferences[FIRST_NAME] ?: "",
+                email = preferences[EMAIL] ?: "",
+                phone_number = preferences[PHONE_NUMBER] ?: "",
+                Street = preferences[STREET] ?: "",
+                plz = preferences[POSTAL_CODE] ?: 0,
+                City = preferences[CITY] ?: "",
+                usertype_txt = preferences[USER_TYPE] ?: ""
+        )
+    }*/
 
-                            dataStore.updateData { protoUser ->
-                                user.toProto(protoUser.toBuilder())
-                            }
+    suspend fun updateProfile() {
+        val sessionId = requireAuthManager().SessionID()
+        val response = apiProfile.getProfile(sessionId)
 
-                            eventChannel.send(UserEvent.UserProfileFetchSuccess(event.session, user))
-                        } catch (exception: Exception) {
-                            // TODO: Error handling sauber umsetzen mit echten Fällen
-                            Log.i("UserSessionInitialized", exception.message.toString())
-                            eventChannel.send(UserEvent.UserProfileFetchError(exception))
-                        }
-                    }
-                }
-            }
+        if(response.isSuccessful) {
+            saveUser(response.body()!!)
+            eventChannel.send(Result.ProfileUpdated)
+        } else {
+            eventChannel.send(Result.ProfileUpdateFailed(getErrorRetro(response.errorBody())))
         }
     }
 
-    suspend fun initSession(session: SessionDto) {
-        eventChannel.send(UserEvent.UserSessionInitialized(session))
+    suspend fun register(registration: Registration) {
+        val response = apiRegistration.registration(
+                registration.name,
+                registration.firstName,
+                registration.password,
+                registration.email,
+                registration.phoneNumber,
+                registration.address,
+                registration.postalCode,
+                registration.city,
+                UserType2.Type[0].second
+        )
+
+        if(response.isSuccessful){
+            saveUser(response.body()!!)
+            eventChannel.send(Result.RegisterSuccess(registration.email, registration.password))
+        } else {
+            val error = getErrorRetro(response.errorBody())
+            Log.d("Registration Error ", error)
+            eventChannel.send(Result.RegisterError(error))
+        }
     }
 
-    suspend fun sessionRevoked() {
-        dataStore.updateData { it.toBuilder().clear().build() }
-        eventChannel.send(UserEvent.UserProfileRemoved)
+    suspend fun saveUser(user: UserGSON) {
+        dataStore.edit { preferences ->
+            preferences[NAME] = user.name
+            preferences[FIRST_NAME] = user.firstname
+            preferences[EMAIL] = user.email
+            preferences[PHONE_NUMBER] = user.phone_number
+            preferences[STREET] = user.Street
+            preferences[POSTAL_CODE] = user.plz
+            preferences[CITY] = user.City
+            preferences[USER_TYPE] = user.usertype_txt
+        }
     }
 
+    private object PreferencesKeys {
+        val NAME = stringPreferencesKey("name")
+        val FIRST_NAME = stringPreferencesKey("first_name")
+        val EMAIL = stringPreferencesKey("email")
+        val PHONE_NUMBER = stringPreferencesKey("phone_number")
+        val STREET = stringPreferencesKey("street")
+        val POSTAL_CODE = intPreferencesKey("postal_code")
+        val CITY = stringPreferencesKey("city")
+        val USER_TYPE = stringPreferencesKey("user_type")
+    }
 
-    sealed class UserEvent {
-        object UserProfileRemoved: UserEvent()
-        data class UserProfileFetchSuccess(val session: SessionDto, val user: User): UserEvent()
-        data class UserProfileFetchError(val exception: Exception): UserEvent()
-        data class UserSessionInitialized(val session: SessionDto): UserEvent()
-    }*/
+    sealed class Result {
+        object ProfileUpdated : Result()
+        data class ProfileUpdateFailed(val error: String): Result()
+        data class RegisterSuccess(val email: String, val password: String) : Result()
+        data class RegisterError(val error: String) : Result()
+    }
 }

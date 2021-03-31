@@ -17,8 +17,8 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import io.moxd.shopforme.ActionType
 import io.moxd.shopforme.getRealPathFromURI_API19
+import io.moxd.shopforme.utils.ActionType
 import timber.log.Timber
 import java.io.File
 import java.io.IOException

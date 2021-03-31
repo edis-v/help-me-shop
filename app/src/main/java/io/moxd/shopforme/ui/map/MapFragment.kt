@@ -1,49 +1,22 @@
 package io.moxd.shopforme.ui.map
 
 
-import android.Manifest
-import android.animation.ValueAnimator
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.Context
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.PointF
-import android.location.Location
-import android.os.Build
 import android.os.Bundle
-import android.os.Looper
-import android.os.Looper.getMainLooper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
-import androidx.cardview.widget.CardView
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.*
-import com.github.kittinunf.fuel.Fuel
-import com.github.kittinunf.fuel.core.FuelManager
-import com.github.kittinunf.result.Result
 import com.google.android.gms.location.*
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.slider.Slider
 import com.google.android.material.snackbar.Snackbar
 import com.mapbox.android.core.location.*
-import com.mapbox.android.core.permissions.PermissionsListener
-import com.mapbox.android.core.permissions.PermissionsManager
-import com.mapbox.geojson.Feature
-import com.mapbox.geojson.FeatureCollection
-import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
@@ -57,30 +30,17 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.plugins.annotation.OnSymbolClickListener
-import com.mapbox.mapboxsdk.plugins.annotation.OnSymbolLongClickListener
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions
-import com.mapbox.mapboxsdk.style.expressions.Expression
 import com.mapbox.mapboxsdk.style.layers.Property
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory
-import com.mapbox.mapboxsdk.style.layers.SymbolLayer
-import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import com.mapbox.pluginscalebar.ScaleBarOptions
 import com.mapbox.pluginscalebar.ScaleBarPlugin
-import com.squareup.picasso.Picasso
 import io.moxd.shopforme.*
 import io.moxd.shopforme.R
 import io.moxd.shopforme.adapter.MapAdapter
-import io.moxd.shopforme.data.RestPath
-import io.moxd.shopforme.data.model.LocationData
-import io.moxd.shopforme.data.model.LocationDataGSON
-import io.moxd.shopforme.data.model.ShopMap
 import io.moxd.shopforme.databinding.MapFragmentLayoutBinding
+import io.moxd.shopforme.utils.getErrorRetro
 import kotlinx.coroutines.*
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
-import java.lang.ref.WeakReference
 
 
 class MapFragment : Fragment(), OnMapReadyCallback {
@@ -114,6 +74,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync(this@MapFragment)
         observer = MapLifecycleObserver(requireActivity().activityResultRegistry, LocationServices.getFusedLocationProviderClient(requireContext()), viewModel, requireContext())
+        lifecycle.addObserver(observer)
         return root
 
 
@@ -208,7 +169,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     symbolManager.deleteAll()
                     mystyle.addImage(
                             SYMBOL_ICON_ID, BitmapFactory.decodeResource(
-                            this@MapFragment.resources, R.drawable.icon_info
+                            this@MapFragment.resources, R.drawable.map_icon_1
                     )
                     )
 

@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -25,6 +26,7 @@ import io.moxd.shopforme.*
 import io.moxd.shopforme.databinding.AuthProfileFragmentBinding
 import io.moxd.shopforme.ui.dialog.CameraGalleryDialog
 import io.moxd.shopforme.ui.profile_list.ProfileListFragment
+import io.moxd.shopforme.utils.getErrorRetro
 import timber.log.Timber
 import java.io.File
 import java.io.IOException
@@ -97,6 +99,21 @@ class ProfileFragment2 : Fragment() {
             }
         }
 
+
+        viewModel.UserType.observe(viewLifecycleOwner){
+            if(viewModel._old_usertype != it)
+                MaterialAlertDialogBuilder(requireContext())
+                        .setTitle("Usertype Geändert")
+                        .setMessage("App muss neustarten")
+
+                        .setPositiveButton("OK") { _, _ ->
+
+                            val intent = Intent(requireContext(), MainActivity::class.java)
+                            requireActivity().finish()
+                            requireActivity().startActivity(intent)
+
+                        }.show()
+        }
 
 
         viewModel.user?.observe(viewLifecycleOwner) {

@@ -1,12 +1,10 @@
 package io.moxd.shopforme.api
 
-import androidx.lifecycle.LiveData
-import androidx.room.Update
-import io.moxd.shopforme.ParseDate
+import io.moxd.shopforme.utils.ParseDate
+import io.moxd.shopforme.data.dto.SessionDto
+import io.moxd.shopforme.data.dto.SessionGSON
 import io.moxd.shopforme.data.model.*
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -77,11 +75,11 @@ interface HelpMeShopService {
     suspend fun shopPayHFS(@Path("sessionId") sessionid: String, @Path("id") id: String, @Part image: MultipartBody.Part): Response<ShopGSON>
 
     @Multipart
-    @PUT("api/shop/doneHF/{sessionId}/{id}")
+    @PUT("api/shop/donehf/{sessionId}/{id}")
     suspend fun shopDoneHF(@Path("sessionId") sessionid: String, @Path("id") id: String, @Part image: MultipartBody.Part): Response<ShopGSON>
 
     @Multipart
-    @PUT("api/shop/doneHFS/{sessionId}/{id}")
+    @PUT("api/shop/donehfs/{sessionId}/{id}")
     suspend fun shopDoneHFS(@Path("sessionId") sessionid: String, @Path("id") id: String, @Part image: MultipartBody.Part, @Part("done") done: Boolean = true): Response<ShopGSON>
 
 
@@ -107,12 +105,33 @@ interface HelpMeShopService {
 
     @FormUrlEncoded
     @POST("api/angebot/add")
-    suspend fun createAngebot(@Field("session_id") sessionid: String, @Field("shop") shop: Int): Response<AngebotHelper>
+    suspend fun createAngebot(@Field("session_id") sessionid: String, @Field("shop") shop: Int): Response<AngebotHelperCreate>
 
 
     @FormUrlEncoded
     @PUT("api/user/firebase/{sessionId}")
     suspend fun updateFirebase(@Path("sessionId") sessionid: String, @Field("firebase_token") token: String)
 
+    @FormUrlEncoded
+    @POST("api/user/login")
+    suspend fun login(
+            @Field("email" ) email: String,
+            @Field("password") password: String
+    ) : Response<SessionGSON>
 
+    @FormUrlEncoded
+    @POST("api/user/add")
+    suspend fun registration(
+            @Field("name" ) name: String,
+            @Field("firstname") firstname: String,
+            @Field("password" ) password: String,
+            @Field("password2" ) password2: String,
+            @Field("email" ) email: String,
+            @Field("phone_number" ) phone_number: String,
+            @Field("Street" ) Street: String,
+            @Field("profile_pic" ) profile_pic: String?,
+            @Field("plz" ) plz: String,
+            @Field("City" ) City: String,
+            @Field("usertype" ) usertype: String
+    ) : Response<UserGSON>
 }

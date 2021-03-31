@@ -11,7 +11,7 @@ import com.google.android.material.snackbar.Snackbar
 import io.moxd.shopforme.R
 import io.moxd.shopforme.data.model.Registration
 import io.moxd.shopforme.databinding.AuthRegistrationFragmentBinding
-import io.moxd.shopforme.requireAuthManager
+import io.moxd.shopforme.utils.requireAuthManager
 import kotlinx.coroutines.flow.collect
 
 private const val TAG = "RegistrationFragment"
@@ -140,6 +140,7 @@ class RegistrationFragment : Fragment(R.layout.auth_registration_fragment) {
                             }
                         }
                     }
+
                     is RegistrationViewModel.RegistrationEvent.FeedbackFieldsRequired -> {
                         binding.apply {
                             event.field.forEach {
@@ -181,11 +182,13 @@ class RegistrationFragment : Fragment(R.layout.auth_registration_fragment) {
                     }
                     is RegistrationViewModel.RegistrationEvent.Success -> {
                         Snackbar.make(requireView(), "Erfolgreich registriert", Snackbar.LENGTH_LONG).show()
-                        requireAuthManager().login2(event.email, event.password)
+                        requireAuthManager().auth(event.email, event.password)
                     }
                     is RegistrationViewModel.RegistrationEvent.Error -> {
+                        Log.d("Error event" , event.lastError)
                         Snackbar.make(requireView(), event.lastError, Snackbar.LENGTH_LONG).show()
                     }
+
                 }
             }
         }

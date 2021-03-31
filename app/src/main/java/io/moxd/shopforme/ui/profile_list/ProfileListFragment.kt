@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import io.moxd.shopforme.MainActivity
 import io.moxd.shopforme.R
-import io.moxd.shopforme.requireAuthManager
+import io.moxd.shopforme.utils.requireAuthManager
 import io.moxd.shopforme.ui.profile.ProfileFragment2
 import kotlinx.coroutines.launch
 

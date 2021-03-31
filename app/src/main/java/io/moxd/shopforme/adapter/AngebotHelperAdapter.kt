@@ -14,12 +14,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.result.Result
 import com.squareup.picasso.Picasso
-import io.moxd.shopforme.FormatDate
+import io.moxd.shopforme.utils.FormatDate
 import io.moxd.shopforme.R
 import io.moxd.shopforme.data.RestPath
 import io.moxd.shopforme.data.model.Angebot
 import io.moxd.shopforme.data.model.AngebotHelper
-import io.moxd.shopforme.requireAuthManager
+import io.moxd.shopforme.utils.requireAuthManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect

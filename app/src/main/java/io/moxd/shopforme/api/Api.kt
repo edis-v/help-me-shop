@@ -1,33 +1,24 @@
 package io.moxd.shopforme.api
 
 
-import android.util.Log
-import com.github.kittinunf.fuel.Fuel
-import com.github.kittinunf.fuel.core.BodyLength
-import com.github.kittinunf.fuel.core.FuelManager
-import com.github.kittinunf.fuel.core.Method
-import com.github.kittinunf.fuel.core.awaitUnit
-import com.github.kittinunf.result.Result
-import io.moxd.shopforme.JsonDeserializer
-import io.moxd.shopforme.data.RestPath
 import io.moxd.shopforme.data.model.*
-import io.moxd.shopforme.getError
-import kotlinx.coroutines.*
-import kotlinx.serialization.decodeFromString
 import okhttp3.MultipartBody
-import retrofit2.Call
-import retrofit2.Callback
+import okhttp3.OkHttpClient
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Path
-import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 
 sealed class Api {
+    val okHttpClient = OkHttpClient.Builder()
+            .readTimeout(60, TimeUnit.SECONDS)
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .build()
     protected val retrofit: Retrofit = Retrofit.Builder()
             .baseUrl("https://moco.fluffistar.com/")
             .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient)
             .build()
 
     protected val service: HelpMeShopService = retrofit.create(HelpMeShopService::class.java)
@@ -144,4 +135,20 @@ class ApiFirebase : Api() {
 }
 
 
+class ApiLogin : Api(){
+    suspend fun login(email: String, password: String) = service.login(email, password)
+}
 
+class ApiRegistration : Api(){
+    suspend fun registration(
+            name: String,
+            firstname: String,
+            password: String,
+            email: String,
+            phoneNumber: String,
+            street: String,
+            postalCode: String,
+            city: String,
+            userType: String
+    ) = service.registration(name, firstname, password, password, email, phoneNumber, street, null, postalCode, city, userType)
+}

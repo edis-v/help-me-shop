@@ -10,7 +10,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.moxd.shopforme.api.*
 import io.moxd.shopforme.data.model.UserGSON
-import io.moxd.shopforme.requireAuthManager
+import io.moxd.shopforme.utils.requireAuthManager
 import kotlinx.coroutines.launch
 import okhttp3.MediaType
 import okhttp3.MultipartBody
@@ -31,10 +31,17 @@ class ProfileViewModel @AssistedInject constructor(
     val edit: LiveData<Boolean> = _edit
     val user: LiveData<Response<UserGSON>> = _user
 
+    val _usertype = MutableLiveData<String>()
 
+    val UserType : LiveData<String> = _usertype
+
+    var _old_usertype : String = ""
     init {
         viewModelScope.launch {
             _user.value = apiProfile.getProfile(sessionId)
+            _old_usertype = _user.value?.body()?.usertype_txt.toString()
+            _usertype.value  =   _user.value?.body()?.usertype_txt
+
             _edit.value = false
         }
     }
@@ -42,6 +49,7 @@ class ProfileViewModel @AssistedInject constructor(
     fun getProfile() {
         viewModelScope.launch {
             _user.value = apiProfile.getProfile(sessionId)
+            _usertype.value = _user.value?.body()?.usertype_txt
         }
     }
 
@@ -52,6 +60,7 @@ class ProfileViewModel @AssistedInject constructor(
             val requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file)
             val body = MultipartBody.Part.createFormData("profile_pic", file.name, requestFile)
             _user.value = apiProfile.updateProfilePic(sessionId, body)
+
 
 
         }
@@ -94,6 +103,7 @@ class ProfileViewModel @AssistedInject constructor(
                     City,
                     usertype
             )
+            _usertype.value = _user.value?.body()?.usertype_txt
             _edit.value = !_edit.value!!
         }
     }

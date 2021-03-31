@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="io.moxd.shopforme">
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-feature android:name="android.hardware.camera" android:required="true"/>
     <uses-feature android:name="android.hardware.location.gps" />
@@ -21,10 +22,6 @@
         android:requestLegacyExternalStorage="true"
         android:usesCleartextTraffic="true"
        > <!-- remove line just for debug /-->
-        <meta-data
-            android:name="firebase_messaging_auto_init_enabled"
-            android:value="false" />
-        <receiver android:name=".service.AlarmServiceSession"/>
 
         <service
             android:name=".service.MyFirebaseMessagingService"  android:exported="false" android:directBootAware="true"
@@ -33,6 +30,11 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
+        <meta-data
+            android:name="firebase_messaging_auto_init_enabled"
+            android:value="false" />
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_baseline_add_shopping_cart_24" />
@@ -58,20 +60,11 @@
                 android:resource="@xml/providerfile"/>
         </provider>
 
-        <activity android:name=".ui.splashscreen.SplashScreen" android:theme="@style/Theme.AppCompat.DayNight.NoActionBar" >
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <meta-data

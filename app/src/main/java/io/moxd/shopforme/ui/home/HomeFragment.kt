@@ -1,33 +1,19 @@
 package io.moxd.shopforme.ui.home
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
-import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
-import com.github.kittinunf.fuel.Fuel
-import com.github.kittinunf.result.Result
-import com.google.android.gms.location.*
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.messaging.FirebaseMessaging
-import com.google.firebase.messaging.ktx.messaging
 import io.moxd.shopforme.*
 import io.moxd.shopforme.R
-import io.moxd.shopforme.data.AuthManager
-import io.moxd.shopforme.data.RestPath
-import io.moxd.shopforme.data.model.UserME
 import io.moxd.shopforme.databinding.MainHomeFragmentBinding
 import io.moxd.shopforme.ui.angebot.AngebotFragment
 import io.moxd.shopforme.ui.map.MapFragment
 import io.moxd.shopforme.ui.profile_list.ProfileListFragment
 import io.moxd.shopforme.ui.shopangebot.ShopAngebotFragment
 import io.moxd.shopforme.ui.shopbuylist.shopcart.Shopcart
-import kotlinx.coroutines.*
-import kotlinx.serialization.decodeFromString
+import io.moxd.shopforme.utils.getErrorRetro
+
 
 
 class HomeFragment : Fragment(R.layout.main_home_fragment) {
@@ -38,16 +24,6 @@ class HomeFragment : Fragment(R.layout.main_home_fragment) {
 
 
     var last = 0
-    override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
-    ): View? {
-
-        return super.onCreateView(inflater, container, savedInstanceState)
-
-    }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -98,6 +74,7 @@ class HomeFragment : Fragment(R.layout.main_home_fragment) {
                     Screen1()
                 } else {
                     //error
+                    getErrorRetro(it.errorBody())
                 }
             }
         }

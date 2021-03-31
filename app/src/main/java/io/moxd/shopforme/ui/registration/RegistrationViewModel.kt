@@ -6,10 +6,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import io.moxd.shopforme.PASSWORD_PATTERN
+import io.moxd.shopforme.utils.PASSWORD_PATTERN
 import io.moxd.shopforme.data.AuthManager
+import io.moxd.shopforme.data.UserManager
 import io.moxd.shopforme.data.model.Registration
-import io.moxd.shopforme.requireAuthManager
+import io.moxd.shopforme.utils.requireAuthManager
+import io.moxd.shopforme.utils.requireUserManager
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
@@ -70,7 +72,7 @@ class RegistrationViewModel(
 
     // Privater Channel für Events
     private val eventChannel = Channel<RegistrationEvent>()
-    private val registerFlow = requireAuthManager().events
+    private val registerFlow = requireUserManager().events
 
     // Öffentlicher Flow auf Basis des EventChannels um asynchron mit dem Fragment zu kommunizieren
     val events = eventChannel.receiveAsFlow()
@@ -79,11 +81,12 @@ class RegistrationViewModel(
         viewModelScope.launch {
             registerFlow.collectLatest { result ->
                 when (result) {
-                    is AuthManager.Result.RegisterSuccess -> {
+                    is UserManager.Result.RegisterSuccess -> {
                         eventChannel.send(RegistrationEvent.Success(result.email, result.password))
                     }
-                    is AuthManager.Result.RegisterError -> {
-                        eventChannel.send(RegistrationEvent.Error(result.errorMessages.first()))
+                    is UserManager.Result.RegisterError -> {
+                        Log.d("ViewModel",result.error)
+                        eventChannel.send(RegistrationEvent.Error(result.error))
                     }
                 }
             }
@@ -145,7 +148,7 @@ class RegistrationViewModel(
     }
 
     fun performRegistration() = viewModelScope.launch {
-        requireAuthManager().register(Registration(email, pw, lastName, firstName, address, postalCode, city, phoneNum))
+        requireUserManager().register(Registration(email, pw, lastName, firstName, address, postalCode, city, phoneNum))
     }
 
     // Eventübersicht (data class wenn Argumente nötig)

@@ -11,7 +11,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
-import io.moxd.shopforme.FormatDate
+import io.moxd.shopforme.utils.FormatDate
 import io.moxd.shopforme.MainActivity
 import io.moxd.shopforme.R
 import io.moxd.shopforme.data.model.ShopGSON
@@ -56,8 +56,8 @@ class ShopAdapter(private val context: Context, val itemModelArrayList: List<Sho
                     holder.status.setColorFilter(ContextCompat.getColor(context, R.color.IconAccept), android.graphics.PorterDuff.Mode.SRC_IN);
                 }
                 false -> {//red X
-                    holder.status.setImageResource(R.drawable.ic_wrong)
-                    holder.status.setColorFilter(ContextCompat.getColor(context, R.color.red), android.graphics.PorterDuff.Mode.SRC_IN);
+                    holder.status.setImageResource(R.drawable.ic_zu_bezahlen)
+                //    holder.status.setColorFilter(ContextCompat.getColor(context, R.color.red), android.graphics.PorterDuff.Mode.SRC_IN);
                 }
             }
         else {
