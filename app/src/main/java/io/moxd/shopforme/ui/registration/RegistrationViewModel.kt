@@ -8,6 +8,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import io.moxd.shopforme.utils.PASSWORD_PATTERN
 import io.moxd.shopforme.data.AuthManager
+import io.moxd.shopforme.data.UserManager
 import io.moxd.shopforme.data.model.Registration
 import io.moxd.shopforme.utils.requireAuthManager
 import io.moxd.shopforme.utils.requireUserManager
@@ -71,7 +72,7 @@ class RegistrationViewModel(
 
     // Privater Channel für Events
     private val eventChannel = Channel<RegistrationEvent>()
-    private val registerFlow = requireAuthManager().events
+    private val registerFlow = requireUserManager().events
 
     // Öffentlicher Flow auf Basis des EventChannels um asynchron mit dem Fragment zu kommunizieren
     val events = eventChannel.receiveAsFlow()
@@ -80,10 +81,11 @@ class RegistrationViewModel(
         viewModelScope.launch {
             registerFlow.collectLatest { result ->
                 when (result) {
-                    is AuthManager.Result.RegisterSuccess -> {
+                    is UserManager.Result.RegisterSuccess -> {
                         eventChannel.send(RegistrationEvent.Success(result.email, result.password))
                     }
-                    is AuthManager.Result.RegisterError -> {
+                    is UserManager.Result.RegisterError -> {
+                        Log.d("ViewModel",result.error)
                         eventChannel.send(RegistrationEvent.Error(result.error))
                     }
                 }

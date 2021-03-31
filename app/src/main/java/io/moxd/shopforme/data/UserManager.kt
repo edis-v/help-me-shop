@@ -1,6 +1,7 @@
 package io.moxd.shopforme.data
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -77,7 +78,9 @@ class UserManager constructor(private val context: Context) {
             saveUser(response.body()!!)
             eventChannel.send(Result.RegisterSuccess(registration.email, registration.password))
         } else {
-            eventChannel.send(Result.RegisterError(getErrorRetro(response.errorBody())))
+            val error = getErrorRetro(response.errorBody())
+            Log.d("Registration Error ", error)
+            eventChannel.send(Result.RegisterError(error))
         }
     }
 

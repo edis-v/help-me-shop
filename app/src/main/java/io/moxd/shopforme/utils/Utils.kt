@@ -6,6 +6,7 @@ import kotlinx.serialization.json.Json
 val JsonDeserializer = Json {
     ignoreUnknownKeys = true // Nicht alle Keys müssen im Dto/Model vorhanden sein
     ;coerceInputValues = true
+    isLenient = true
 }
 
 

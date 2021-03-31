@@ -140,6 +140,7 @@ class RegistrationFragment : Fragment(R.layout.auth_registration_fragment) {
                             }
                         }
                     }
+
                     is RegistrationViewModel.RegistrationEvent.FeedbackFieldsRequired -> {
                         binding.apply {
                             event.field.forEach {
@@ -184,8 +185,10 @@ class RegistrationFragment : Fragment(R.layout.auth_registration_fragment) {
                         requireAuthManager().auth(event.email, event.password)
                     }
                     is RegistrationViewModel.RegistrationEvent.Error -> {
+                        Log.d("Error event" , event.lastError)
                         Snackbar.make(requireView(), event.lastError, Snackbar.LENGTH_LONG).show()
                     }
+
                 }
             }
         }

@@ -17,8 +17,7 @@ fun getErrorRetro(response: ResponseBody?): String = runBlocking {
             val data = response.byteStream().bufferedReader().use(BufferedReader::readText)
             Log.d("getErrorData", data)
 
-
-            return@withContext if (data.contains("non_field_errors"))
+            return@withContext if (data.contains(":"))
                 JsonDeserializer.decodeFromString<ErrorField>(data).Error()
             else
                 data.replace("[\"", "").replace("\"]", "")
@@ -41,17 +40,3 @@ fun getError(response: Response): String = runBlocking {
 }
 
 
-fun getAllError(response: Response): List<String> = runBlocking {
-    withContext(Dispatchers.IO) {
-
-        val data = response.body().asString("application/json")
-        Log.d("getErrorData", data)
-
-
-        if (data.contains("non_field_errors"))
-            return@withContext JsonDeserializer.decodeFromString<ErrorField>(data).non_field_errors
-        else
-            return@withContext data.replace("[\"", "").replace("\"]", "").split(",")
-
-    }
-}
