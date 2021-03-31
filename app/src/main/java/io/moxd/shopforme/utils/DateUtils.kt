@@ -1,9 +1,52 @@
 package io.moxd.shopforme.utils
 
+import android.os.Build
 import android.util.Log
 import java.text.SimpleDateFormat
+import java.time.Duration
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.math.abs
+
+fun currentDateAsString(): String {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        val current = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy. HH:mm:ss")
+        return current.format(formatter)
+    } else {
+        val current = Date()
+        val formatter = SimpleDateFormat("dd.MM.yyyy. HH:mm:ss")
+        return formatter.format(current)
+    }
+}
+
+fun stringifiedDateOlderThan30Min(date: String): Boolean {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        val current = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy. HH:mm:ss")
+        val parsedDate = LocalDateTime.parse(date, formatter)
+
+        val duration = Duration.between(parsedDate, current)
+
+        if(duration.toMinutes() >= 30) {
+            return true
+        }
+    } else {
+        val current = Date()
+        val formatter = SimpleDateFormat("dd.MM.yyyy. HH:mm:ss")
+        val parsedDate = formatter.parse(date)
+        val diffInMillies = Math.abs(current.getTime() - parsedDate.getTime())
+        val diff = TimeUnit.MINUTES.convert(diffInMillies, TimeUnit.MINUTES)
+
+        if(diff >= 30) {
+            return true
+        }
+    }
+
+    return false
+}
 
 fun FormatDate(date: String): String {
     var format = SimpleDateFormat("yyyy-M-dd")

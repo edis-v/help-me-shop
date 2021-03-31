@@ -65,6 +65,10 @@ class AuthManager constructor(private val context: Context) {
         auth(email, password)
     }
 
+    suspend fun reauth() = withContext(Dispatchers.IO) {
+        // check last login
+    }
+
     suspend fun auth(email: String, password: String) = withContext(Dispatchers.IO) {
         val response = apiLogin.login(email, password)
 
