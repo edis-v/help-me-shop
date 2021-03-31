@@ -1,14 +1,11 @@
 package io.moxd.shopforme
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
-import com.github.kittinunf.fuel.core.FuelManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -19,8 +16,6 @@ import io.moxd.shopforme.data.AuthManager
 import io.moxd.shopforme.data.UserManager
 import io.moxd.shopforme.ui.login.LoginFragment
 import io.moxd.shopforme.ui.splashscreen.SplashScreenDirections
-import io.moxd.shopforme.utils.requireAuthManager
-import io.moxd.shopforme.utils.requireUserManager
 import kotlinx.coroutines.flow.collect
 import java.util.*
 
@@ -31,7 +26,6 @@ class MainActivity : AppCompatActivity() {
     private val firebaseAnalytics: FirebaseAnalytics
 
     init {
-
         firebaseAnalytics = Firebase.analytics
     }
 
@@ -59,11 +53,6 @@ class MainActivity : AppCompatActivity() {
                                     dialog.dismiss()
                                 }
                                 .show()
-                    }
-
-                    is AuthManager.Result.SessionInvalid -> {
-                        // Versuche die Session zu erneuern
-                        requireAuthManager().auth()
                     }
 
                     is AuthManager.Result.AuthSucess -> {

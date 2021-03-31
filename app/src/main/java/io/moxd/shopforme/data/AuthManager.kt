@@ -1,6 +1,7 @@
 package io.moxd.shopforme.data
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -28,7 +29,7 @@ class AuthManager constructor(private val context: Context) {
 
     private val dataStore = context.createDataStore("auth_preferences")
 
-    private val timer = fixedRateTimer("reauth", true, 0.minutes.toLong(), 30.minutes.toLong()) {
+    private val timer = fixedRateTimer("reauth", true, 30.minutes.toLong(), 30.minutes.toLong()) {
         GlobalScope.launch {
             // Reauth jede 30 min
             auth()
@@ -45,19 +46,12 @@ class AuthManager constructor(private val context: Context) {
     suspend fun checkSessionAndConnectivity() = withContext(Dispatchers.IO) {
         val preferences = dataStore.data.first()
 
-        val session = preferences[SESSION_ID] ?: return@withContext sendLoginNeeded()
-        val loginEmail = preferences[EMAIL] ?: return@withContext sendLoginNeeded()
-        val loginPassword = preferences[PASSWORD] ?: return@withContext sendLoginNeeded()
+        preferences[SESSION_ID] ?: return@withContext sendLoginNeeded()
+        preferences[EMAIL] ?: return@withContext sendLoginNeeded()
+        preferences[PASSWORD] ?: return@withContext sendLoginNeeded()
 
         if(context.isOnline()) {
-            // if user is online check if session is still valid using profile api
-            val response = apiProfile.getProfile(session)
-
-            if(response.isSuccessful) {
-                eventChannel.send(Result.SessionActive)
-            } else {
-                eventChannel.send(Result.SessionInvalid)
-            }
+            auth()
         } else {
             eventChannel.send(Result.NoConnection)
         }
@@ -130,8 +124,6 @@ class AuthManager constructor(private val context: Context) {
 
     sealed class Result {
         object LoginNeeded: Result()
-        object SessionActive : Result()
-        object SessionInvalid : Result()
         object NoConnection : Result()
         object UnauthDone : Result()
         data class AuthSucess(val session: SessionGSON) : Result()
